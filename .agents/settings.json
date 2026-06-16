@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "BeforeTool": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "name": "prevent-dangerous-commands",
+            "type": "command",
+            "command": "./scripts/hooks/prevent_dangerous_commands.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

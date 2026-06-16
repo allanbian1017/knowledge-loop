@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "ref": "main",
+      "sourceType": "github",
+      "computedHash": "e6d6cddb2dcb7191fcf3d031575bf34e3b65dab8001743f51fe6d9636de4899e"
+    },
+    "architecture-decision-records": {
+      "source": "wshobson/agents",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "plugins/documentation-generation/skills/architecture-decision-records/SKILL.md",
+      "computedHash": "bffeafc71791924809ca9e24bfe3f18e87b2a060dbe5484468b4ff06c8e693b2"
+    },
+    "gws-gmail": {
+      "source": "googleworkspace/cli",
+      "ref": "main",
+      "sourceType": "github",
+      "computedHash": "5e5b5fdb4b4f347310d929657ed773abcaf528b5ac0a68deee12d3d38d307642"
+    },
+    "gws-shared": {
+      "source": "googleworkspace/cli",
+      "ref": "main",
+      "sourceType": "github",
+      "computedHash": "b197590681ce3d5a52e9c15a68652b5445d111dbfc0dc453f68fb0785aac443c"
+    },
+    "gws-tasks": {
+      "source": "googleworkspace/cli",
+      "ref": "main",
+      "sourceType": "github",
+      "computedHash": "c18db1a0ddecb2c4f1d3999d4021c77da621b51da6e9b4a24783a4ef16859c76"
+    }
+  }
+}
