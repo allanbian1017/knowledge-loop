@@ -63,7 +63,7 @@ cd knowledge-loop
 Ensure [Node.js](https://nodejs.org/) (v18+) is installed. This is required to run the skills installer utility (`npx skills`).
 
 #### 3. Install Third-Party Skills
-The template includes 14 built-in skills. To install the 5 third-party dependencies:
+The template includes 13 built-in skills. To install the 5 third-party dependencies:
 ```bash
 npx skills experimental_install
 ```
@@ -183,7 +183,7 @@ Refer to this map to quickly locate system files and design details:
 | :--- | :--- | :--- |
 | **Agent Rules** | [AGENTS.md](AGENTS.md) | Coding conventions, strict tool constraints, and workflow guidelines. |
 | **Glossary** | [CONTEXT.md](CONTEXT.md) | Definition of project terms like Dreamer, Trace, and Memory Injection. |
-| **Skill Logic** | `.agents/skills/` | Source folders of all 14 built-in and third-party skills. |
+| **Skill Logic** | `.agents/skills/` | Source folders of all 13 built-in and third-party skills. |
 | **Preferences** | [user_preferences.md](data/user_preferences.md) | Key-value store of user preferences updated via reviews. |
 | **Goal Settings** | [goals.md](data/goals.md) | User goals used by the suggestion scoring rubric. |
 | **Safety Hooks** | [prevent_dangerous_commands.sh](scripts/hooks/prevent_dangerous_commands.sh) | Hook executing before command runs to prevent unsafe operations. |
