@@ -3,7 +3,8 @@
 > Last updated: YYYY-MM-DD | Based on 0 reviewed suggestions
 
 ## Configuration
-- **Preferred Output Language**: English
+- **Preferred Report Language**: English
+- **Preferred Conversation Language**: English
 
 ## Summary Statistics
 - Total reviewed: 0
