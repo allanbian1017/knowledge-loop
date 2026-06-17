@@ -42,6 +42,7 @@ Built for [Antigravity](https://blog.google/technology/google-deepmind/) (Google
 - When identifying a bug, find root causes, not symptoms. Do not make temporary or "hacky" fixes.
 
 ## Project Specific Instructions
+- Eagerly check `data/user_preferences.md` at the start of any session to identify the `Preferred Output Language` (e.g., Traditional Chinese) and ensure all generated reports, summaries, and user communications strictly follow this preference.
 - When identifying a bug or unexpected behavior, you should always document it in `docs/rca/` with the naming convention: `<workflow_name>_rca_<YYYY-MM-DD>_V<version>.md`.
     - Root cause conclusions must be supported by quantitative evidence (e.g., measured counts, script output, grep results). Qualitative descriptions alone do not constitute proof. If a claim cannot be verified with a tool, it must be labelled a hypothesis, not a conclusion.
     - An RCA document must always include: observed problem, root cause (primary + contributing), fix applied, and status checklist.
