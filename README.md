@@ -196,9 +196,18 @@ Refer to this map to quickly locate system files and design details:
 
 ## 🌐 How to Switch Language
 
-By default, the content summarization pipeline produces output in **English**. To switch to another language (e.g., Traditional Chinese):
+By default, both reports and conversation default to **English**. You can configure them independently in [user_preferences.md](data/user_preferences.md) under the `## Configuration` section:
 
-1. Edit [user_preferences.md](data/user_preferences.md) — change the `Preferred Output Language` under the `## Configuration` section (e.g., to `Traditional Chinese`).
+1. **Preferred Report Language**: Controls the language of the generated reports and summaries (e.g., `Traditional Chinese`, `English`).
+2. **Preferred Conversation Language**: Controls the language used by the agent when communicating directly with you in chat.
+
+To change them:
+1. Edit [user_preferences.md](data/user_preferences.md) and set the desired language values:
+   ```markdown
+   ## Configuration
+   - **Preferred Report Language**: Traditional Chinese
+   - **Preferred Conversation Language**: Traditional Chinese
+   ```
 2. (Optional) Update [rubric_blocklist.md](data/rubric_blocklist.md) — add ambiguity phrases in your target language.
 
 ---
