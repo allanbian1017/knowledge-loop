@@ -8,24 +8,24 @@ Integrate the `ingest-website` skill to process generic URLs in the "Delegate" G
 
 ### 1. content-summary (Shared References)
 
-#### [MODIFY] [filename_rules.md](.agents/skills/content-summary/references/filename_rules.md)
+#### [MODIFY] [filename_rules.md](../.agents/skills/content-summary/references/filename_rules.md)
 - Register `Website` as a valid `{SourceType}`.
 - Document directory path structure: `reports/Website_YYYY_MM_DD/`.
 - Add naming convention rule: `[domain]_[slugified_title].md`.
 
-#### [MODIFY] [output_template.md](.agents/skills/content-summary/references/output_template.md)
+#### [MODIFY] [output_template.md](../.agents/skills/content-summary/references/output_template.md)
 - Register `Website` under the valid `來源類型` values.
 - Document website-specific fields under `🔖 來源 Metadata` (Domain/Host, original URL, scraped date).
 - Update the `📄 原始內容` guidelines to explicitly omit this section for `Website` reports.
 
-#### [MODIFY] [suggestion_log.md](.agents/skills/content-summary/references/suggestion_log.md)
+#### [MODIFY] [suggestion_log.md](../.agents/skills/content-summary/references/suggestion_log.md)
 - Register `Website` as a valid source type in the log metadata line definition.
 
 ---
 
 ### 2. ingest-website (New Skill)
 
-#### [NEW] [SKILL.md](.agents/skills/ingest-website/SKILL.md)
+#### [NEW] [SKILL.md](../.agents/skills/ingest-website/SKILL.md)
 - Set frontmatter with `name: ingest-website` and appropriate description.
 - Implement the step-by-step procedure:
   1. Fetch website Markdown from `https://r.jina.ai/<target_url>`.
@@ -35,30 +35,30 @@ Integrate the `ingest-website` skill to process generic URLs in the "Delegate" G
   5. Append a suggestion to `data/suggestions_pending.md` based on `content-summary/references/suggestion_log.md`.
   6. Mark the task completed in Google Tasks using `gws tasks tasks patch`.
 
-#### [NEW] [README.md](.agents/skills/ingest-website/README.md)
+#### [NEW] [README.md](../.agents/skills/ingest-website/README.md)
 - Add standard Overview, Problem Statement, Solution, File Structure, Dependencies, Triggering, and Output Location documentation.
 
 ---
 
 ### 3. daily-workflow (Orchestrator Integration)
 
-#### [MODIFY] [SKILL.md](.agents/skills/daily-workflow/SKILL.md)
+#### [MODIFY] [SKILL.md](../.agents/skills/daily-workflow/SKILL.md)
 - Modify Step 1 routing table to include a generic website classification to `website_queue` for valid URLs that do not belong to Threads or YouTube.
 - Add Step 4W to process `website_queue` tasks synchronously using `ingest-website` right after Threads tasks.
 - Modify Step 5/6 Final Summary template to output the count and files created for Website tasks, as well as any soft failures.
 
-#### [MODIFY] [README.md](.agents/skills/daily-workflow/README.md)
+#### [MODIFY] [README.md](../.agents/skills/daily-workflow/README.md)
 - Document the new website queue, synchronous execution sequence, and directory output locations.
 
 ---
 
 ### 4. Verification & Test Scripts
 
-#### [NEW] [validate_website_report.py](scripts/validate_website_report.py)
+#### [NEW] [validate_website_report.py](../scripts/validate_website_report.py)
 - Create a Python quality scoring script that validates website report structural integrity.
 - Ensures all headings and sections are present, `來源類型` is `Website`, and the raw content section is omitted.
 
-#### [NEW] [test_website_routing.py](scripts/test_website_routing.py)
+#### [NEW] [test_website_routing.py](../scripts/test_website_routing.py)
 - Create a Python test suite that mocks a Google Task list API response and verifies task URLs are correctly routed to `threads_queue`, `youtube_queue`, and `website_queue` or skipped if no URL is present.
 
 ---

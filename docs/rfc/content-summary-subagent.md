@@ -79,7 +79,7 @@ A custom `content-summariser` subagent is defined via `define_subagent` with the
 | `enable_mcp_tools` | `false` |
 | `enable_subagent_tools` | `false` |
 
-The system prompt is stored in [subagent_prompt.md](.agents/skills/content-summary/references/subagent_prompt.md) (new file) and contains:
+The system prompt is stored in [subagent_prompt.md](../.agents/skills/content-summary/references/subagent_prompt.md) (new file) and contains:
 
 1. **Role description**: "You are a content summariser for a personal AI workflow pipeline."
 2. **File list**: The 7 files to read before summarising (5 references + 2 data files).

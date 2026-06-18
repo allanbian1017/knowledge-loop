@@ -2,7 +2,7 @@
 
 Introduce a `content-summariser` subagent to isolate summarisation into clean contexts, preventing context rot as daily content volume grows.
 
-> RFC: [content-summary-subagent.md](docs/rfc/content-summary-subagent.md)
+> RFC: [content-summary-subagent.md](../rfc/content-summary-subagent.md)
 
 ---
 
@@ -10,7 +10,7 @@ Introduce a `content-summariser` subagent to isolate summarisation into clean co
 
 ### 1. content-summary (Shared Skill)
 
-#### [NEW] [subagent_prompt.md](.agents/skills/content-summary/references/subagent_prompt.md)
+#### [NEW] [subagent_prompt.md](../.agents/skills/content-summary/references/subagent_prompt.md)
 
 Contract-only file containing the `content-summariser` subagent's system prompt:
 - Role description: content summariser for the pipeline
@@ -18,7 +18,7 @@ Contract-only file containing the `content-summariser` subagent's system prompt:
 - Input contract: expected prompt fields (Source Type, URL, Title, Author, Task ID, Source Metadata, Date, Raw Content)
 - Output behavior: write report to `reports/{SourceType}_YYYY_MM_DD/`, append suggestion to `data/suggestions_pending.md`, return confirmation with file path
 
-#### [MODIFY] [SKILL.md](.agents/skills/content-summary/SKILL.md)
+#### [MODIFY] [SKILL.md](../.agents/skills/content-summary/SKILL.md)
 
 - Add `subagent_prompt.md` to the reference table:
 
@@ -26,7 +26,7 @@ Contract-only file containing the `content-summariser` subagent's system prompt:
 |---|---|---|
 | `references/subagent_prompt.md` | Before spawning the content-summariser subagent | System prompt and I/O contract for `define_subagent` |
 
-#### [MODIFY] [README.md](.agents/skills/content-summary/README.md)
+#### [MODIFY] [README.md](../.agents/skills/content-summary/README.md)
 
 - Add architecture section explaining the subagent pattern with before/after diagram
 - Add `subagent_prompt.md` to file structure and reference table
@@ -37,7 +37,7 @@ Contract-only file containing the `content-summariser` subagent's system prompt:
 
 ### 2. ingest-newsletter
 
-#### [MODIFY] [SKILL.md](.agents/skills/ingest-newsletter/SKILL.md)
+#### [MODIFY] [SKILL.md](../.agents/skills/ingest-newsletter/SKILL.md)
 
 Replace Steps 2-2 through 2-4b with:
 
@@ -56,7 +56,7 @@ Steps 2-1 (read email), 2-5 (mark read), 2-6 (next batch) remain unchanged.
 
 ### 3. ingest-threads
 
-#### [MODIFY] [SKILL.md](.agents/skills/ingest-threads/SKILL.md)
+#### [MODIFY] [SKILL.md](../.agents/skills/ingest-threads/SKILL.md)
 
 Replace Steps 2–4 with:
 
@@ -75,7 +75,7 @@ Steps 1 (fetch via agent-browser), 5 (mark task done) remain unchanged.
 
 ### 4. ingest-youtube
 
-#### [MODIFY] [SKILL.md](.agents/skills/ingest-youtube/SKILL.md)
+#### [MODIFY] [SKILL.md](../.agents/skills/ingest-youtube/SKILL.md)
 
 Replace Steps 4–6 with:
 
@@ -94,7 +94,7 @@ Steps 1–3 (model selection, launch, poll) and Step 7 (mark done + cleanup) rem
 
 ### 5. ingest-website
 
-#### [MODIFY] [SKILL.md](.agents/skills/ingest-website/SKILL.md)
+#### [MODIFY] [SKILL.md](../.agents/skills/ingest-website/SKILL.md)
 
 Replace Steps 2–4 with:
 
@@ -113,7 +113,7 @@ Steps 1 (fetch via Jina Reader), 5 (mark task done) remain unchanged.
 
 ### 6. daily-workflow
 
-#### [MODIFY] [SKILL.md](.agents/skills/daily-workflow/SKILL.md)
+#### [MODIFY] [SKILL.md](../.agents/skills/daily-workflow/SKILL.md)
 
 Update **Step 5** (YouTube post-processing) to use the subagent pattern:
 

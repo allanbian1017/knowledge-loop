@@ -21,7 +21,7 @@ The current report template has a gap between "What this content covers" and "Wh
 
 Core Idea tells you *what*; the reader still has to work to extract the *so what*. Deep Analysis covers this at length but is 6 layers deep. There is no quick-access "elevator pitch" of the distilled principle.
 
-**Concrete example** — from the Ara Khan report ([Dont_Build_Slop](reports/YouTube_2026_05_27/Dont_Build_Slop_4_Levels_of_AI_Agent_Maturity_Ara_Khan_Cline.md)):
+**Concrete example** — from the Ara Khan report ([Dont_Build_Slop](../reports/YouTube_2026_05_27/Dont_Build_Slop_4_Levels_of_AI_Agent_Maturity_Ara_Khan_Cline.md)):
 
 ```markdown
 ## 📝 核心總結（Core Idea）
