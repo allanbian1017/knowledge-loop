@@ -83,14 +83,14 @@ t=end   daily-distiller → review-suggestions
 ## Implementation Plan
 
 1. **Content Summary updates**:
-   - Update [filename_rules.md](../.agents/skills/content-summary/references/filename_rules.md) to register `Website` source type and `[domain]_[slugified_title].md` filenames.
-   - Update [output_template.md](../.agents/skills/content-summary/references/output_template.md) to support the new `Website` source and omit raw content for it.
-   - Update [suggestion_log.md](../.agents/skills/content-summary/references/suggestion_log.md) to support `Website` type.
+   - Update [filename_rules.md](../../.agents/skills/content-summary/references/filename_rules.md) to register `Website` source type and `[domain]_[slugified_title].md` filenames.
+   - Update [output_template.md](../../.agents/skills/content-summary/references/output_template.md) to support the new `Website` source and omit raw content for it.
+   - Update [suggestion_log.md](../../.agents/skills/content-summary/references/suggestion_log.md) to support `Website` type.
 2. **Create New Skill**:
-   - Define [SKILL.md](../.agents/skills/ingest-website/SKILL.md) and [README.md](../.agents/skills/ingest-website/README.md) inside `.agents/skills/ingest-website/`.
+   - Define [SKILL.md](../../.agents/skills/ingest-website/SKILL.md) and [README.md](../../.agents/skills/ingest-website/README.md) inside `.agents/skills/ingest-website/`.
 3. **Update Orchestrator**:
-   - Modify [daily-workflow/SKILL.md](../.agents/skills/daily-workflow/SKILL.md) routing and sequential pipeline execution.
-   - Update [daily-workflow/README.md](../.agents/skills/daily-workflow/README.md) documentation.
+   - Modify [daily-workflow/SKILL.md](../../.agents/skills/daily-workflow/SKILL.md) routing and sequential pipeline execution.
+   - Update [daily-workflow/README.md](../../.agents/skills/daily-workflow/README.md) documentation.
 4. **Add Automated Tests**:
    - Create a website scorecard validator (`scripts/validate_website_report.py`).
    - Create a task routing test suite (`scripts/test_website_routing.py`).

@@ -58,14 +58,14 @@ the current task.
 
 1. **Corrected suggestion review state**: Updated suggestion #8 (previously rejected due to the
    hallucinated content) to Accepted in
-   [suggestions_reviewed.md](../data/suggestions_reviewed.md).
+   [suggestions_reviewed.md](../../data/suggestions_reviewed.md).
 
 2. **Recompiled user preferences**: Re-ran the preference compiler to regenerate
-   [user_preferences.md](../data/user_preferences.md) with
+   [user_preferences.md](../../data/user_preferences.md) with
    corrected acceptance rate statistics.
 
 3. **Backlog items created**: Added defensive mechanism backlog items to
-   [backlog.md](../backlog.md):
+   [backlog.md](../../backlog.md):
    - **Item 29**: Canonical URL Resolution & Cache Mirroring (unique hash-based filenames).
    - **Item 30**: Cryptographic Cache Validation (TTL enforcement, URL metadata headers, pre-run
      sanitation).
@@ -82,5 +82,5 @@ the current task.
 
 ## 5. References
 
-- Affected skill: [daily-workflow/SKILL.md](../.agents/skills/daily-workflow/SKILL.md)
-- Affected skill: [ingest-website/SKILL.md](../.agents/skills/ingest-website/SKILL.md)
+- Affected skill: [daily-workflow/SKILL.md](../../.agents/skills/daily-workflow/SKILL.md)
+- Affected skill: [ingest-website/SKILL.md](../../.agents/skills/ingest-website/SKILL.md)

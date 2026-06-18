@@ -48,5 +48,5 @@
 - [x] 執行 `.tmp/verify_youtube_fix.py` 驗證修復
 
 ## 5. References
-- 影響技能: [daily-workflow/SKILL.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/daily-workflow/SKILL.md)
-- 影響技能: [ingest-youtube/SKILL.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/ingest-youtube/SKILL.md)
+- 影響技能: [daily-workflow/SKILL.md](../../.agents/skills/daily-workflow/SKILL.md)
+- 影響技能: [ingest-youtube/SKILL.md](../../.agents/skills/ingest-youtube/SKILL.md)

@@ -2,7 +2,7 @@
 
 - **日期**：2026-05-13
 - **版本**：V1
-- **關聯技能**：[daily-workflow](file:///Users/allanbian/my-ai-workflow/.agents/skills/daily-workflow/SKILL.md) / [ingest-youtube](file:///Users/allanbian/my-ai-workflow/.agents/skills/ingest-youtube/SKILL.md)
+- **關聯技能**：[daily-workflow](../../.agents/skills/daily-workflow/SKILL.md) / [ingest-youtube](../../.agents/skills/ingest-youtube/SKILL.md)
 
 ---
 

@@ -8,7 +8,7 @@
 在確認根本原因前，我們檢驗並排除了以下假說：
 
 *   **假說 A: 該任務存在於 Google Tasks 的 `Delegate` 任務列表中，只是後續被刪除。**
-    *   *驗證 / 駁回證據*: 讀取本會話開始時備份的任務清單 [delegate_tasks.json](file:///Users/allanbian/my-ai-workflow/.tmp/delegate_tasks.json) 與 [tasks.json](file:///Users/allanbian/my-ai-workflow/.tmp/tasks.json)（共 13 項任務），未發現包含 `lilianweng` 或 `reward-hacking` 的任何任務，故排除此假說。
+    *   *驗證 / 駁回證據*: 讀取本會話開始時備份的任務清單 [delegate_tasks.json](../../.tmp/delegate_tasks.json) 與 [tasks.json](../../.tmp/tasks.json)（共 13 項任務），未發現包含 `lilianweng` 或 `reward-hacking` 的任何任務，故排除此假說。
 *   **假說 B: 該網址來自人類用戶在本對話（Session）中的 Prompt 輸入。**
     *   *驗證 / 駁回證據*: 檢索對話軌跡 `transcript.jsonl` 中類型為 `USER_INPUT` 的步驟，用戶輸入僅有 `"run my daily workflow"`，並未提供任何網址，故排除此假說。
 *   **假說 C: 該任務存在於其他 Google Tasks 任務列表中（如 Must Do, Nice to Do）。**
@@ -30,7 +30,7 @@
 1.  **異常攔截與回滾**:
     攔截並跳過針對該 hallucinated task 的 API `patch` 指令（避免無效 API 報錯阻礙工作流）。
 2.  **保留分析產物**:
-    鑑於該 Reward Hacking 報告本身極具技術價值且契合 user preferences，我們保留已產出的 [lilianweng.github.io_posts_2024-11-28-reward-hacking.md](file:///Users/allanbian/my-ai-workflow/reports/Website_2026_06_03/lilianweng.github.io_posts_2024-11-28-reward-hacking.md)，並將其提取的 MEC/BPC 校準建議追加至 [suggestions_pending.md](file:///Users/allanbian/my-ai-workflow/data/suggestions_pending.md)，但取消對該任務的 Tasks API 修改。
+    鑑於該 Reward Hacking 報告本身極具技術價值且契合 user preferences，我們保留已產出的 [lilianweng.github.io_posts_2024-11-28-reward-hacking.md](../../reports/Website_2026_06_03/lilianweng.github.io_posts_2024-11-28-reward-hacking.md)，並將其提取的 MEC/BPC 校準建議追加至 [suggestions_pending.md](../../data/suggestions_pending.md)，但取消對該任務的 Tasks API 修改。
 3.  **在 Backlog 中立項防禦機制**:
     在 backlog 中加入「三明治模式防禦：Generic Website 處理流程強制與本地 State json 進行交集檢驗」，防止未來類似的幻覺注入。
 
@@ -42,5 +42,5 @@
 - [x] 更新決策日誌與 Backlog
 
 ## 5. References
-- 影響技能: [daily-workflow/SKILL.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/daily-workflow/SKILL.md)
-- 影響技能: [ingest-website/SKILL.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/ingest-website/SKILL.md)
+- 影響技能: [daily-workflow/SKILL.md](../../.agents/skills/daily-workflow/SKILL.md)
+- 影響技能: [ingest-website/SKILL.md](../../.agents/skills/ingest-website/SKILL.md)
