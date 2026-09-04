@@ -2,7 +2,7 @@
 
 **Supercharge your daily reading. Turn newsletters, videos, and articles into a personalized, self-improving knowledge pipeline.**
 
-Knowledge Loop is an AI-powered personal content intelligence pipeline (designed for [Antigravity](https://antigravity.google/)). It automates daily knowledge digestion — ingesting newsletters, YouTube videos, social media posts, and web articles — then summarizing, distilling, and surfacing actionable insights through AI-powered suggestions that continuously learn and improve based on your feedback.
+Knowledge Loop is an AI-powered personal content intelligence pipeline (designed for [Antigravity](https://antigravity.google/)) but can be used in other environments as well. It automates daily knowledge digestion — ingesting newsletters, YouTube videos, social media posts, and web articles — then summarizing, distilling, and surfacing actionable insights through AI-powered suggestions that continuously learn and improve based on your feedback.
 
 ---
 

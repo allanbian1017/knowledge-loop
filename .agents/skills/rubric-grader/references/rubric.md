@@ -22,13 +22,13 @@ Measures how concrete, clear, and ready to execute the suggestion is.
 Measures how well the suggestion aligns with the user's explicit preferences and topic interest levels.
 
 *   **0 (Fail)**: Matches low-interest topics or contains neutral/passive recommendations.
-    *   *Examples*: Suggestions about general system design patterns, or topics explicitly rejected/marked avoided in [user_preferences.md](data/user_preferences.md).
+    *   *Examples*: Suggestions about general system design patterns, or topics explicitly rejected/marked avoided in [user_preferences.md](file:///Users/allanbian/my-ai-workflow/data/user_preferences.md).
 *   **1 (Pass)**: Matches medium-interest or general topics without explicit alignment.
 *   **2 (Strong)**: Matches high-interest topics AND aligns with preferred action types (e.g. adding prompts to library, learning from weakness).
     *   *Examples*: Adding specific prompt templates to `prompts.md`, creating RCA docs for errors.
 
 ### 3. Goal Relevance (G)
-Measures the suggestion's contribution to goals defined in [goals.md](data/goals.md).
+Measures the suggestion's contribution to goals defined in [goals.md](file:///Users/allanbian/my-ai-workflow/data/goals.md).
 
 *   **0 (Fail)**: No connection to any goal in `goals.md` (e.g., general news/opinion summaries).
 *   **1 (Pass)**: Indirect or secondary connection to a goal.

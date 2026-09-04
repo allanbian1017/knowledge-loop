@@ -8,6 +8,28 @@
             "name": "prevent-dangerous-commands",
             "type": "command",
             "command": "./scripts/hooks/prevent_dangerous_commands.sh"
+          },
+          {
+            "name": "ensure-lang-preferences",
+            "type": "command",
+            "command": "./scripts/hooks/ensure_lang_preferences.sh"
+          }
+        ]
+      }
+    ],
+    "AfterTool": [
+      {
+        "matcher": "replace_file_content|multi_replace_file_content|write_to_file",
+        "hooks": [
+          {
+            "name": "sync-subagents-and-validate",
+            "type": "command",
+            "command": "python3 scripts/validate_skill.py && python3 scripts/sync_subagents.py"
+          },
+          {
+            "name": "ensure-lang-preferences",
+            "type": "command",
+            "command": "./scripts/hooks/ensure_lang_preferences.sh"
           }
         ]
       }

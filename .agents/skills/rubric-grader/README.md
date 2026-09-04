@@ -57,10 +57,10 @@ data/
 ### 1. Grade Mode (Programmatic Ingestion)
 Executed automatically during ingestion (e.g. website, threads, youtube, newsletter):
 *   Reads suggestion details.
-*   Checks [rubric_blocklist.md](data/rubric_blocklist.md). Vetoes if matched.
+*   Checks [rubric_blocklist.md](file:///Users/allanbian/my-ai-workflow/data/rubric_blocklist.md). Vetoes if matched.
 *   Grades A, P, G dimensions (0, 1, or 2).
-*   If composite $\ge 4$: Appends with `📊` format to [suggestions_pending.md](data/suggestions_pending.md).
-*   If composite $< 4$: Appends to [suggestions_filtered.md](data/suggestions_filtered.md).
+*   If composite $\ge 4$: Appends with `📊` format to [suggestions_pending.md](file:///Users/allanbian/my-ai-workflow/data/suggestions_pending.md).
+*   If composite $< 4$: Appends to [suggestions_filtered.md](file:///Users/allanbian/my-ai-workflow/data/suggestions_filtered.md).
 
 ### 2. Backtest Mode (Chat Trigger)
 Triggered by asking the agent to "backtest the rubric":
