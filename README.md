@@ -4,6 +4,8 @@
 
 Knowledge Loop is an AI-powered personal content intelligence pipeline built for [Google Antigravity](https://antigravity.google/) and cross-platform compatible with **Claude Code** and **OpenAI Codex**. It automates daily knowledge digestion — discovering pending tasks, dispatching parallel worker subagents, extracting high-signal summaries, evaluating suggestions against a 3-dimension rubric, and continuously refining a user preference profile based on your feedback.
 
+> 📖 **Curious about how this system evolved?** Read the [Evolution Log](EvolutionLog.md) — an 8-phase chronicle tracing how an unread newsletter inbox transformed into a 13-skill, 6-persona autonomous content intelligence engine.
+
 ---
 
 ## 🌟 What It Does
@@ -229,6 +231,33 @@ Knowledge Loop uses a **Declarative Sub-Agent Persona Architecture**. Personas a
 
 ---
 
+## 🧩 Complete Skills Catalog (13 Built-in + 5 Managed)
+
+Knowledge Loop leverages 13 specialized built-in skills and 5 managed external skills tracked via [skills-lock.json](skills-lock.json):
+
+| Skill | Type | Category | Role & Description |
+| :--- | :--- | :--- | :--- |
+| [`daily-workflow`](.agents/skills/daily-workflow/SKILL.md) | Built-in | Master Orchestrator | Chained 7-step pipeline: task discovery, parallel worker dispatch, grading sync barrier, distillation, and suggestion review. |
+| [`daily-distiller`](.agents/skills/daily-distiller/SKILL.md) | Built-in | Knowledge Synthesis | Synthesizes daily reports across sources into macro engineering distillations in `reports/distillations/`. |
+| [`ingest-newsletter`](.agents/skills/ingest-newsletter/SKILL.md) | Built-in | Content Ingestion | Reads unread Gmail newsletters (`label:newsletter is:unread`) via `gws-gmail` and generates thesis-driven Markdown reports. |
+| [`ingest-threads`](.agents/skills/ingest-threads/SKILL.md) | Built-in | Content Ingestion | Scrapes Threads posts, reply trees, and developer discussions using browser automation. |
+| [`ingest-website`](.agents/skills/ingest-website/SKILL.md) | Built-in | Content Ingestion | Parses tech blogs, RFCs, and documentation via Jina Reader API with fallback routing. |
+| [`ingest-youtube`](.agents/skills/ingest-youtube/SKILL.md) | Built-in | Content Ingestion | Transcribes YouTube videos via `yt2doc` CLI and extracts hardware benchmarks and architectures. |
+| [`rubric-grader`](.agents/skills/rubric-grader/SKILL.md) | Built-in | Quality Gate | Evaluates staged suggestions against a 3-dimension rubric and hard-veto blocklist ($\ge 4/6$ to pass). |
+| [`review-suggestions`](.agents/skills/review-suggestions/SKILL.md) | Built-in | Feedback & Learning | Presents pending suggestions for user accept/reject review and calibrates preference weights in [data/user_preferences.md](data/user_preferences.md). |
+| [`content-summary`](.agents/skills/content-summary/SKILL.md) | Built-in | Shared Library | Central reference library defining Two-Zone extraction/judgement rules, Thesis-Driven templates, and AI analysis standards. |
+| [`content-cleaner`](.agents/skills/content-cleaner/SKILL.md) | Built-in | Extraction Utility | Strips navigation, ads, boilerplate, and tracking noise from raw HTML dumps or scraped text. |
+| [`web-to-markdown`](.agents/skills/web-to-markdown/SKILL.md) | Built-in | Extraction Utility | Converts arbitrary web URLs into clean, structured Markdown documents via Jina Reader API. |
+| [`fetch-threads-post`](.agents/skills/fetch-threads-post/SKILL.md) | Built-in | Extraction Utility | Low-level browser extraction helper for Threads posts, author replies, media, and metrics. |
+| [`yt2doc`](.agents/skills/yt2doc/SKILL.md) | Built-in | Extraction Utility | Local CLI wrapper to fetch video transcripts and format them into structured documents. |
+| `agent-browser` | Managed | Browser Automation | Headless browser engine for complex JavaScript-rendered pages and interactive web sessions. |
+| `architecture-decision-records` | Managed | Engineering Standards | Standardized ADR creation and maintenance for documenting architectural decisions. |
+| `gws-gmail` | Managed | Google Workspace | Gmail CLI tool for searching, reading, labeling, and archiving emails. |
+| `gws-tasks` | Managed | Google Workspace | Google Tasks CLI tool for querying, creating, and completing tasks in task lists (`Delegate`). |
+| `gws-shared` | Managed | Google Workspace | Shared authentication and token lifecycle manager for Google Workspace CLI operations. |
+
+---
+
 ## 🏗️ Developer & Engineering Standards
 
 ### 📐 3-Tier Agent Rules Architecture ([AGENTS.md](AGENTS.md))
@@ -265,6 +294,26 @@ All ingestion workers produce reports adhering to the Thesis-Driven standard:
 
 ---
 
+### 🧪 Automated Verification & Testing
+
+Knowledge Loop enforces automated test verification across all skills, configurations, and subagent definitions to prevent regressions and rule drift. You can run the test suite locally at any time:
+
+```bash
+# 1. Validate all skill definitions (YAML frontmatter and structural standards)
+python3 scripts/validate_skill.py
+
+# 2. Synchronize declarative subagent personas to Claude Code (.claude/) and Codex (.codex/)
+python3 scripts/sync_subagents.py
+
+# 3. Verify dual-language configuration integrity and lifecycle hook self-healing
+python3 scripts/validate_language_config.py
+```
+
+> [!TIP]
+> **Zero-Drift Automation**: When editing files, these scripts execute automatically via `AfterTool` lifecycle hooks in [.agents/settings.json](.agents/settings.json), ensuring that skill frontmatter and multi-platform persona definitions remain perpetually in sync.
+
+---
+
 ### 🔒 Lifecycle & Safety Hooks ([settings.json](.agents/settings.json))
 
 The agent runtime is fortified with automated hooks:
@@ -282,10 +331,15 @@ The agent runtime is fortified with automated hooks:
 
 | Category | File / Path | Purpose |
 | :--- | :--- | :--- |
+| **Project Evolution** | [EvolutionLog.md](EvolutionLog.md) | Chronicle of 8 evolutionary problem-solving phases and architectural trade-offs |
 | **Agent Steering** | [AGENTS.md](AGENTS.md) | Core 3-tier operational rules and invariants |
 | **Multi-Platform Entry** | [CLAUDE.md](CLAUDE.md) | Single-source pointer directing Claude Code to read `AGENTS.md` |
+| **Architecture Context** | [CONTEXT.md](CONTEXT.md) | Glossary and core terms (Traces, Dreamer, Memory Injection) |
 | **Subagent Personas** | [.agents/agents/](.agents/agents/) | Single Source of Truth for sub-agent persona definitions |
-| **Sync Script** | [scripts/sync_subagents.py](scripts/sync_subagents.py) | Translates and synchronizes personas to `.claude/` and `.codex/` |
+| **Persona Sync** | [scripts/sync_subagents.py](scripts/sync_subagents.py) | Translates and synchronizes personas to `.claude/` and `.codex/` |
+| **Skill Validator** | [scripts/validate_skill.py](scripts/validate_skill.py) | Validates YAML frontmatter and structural standards across all skills |
+| **Language Test Harness** | [scripts/validate_language_config.py](scripts/validate_language_config.py) | Automated test suite verifying dual-language config and hook self-healing |
+| **Managed Skills Lock** | [skills-lock.json](skills-lock.json) | Dependency lockfile for managed third-party agent skills |
 | **Language Config** | [data/lang_preferences.md](data/lang_preferences.md) | Decoupled report and conversation language settings |
 | **Personal Goals** | [data/goals.md](data/goals.md) | Strategic learning goals used by rubric grading |
 | **Rubric Blocklist** | [data/rubric_blocklist.md](data/rubric_blocklist.md) | Topic and phrase blocklist for auto-filtering suggestions |
@@ -300,10 +354,12 @@ The agent runtime is fortified with automated hooks:
 
 ## 🌐 How to Switch Language
 
-Language settings are cleanly decoupled into [data/lang_preferences.md](data/lang_preferences.md):
+Language settings are cleanly decoupled from dynamic user preferences into [data/lang_preferences.md](data/lang_preferences.md). By default, both settings are configured to **English**:
 
 - **Preferred Report Language**: Controls the output language for generated reports, summaries, and knowledge distillations.
 - **Preferred Conversation Language**: Controls the language used by the agent in chat, plans, RCAs, and internal technical documentation.
+
+To change either setting, edit [data/lang_preferences.md](data/lang_preferences.md) (e.g., switching to Traditional Chinese):
 
 ```markdown
 # Language Preferences
@@ -312,16 +368,31 @@ Language settings are cleanly decoupled into [data/lang_preferences.md](data/lan
 - **Preferred Conversation Language**: Traditional Chinese
 ```
 
-*Note: Changes are validated and protected by the `ensure_lang_preferences.sh` lifecycle hook.*
+> [!TIP]
+> **Deterministic Guardrail**: Language configurations are validated and protected against accidental deletion or corruption by the `ensure_lang_preferences.sh` lifecycle hook, which automatically restores and heals missing configuration keys.
 
 ---
 
-## ⚙️ Maintenance & Self-Improvement
+## ⚙️ Maintenance, Troubleshooting & Self-Improvement
 
-- **Environment & Pipeline Quirks**: Recorded in [known_issues.md](known_issues.md) at session start or upon failure.
-- **Defects & Regressions**: Handled under the Tier 2 Stop-and-Review gate via formal Root Cause Analyses in [docs/rca/](docs/rca/).
-- **Architecture Decisions**: Documented as ADRs in individual skill READMEs and system RFCs in [docs/rfc/](docs/rfc/).
-- **Suggestion Calibration**: Every suggestion review dynamically updates the statistical weights in [data/user_preferences.md](data/user_preferences.md).
+- **Project Evolution Chronicle**: Read [EvolutionLog.md](EvolutionLog.md) to explore how the system iteratively evolved across 8 distinct phases — from an initial single-file Gmail summarizer to a multi-source parallel subagent ecosystem.
+- **Defects & Regressions**: Handled under the Tier 2 Stop-and-Review gate via formal Root Cause Analyses in [docs/rca/](docs/rca/). All fixes require automated test verification before completion.
+- **Architecture Decisions**: Documented as Architecture Decision Records (ADRs) in individual skill `README.md` files and as formal system RFCs in [docs/rfc/](docs/rfc/).
+- **Suggestion Calibration**: Every suggestion review dynamically updates the statistical weights in [data/user_preferences.md](data/user_preferences.md) to improve future recommendation relevance.
+- **Environment & Pipeline Quirks**: Recorded in [known_issues.md](known_issues.md) at session start or upon encountering an environment failure.
+
+### 🛠️ Common Troubleshooting & Workarounds
+
+| Context / Symptom | Root Cause | Verified Workaround |
+| :--- | :--- | :--- |
+| **`gws` in macOS sandbox** | Terminal sandbox permission wrapper intercepts CLI | Wrap call in `bash -c "gws ..."` or invoke via absolute path |
+| **Google OAuth token expiry** | OAuth credentials revoked or expired | Run `gws auth login` to renew authentication |
+| **Git global config access denied** | macOS sandbox restricts access to `~/.gitconfig` | Prefix git commands with `GIT_CONFIG_GLOBAL=/dev/null git ...` |
+| **Tasks update API "Missing ID"** | Google Tasks API requires `id` in JSON body and URL path | Include `id` in both URL path parameters and request body |
+| **Web scraping bot detection** | Cloudflare / bot protection blocks browser scraper | Use Jina Reader via `read_url_content` or `search_web` fallback |
+| **API quota exhaustion (429)** | Concurrently running $\ge 7$ subagents exhausts quota | Limit subagent concurrency or batch processing tasks |
+
+Refer to [known_issues.md](known_issues.md) for the full active registry and [docs/rca/](docs/rca/) for in-depth post-mortems.
 
 ---
 
