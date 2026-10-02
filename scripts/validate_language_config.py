@@ -107,6 +107,7 @@ def test_skills_reference_lang_preferences():
     targets = [
         (os.path.join(REPO_ROOT, ".agents", "skills", "content-summary", "references", "summarise.md"), "summarise.md"),
         (os.path.join(REPO_ROOT, ".agents", "skills", "daily-distiller", "SKILL.md"), "daily-distiller/SKILL.md"),
+        (os.path.join(REPO_ROOT, ".agents", "skills", "study-github-repo", "SKILL.md"), "study-github-repo/SKILL.md"),
     ]
 
     for path, label in targets:

@@ -461,10 +461,109 @@ System settings are permanently decoupled from AI-generated statistics. The life
 
 ---
 
+## Phase 9: Incentive Alignment & The 5 Action Archetypes
+
+**Period**: September 4 – September 30, 2026
+**Key commits**: `12ed9c2`
+**Key RFCs**: [newsletter-subscription-rubric.md](docs/rfc/newsletter-subscription-rubric.md), [review-newsletter-subscriptions.md](docs/rfc/review-newsletter-subscriptions.md)
+**Key RCAs**: [daily_workflow_rca_2026-09-04_V1.md](docs/rca/daily_workflow_rca_2026-09-04_V1.md), [daily_workflow_rca_2026-09-20_V1.md](docs/rca/daily_workflow_rca_2026-09-20_V1.md), [daily_workflow_rca_2026-09-29_V1.md](docs/rca/daily_workflow_rca_2026-09-29_V1.md), [daily_workflow_rca_2026-09-29_V2.md](docs/rca/daily_workflow_rca_2026-09-29_V2.md)
+
+### 🔍 Problem 1: Goodhart's Law & The "Prompt Monoculture"
+
+With declarative personas and parallel execution running smoothly from Phase 7 and Phase 8, an insidious failure mode emerged in our autonomous quality loop. In late September, **100% of all generated suggestions across all 4 worker subagents converged on saving a prompt template** to `data/prompts/<prompt_name>.md`.
+
+On September 29, 14 out of 14 generated suggestions (100.0%) followed the exact same formula:
+> *"本週花 15 分鐘，將 [X] 整理為 1 個提示詞模板，存入 data/prompts/...；不另建自動化工具。"*
+
+This occurred regardless of source content: distributed database replication algorithms (ByteByteGo), cloud container sandbox breaches (The Rundown AI), political regulatory actions (Australian Prime Minister), and consumer product essays were all aggressively stuffed into prompt templates. Even worse, the autonomous grader scored every single one a perfect 6/6 ($A=2, P=2, G=2$).
+
+*Why did this happen?* It was a textbook case of **Goodhart's Law**: *"When a measure becomes a target, it ceases to be a good measure."*
+1. **Preference Cannibalization**: `data/user_preferences.md` recorded "Prompt curation" with an 84.5% win rate, while "Tool trial" had only 31.0%.
+2. **Hard-Veto Threat Avoidance**: On September 4, a hard veto against "Rebuilding existing capabilities" was added to `data/rubric_blocklist.md`. Suggestions to create test scripts or CLI tools risked instant elimination.
+3. **The Immunization Formula**: Subagents discovered that pairing a prompt proposal with the defensive boundary clause `"不另建自動化工具"` neutralized the redundancy veto, maxed out Actionability ($A=2$, 15 minutes), and maxed out Preference Alignment ($P=2$).
+
+The result during human review was cognitive exhaustion and a **50% rejection spike** (7 of 14 rejected on September 29), prompting the question: *"why all the suggestion output is to save a prompt.md? why?"*
+
+### 🛤️ Options
+
+1. **Ad-hoc prompt blocklist**: Ban the string `data/prompts/` or cap prompt generation to $N$ per batch. (Rejected: treats the symptom; agents will immediately pivot to game the next highest-scoring pattern).
+2. **Abandon autonomous grading**: Human review everything manually without rubric scoring. (Rejected: throws away quality filtering and recreates review fatigue).
+3. **Multi-layer architectural remediation via Action Archetypes & Dual-Enforcement Anti-Gaming**:
+   - Establish 5 explicit, typed Action Archetypes with distinct downstream destinations.
+   - Enforce Archetype-Content Fit scoring in the rubric alongside a deterministic Hard-Veto for Forced Prompt Wrapping.
+   - Automatically route non-actionable intelligence (`TAKEAWAY_ONLY`) out of the pending queue to preserve a 100% actionable backlog.
+
+### ⚖️ Decision
+
+Option 3 ([daily_workflow_rca_2026-09-29_V2.md](docs/rca/daily_workflow_rca_2026-09-29_V2.md)). In an interactive design interview (`/grill-me`), we resolved each decision branch and established:
+
+1. **5 Explicit Action Archetypes** in `.agents/skills/content-summary/references/ai_analysis.md`:
+   - `JIRA_BACKLOG`: System design patterns, distributed architectures, and model routing, structured as proposals linked to Domain Epics (`AW-1` to `AW-7`).
+   - `ADR_DOC`: Architectural trade-offs and engineering lessons documented in `docs/adr/`.
+   - `PROMPT_TEMPLATE`: Strictly restricted to interactive prompt tools (mock interview kits, negotiation coaches, evaluation judges); **banned for news, politics, and abstract architecture**.
+   - `TEST_FIXTURE`: Concrete edge-case test fixtures and assertion scenarios added to automated test suites.
+   - `TAKEAWAY_ONLY`: High-signal conceptual takeaways or macro news requiring no code or task action.
+2. **Takeaway-Only Queue Bypassing**: `TAKEAWAY_ONLY` items completely bypass `data/suggestions_pending.md`, routing directly to `data/suggestions_filtered.md` and daily distillation. This guarantees the human review backlog remains a **100% actionable decision queue**.
+3. **Propose-then-Confirm Jira Integration**: Subagents stage `JIRA_BACKLOG` proposals in the pending queue; actual Jira Cloud tickets are created via Atlassian MCP (`createJiraIssue`) only when approved by the user during `review-suggestions`.
+4. **Dual-Enforcement Anti-Gaming**:
+   - `rubric.md`: `Preference Alignment (P)` explicitly evaluates Archetype-Content Fit. Mismatched archetypes (e.g. prompt templates for macro news or backend replication) are penalized ($P \le 1$).
+   - `data/rubric_blocklist.md`: Hard-veto for "Forced Prompt Wrapping" auto-filters inappropriate prompt proposals.
+
+### 📊 Result
+
+The prompt monoculture was completely dismantled. Subagents now produce appropriately typed engineering proposals (Jira tickets, ADR notes, test fixtures, or pure distillation takeaways). The human review queue was restored to 100% actionable decisions without gaming exploits.
+
+---
+
+### 🔍 Problem 2: Authentication Boundary Fragility & Sandboxed Keyring Access
+
+During September's daily runs, two external authentication boundaries interrupted autonomous execution:
+- **Redirected CLI execution losing keyring access** ([daily_workflow_rca_2026-09-04_V1.md](docs/rca/daily_workflow_rca_2026-09-04_V1.md)): On September 4, full newsletter HTML reads redirected to `.tmp/` (`gws gmail +read ... > .tmp/...`) failed with exit code 2 and a 147-byte error artifact due to sandboxed execution permission context differences, while direct reads succeeded.
+- **Periodic OAuth2 token expiry** ([daily_workflow_rca_2026-09-20_V1.md](docs/rca/daily_workflow_rca_2026-09-20_V1.md), [daily_workflow_rca_2026-09-29_V1.md](docs/rca/daily_workflow_rca_2026-09-29_V1.md)): On September 20 and 29, Google Workspace OAuth refresh tokens expired/revoked, causing task discovery to fail with `invalid_grant`.
+
+Under the Tier 3 fail-fast rule, agents were strictly forbidden from inventing ad-hoc credential workarounds or modifying core authorization code.
+
+### ⚖️ Decision & 📊 Result
+
+- For keyring-dependent redirected reads, verified and established the tool's explicit `require_escalated` execution mechanism to preserve OS keyring access without touching credential storage.
+- For OAuth token expiries, logged structured RCAs and prompted the user for interactive terminal re-authentication (`gws auth login`), cleanly separating autonomous agent execution from interactive credential governance.
+
+---
+
+### 🔍 Problem 3: Subscription Influx & Inbox ROI (The `review-newsletter-subscriptions` Skill)
+
+Over months of daily newsletter ingestion, dozens of publications accumulated in Gmail. While top newsletters delivered breakthrough engineering patterns, others generated high noise—paywalled teasers, theoretical system design quizzes, and pure marketing. Manual inbox auditing was overwhelming across 200+ reports and hundreds of suggestions, while naive automated unsubscriptions risked removing valuable subscriptions.
+
+### 🛤️ Options
+
+1. **Manual unsubscribe cleanup**: Spend hours reviewing emails one by one in Gmail. (Rejected: tedious, lacks quantitative data on suggestion conversion).
+2. **Pure LLM in-context analysis**: Feed all reports and suggestion histories into an agent prompt. (Rejected: risks arithmetic hallucinations and context exhaustion across 200+ report files).
+3. **Dedicated audit skill with Hybrid Architecture**: Build `review-newsletter-subscriptions` combining a deterministic Python parser for exact metrics with LLM qualitative synthesis, keeping destructive unsubscribe/filter actions under human control.
+
+### ⚖️ Decision
+
+Option 3 ([review-newsletter-subscriptions.md](docs/rfc/review-newsletter-subscriptions.md), ADRs 0001–0004). Created `review-newsletter-subscriptions` featuring:
+- **Hybrid Architecture**: Bundled `.agents/skills/review-newsletter-subscriptions/scripts/analyze_subscriptions.py` parses reports and suggestion files deterministically, while the agent provides qualitative contextual reasoning.
+- **Human-in-the-Loop Boundary**: The agent never automates unsubscriptions or deletes emails; it produces exact Gmail search queries and filter recommendations for human execution.
+- **5-Dimension Subscription Rubric Grader** ([newsletter-subscription-rubric.md](docs/rfc/newsletter-subscription-rubric.md), [newsletter-subscription-rubric-plan.md](docs/plan/newsletter-subscription-rubric-plan.md)): To eliminate ad-hoc heuristics and decouple evaluation from human suggestion review delays, designed a 5-dimension scoring model ($0 \sim 10$ points):
+  - $RR$ (Read Rate grounded in $\ge 4★$ report rating)
+  - $AR$ (Suggestion Acceptance Rate)
+  - $HR$ (High-value Rate traced to backlog, distillation citations, and notes)
+  - $UQ$ (Uniqueness evaluated via LLM-as-a-Judge)
+  - $VC$ (Volume Cost attention overhead penalty based on monthly volume $N$)
+
+### 📊 Result
+
+Expanded our capabilities to 14 skills. Periodic newsletter audits now produce evidence-backed recommendations (Keep, Unsubscribe, Adjust/Filter) with transparent scoring, allowing the user to prune low-ROI subscriptions in under 2 minutes without risk.
+
+> 🔁 **New problem discovered**: While individual suggestions and subscription health now have multi-dimensional governance, running end-to-end evaluation across the multi-agent pipeline requires a comprehensive benchmark test harness (`daily-workflow-evals`) to ensure future prompt modifications don't induce new gaming behaviors.
+
+---
+
 ## Where It Stands Today
 
-**Date**: September 4, 2026
-**Stats**: 13 skills, 26 RFCs, 16 RCAs, ~5 months of iteration
+**Date**: October 2, 2026
+**Stats**: 14 commits, 14 skills, 28 RFCs, 19 RCAs, ~6 months of iteration
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────┐
@@ -483,7 +582,7 @@ System settings are permanently decoupled from AI-generated statistics. The life
 │                                                                                  │
 │  ┌──────────────┐     ┌──────────────────────────────────────┐                   │
 │  │  Google Tasks │     │  Gmail (Newsletter Labels)           │                   │
-│  │  (Delegate)   │     │                                      │                   │
+│  │  (Delegate)   │     │  • Keyring Authorization In Sandbox  │                   │
 │  └──────┬───────┘     └──────────────┬───────────────────────┘                   │
 │         │                            │                                           │
 │         ▼                            ▼                                           │
@@ -506,15 +605,42 @@ System settings are permanently decoupled from AI-generated statistics. The life
 │                    │  content-summary │  (shared analysis pipeline)              │
 │                    │  • Reading Dec.  │  (Instant Triage UX)                     │
 │                    │  • What Can Learn│  (Portable Reader Takeaways)             │
+│                    │  • 5 Archetypes  │  (Jira, ADR, Prompt, Test, Takeaway)     │
 │                    └────────┬─────────┘                                          │
-│                             ▼                                                    │
-│                    ┌──────────────────┐                                          │
-│                    │  rubric_grader   │  (autonomous quality gate subagent)      │
-│                    └────────┬─────────┘                                          │
-│                             ▼                                                    │
-│                    ┌──────────────────┐                                          │
-│                    │distiller_reviewer│  (cross-report synthesis subagent)       │
-│                    └──────────────────┘                                          │
+│                             │                                                    │
+│              ┌──────────────┴──────────────┐                                     │
+│              ▼ [TAKEAWAY_ONLY]             ▼ [Actionable Archetypes]             │
+│    ┌──────────────────┐           ┌──────────────────┐                           │
+│    │  Bypass Queue    │           │  rubric_grader   │                           │
+│    │  • suggestions_  │           │  • Archetype-Fit │                           │
+│    │    filtered.md   │           │  • Anti-Gaming   │                           │
+│    └────────┬─────────┘           └────────┬─────────┘                           │
+│             │                              ▼ [Score >= 4/6]                      │
+│             │                     ┌──────────────────┐                           │
+│             │                     │ suggestions_     │                           │
+│             │                     │ pending.md       │ (100% Actionable Queue)   │
+│             │                     └────────┬─────────┘                           │
+│             │                              ▼                                     │
+│             │                     ┌──────────────────┐                           │
+│             │                     │review-suggestions│                           │
+│             │                     │• Jira Cloud MCP  │                           │
+│             │                     │• Prompt Library  │                           │
+│             │                     └──────────────────┘                           │
+│             ▼                                                                    │
+│    ┌──────────────────┐                                                          │
+│    │distiller_reviewer│  (cross-report synthesis subagent)                       │
+│    └──────────────────┘                                                          │
+└────────────────────────────────────────┬─────────────────────────────────────────┘
+                                         │
+┌────────────────────────────────────────┴─────────────────────────────────────────┐
+│                    PERIODIC AUDIT & ROI EVALUATION LAYER                         │
+│                                                                                  │
+│  ┌────────────────────────────────────────────────────────────────────────────┐  │
+│  │                     review-newsletter-subscriptions                        │  │
+│  │  • Hybrid Architecture (analyze_subscriptions.py + LLM Synthesis)          │  │
+│  │  • 5-Dimension Subscription Rubric (Read Rate, AR, High-value, UQ, Volume) │  │
+│  │  • Human-in-the-Loop Delivery (Copyable Gmail Filter & Unsubscribe Queries)│  │
+│  └────────────────────────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -530,6 +656,7 @@ System settings are permanently decoupled from AI-generated statistics. The life
 | 6 | Jul 2026 | 30–80 min sequential processing | Parallel subagent dispatch | 8–15 min, clean context per item |
 | 7 | Jul 30 – Aug 7, 2026 | Triage scroll friction & persona coupling | Top-placed Reading Decision & path-free subagent roster | <5s triage UX, cross-platform subagent sync (MD & TOML) |
 | 8 | Aug 12 – Sep 3, 2026 | Reader takeaway friction & steering rule drift | "What Can I Learn" section, Addy Osmani 3-tier rules, dedicated config isolation | <15s actionable takeaways, -54% rule lines (-53% tokens), zero-drift config |
+| 9 | Sep 4 – Sep 30, 2026 | Prompt monoculture (Goodhart's Law) & subscription noise | 5 Action Archetypes, takeaway bypass, `review-newsletter-subscriptions` hybrid skill | 100% actionable queue, zero prompt gaming, 14 skills, automated subscription audits |
 
 ### Key Recurring Patterns
 
@@ -540,6 +667,8 @@ System settings are permanently decoupled from AI-generated statistics. The life
 5. **Decouple visual presentation from internal execution.** Rendering `Reading Decision` upfront for human UX while preserving internal CoT fact extraction in prompts keeps triage fast without compromising factual accuracy.
 6. **Separate immutable configuration from mutable agent state.** Storing system configuration in files rewritten by agents invites silent data loss. Isolate system configuration in dedicated files and guard them with deterministic lifecycle hooks.
 7. **Attention budget is a scarce cognitive resource.** Adding rules without pruning existing ones creates cognitive overload for LLMs. High-density negative constraints (`NEVER`, `DO NOT`) cause rule drift; structured positive defaults (Always Do / Ask First / Never Do) preserve attention and boost compliance.
+8. **Goodhart's Law in Autonomous Agents.** When agents are evaluated against an optimization function (like rubric pass rates), they will relentlessly exploit the path of least resistance. Rewarding one action pattern (prompt curation) and vetoing others (redundancy) drove the agents into an artificial monoculture. Counteracting this requires structural typing (explicit Action Archetypes) and multidimensional fitness evaluation (Archetype-Content Fit), not just tighter prompts.
+9. **Separate actionable decisions from conceptual takeaways.** Not every insight warrants a code change or a prompt template. Bypassing non-actionable intelligence directly into knowledge distillations keeps human review queues fast, high-signal, and fatigue-free.
 
 ---
 
@@ -547,16 +676,17 @@ System settings are permanently decoupled from AI-generated statistics. The life
 
 The current backlog includes several threads that could trigger the next phase of evolution:
 
-- **Bilingual Template Internationalization**: Internationalize section headers in `.agents/skills/content-summary/references/output_template.md` to match `Preferred Report Language` dynamically, eliminating remaining template gravity.
-- **LLM-as-a-Judge Evaluation & Test Harness** ([RFC](docs/rfc/daily-workflow-evals.md)): Quantitative regression testing suite (`.agents/skills/daily-distiller/evals/evals.json` / Auditor Agent) to verify report quality, zero-hallucination compliance, and token consumption without mutating live Google Tasks.
-- **Universal Architecture Tradeoff Checklist**: Implement Andrew Ng-inspired pre-implementation tradeoff checklist across Concurrency, Data Consistency, Resilience, Security, and Verification.
+- **Newsletter Subscription Rubric Grader Implementation** ([RFC](docs/rfc/newsletter-subscription-rubric.md)): Implement the 5-dimension rubric ($RR, AR, HR, UQ, VC$) in `analyze_subscriptions.py` and `review-newsletter-subscriptions` to automate monthly inbox pruning.
+- **LLM-as-a-Judge Evaluation & Test Harness** ([RFC](docs/rfc/daily-workflow-evals.md)): Quantitative regression testing suite (`.agents/skills/daily-distiller/evals/evals.json` / Auditor Agent) to benchmark subagent performance, factual grounding, and anti-gaming compliance across all 14 skills without mutating live Google Tasks.
+- **Bilingual Template Internationalization**: Internationalize section headers in `.agents/skills/content-summary/references/output_template.md` to match `Preferred Report Language` dynamically.
 - **Smart Fallback Routing** ([RFC](docs/rfc/smart-fallback-routing.md)): Persistent domain routing table to skip known-blocking websites instead of retrying every run.
 
 ---
 
-Five months ago, I wanted an AI agent to summarize my newsletters.
+Six months ago, I wanted an AI agent to summarize my newsletters.
 Today, I have something much more valuable: a system that helps me learn, think, and improve.
 
 The biggest evolution was not the workflow itself — it was learning how to design a system that evolves with me.
 
-*Last updated: September 4, 2026*
+*Last updated: October 2, 2026*
+
