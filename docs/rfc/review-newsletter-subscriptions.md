@@ -17,21 +17,9 @@ Introduce a dedicated agent skill `review-newsletter-subscriptions` under `.agen
 
 ## 3. Motivation
 
-As part of the daily automated workflow, the ingestion pipeline continuously reads unread emails tagged `label:newsletter is:unread` via `ingest-newsletter` and produces Markdown summaries in `reports/Newsletter_YYYY_MM_DD/`. Over a 30-day window, this system processed **205 newsletter reports** across 20 distinct publishers.
+Subscription value varies by the current user's goals and feedback. A reusable audit computes volume, acceptance, yield and veto rates from that user's external data, then explains uncertainty and triage. No publisher is universally high-value or blocked because of its name.
 
-However, an empirical audit of suggestion acceptance histories reveals severe disparities in signal-to-noise ratio:
-
-1. **High-Signal Core Sources**:
-   - Publishers like **朱騏 (Henry Chu)** (100% acceptance, 75% yield), **The Code** (75% acceptance), **The Pragmatic Engineer** (66.7% acceptance), and **Ally Hsieh** (66.7% acceptance) consistently generate high-leverage outcomes—including core agent skills (e.g. `agent-rules-reviewer`, `decision-sparring`), critical prompt templates, and actionable career decisions.
-2. **Systemic Hard-Veto Mismatches**:
-   - **Hugging Face Daily Papers** generated 22 reports in 30 days, but 80% were automatically blocked by the user's hard-veto against academic paper reading (`Paper reading tasks / 論文研讀`), yielding only 1 accepted action (4.5% yield).
-   - **Gary Chen (創作者的秘密)** generated 14 reports, with 43% blocked by the hard-veto against Claude Code/Cursor tools, while remaining issues were paywalled teasers.
-3. **High-Volume Interview Trivia & Sales Fatigue**:
-   - **ByteByteGo (Alex Xu)** (20 reports) and **System Design One (Neo Kim)** (11 reports) suffered from high rejection rates (>71% and 75% respectively). Most suggestions involved abstract system design diagrams, repetitive interview quizzes, or course promotions that do not translate to hands-on workflow execution.
-4. **Viral Noise Dilution**:
-   - **Superhuman** generated 31 reports (highest volume), but frequently included viral consumer tech, robotics, and rocket launches that required manual filtering.
-
-Without an automated, data-backed audit skill, users suffer from decision paralysis and FOMO, tolerating inbox clutter and wasting automated ingestion compute on low-yield subscriptions.
+Personal reading statistics and source-by-source feedback are excluded from this public document. Use synthetic fixtures to exercise the decision rules.
 
 ---
 
@@ -71,7 +59,7 @@ The evaluation relies on 4 core quantitative metrics and qualitative indicators 
 ### 4.3 Operational Boundaries & Safety Gates
 
 1. **Deterministic Accuracy**: All counts, percentages, and veto classifications are calculated in Python (`scripts/analyze_subscriptions.py`) rather than estimated via in-context LLM arithmetic.
-2. **Human-in-the-Loop Execution**: The agent never performs destructive unsubscriptions or modifies Gmail settings autonomously. It generates exact search queries (`from:bytebytego.com`), and the user performs manual unsubscriptions in the inbox.
+2. **Human-in-the-Loop Execution**: The agent never performs destructive unsubscriptions or modifies Gmail settings autonomously. It generates exact search queries (`from:newsletter.example.invalid`), and the user performs manual unsubscriptions in the inbox.
 3. **Decoupled Scheduling**: The skill remains pure On-Demand. Periodic monthly auditing is orchestrated via the runtime environment (`/schedule`) rather than hardcoding cron logic inside pipeline code.
 
 ### 4.4 File & Module Changes
@@ -99,7 +87,7 @@ The evaluation relies on 4 core quantitative metrics and qualitative indicators 
 
 - **Alternative A: Pure Markdown Prompt (Zero-Script)**
   - *Description*: Have the LLM read raw directory listings and markdown files directly to estimate counts and percentages.
-  - *Rationale for Rejection*: Scanning 200+ reports and 650+ suggestions exceeds context limits and causes mental arithmetic hallucinations in conversion rate calculations. The user explicitly approved an exception to Zero-Script for large-scale data precision.
+  - *Rationale for Rejection*: Scanning large report and suggestion histories exceeds context limits and causes mental arithmetic hallucinations in conversion rate calculations. The user explicitly approved an exception to Zero-Script for large-scale data precision.
 - **Alternative B: Hardcoded Monthly Cron in `daily-workflow`**
   - *Description*: Embed monthly trigger logic directly in `daily-workflow.py` to automatically run subscription audits on the 1st of every month.
   - *Rationale for Rejection*: Violates minimal code scope and tight-couples an occasional audit task to the daily operational pipeline. Decoupled scheduling via Antigravity's `/schedule` keeps the skill clean and modular.

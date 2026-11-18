@@ -5,6 +5,10 @@ description: "Shared content summarisation and AI analysis pipeline. Provides re
 
 # content-summary
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 Shared reference library for the content intelligence pipeline. **Do not invoke directly** — ingest skills reference these files during their execution.
 
 This skill follows the same pattern as `gws-shared`: it provides reusable rules and templates that multiple skills need.

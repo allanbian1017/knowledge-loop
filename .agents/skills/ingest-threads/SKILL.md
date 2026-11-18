@@ -1,10 +1,14 @@
 ---
 name: ingest-threads
 description: "Fetch a Threads post and produce a summary report in the configured output language (defaulting to English), then mark the Google Task as completed. Use when the user provides a Threads URL to process, says 'process this Threads post', or when invoked by daily-workflow for tasks in the Delegate list."
-allowed-tools: Bash(gws:*, agent-browser:*)
+allowed-tools: Bash(python3:*) Bash(gws:*) Bash(agent-browser:*)
 ---
 
 # ingest-threads
+
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
 
 Full lifecycle for a single Threads task: fetch → summarise → write report → append suggestion → mark done.
 

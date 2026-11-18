@@ -8,7 +8,7 @@ This file defines the output path, filename convention, and the full document st
 
 - **Directory**: `reports/distillations/`
 - **Filename format**: `Knowledge_Distillation_YYYY_MM_DD.md` (use today's local date)
-- Re-running on the same day overwrites the existing file (treated as an updated version)
+- Publish same-day revisions through report_store.py: retain the dated filename and archive previous bytes.
 
 ---
 

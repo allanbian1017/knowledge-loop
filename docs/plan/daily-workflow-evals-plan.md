@@ -143,7 +143,7 @@ RFC: [daily-workflow-evals.md](../rfc/daily-workflow-evals.md)
 - Generate human review output with:
 
 ```bash
-python /Users/allanbian/.gemini/antigravity/skills/skill-creator/eval-viewer/generate_review.py \
+python <EXTERNAL_PATH> \
   .agents/skills/daily-workflow-workspace/iteration-1 \
   --skill-name "daily-workflow" \
   --benchmark .agents/skills/daily-workflow-workspace/iteration-1/benchmark.json \
@@ -228,7 +228,7 @@ After `daily-workflow` evals are stable, add skill-local evals for:
   - **Expected behavior**: `benchmark.json` and `benchmark.md` are generated with pass rate, timing, token usage, and per-eval breakdowns.
 
 - **What to test**: Human review artifact generation.
-  - **How to test**: `python /Users/allanbian/.gemini/antigravity/skills/skill-creator/eval-viewer/generate_review.py .agents/skills/daily-workflow-workspace/iteration-1 --skill-name "daily-workflow" --benchmark .agents/skills/daily-workflow-workspace/iteration-1/benchmark.json --static .agents/skills/daily-workflow-workspace/iteration-1/review.html`
+  - **How to test**: `python <EXTERNAL_PATH> .agents/skills/daily-workflow-workspace/iteration-1 --skill-name "daily-workflow" --benchmark .agents/skills/daily-workflow-workspace/iteration-1/benchmark.json --static .agents/skills/daily-workflow-workspace/iteration-1/review.html`
   - **Expected behavior**: Static `review.html` is generated and includes outputs, formal grades, and benchmark data.
 
 - **What to test**: Live read-only GWS smoke test.

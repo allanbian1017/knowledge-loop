@@ -6,7 +6,7 @@ All content summaries produced by ingest skills must follow these quality standa
 
 Check `data/lang_preferences.md` for the `Preferred Report Language` configuration:
 - Write all report headers, section titles, summaries, and contents in the configured preferred report language.
-- If the configuration is missing, empty, or invalid, default to **English**.
+- If configured personal language is missing, empty, or invalid, stop and explain setup. English is the neutral seed value, not a runtime fallback.
 
 ## Quality Standards (Two-Zone Rule)
 

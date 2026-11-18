@@ -10,6 +10,7 @@ a specified time window (default: 30 days) to evaluate newsletter ROI and triage
 import argparse
 from collections import defaultdict
 from datetime import datetime, timedelta
+from pathlib import Path
 import glob
 import json
 import os
@@ -130,7 +131,7 @@ def extract_veto_category(score_status: str) -> str:
         return "Below threshold"
     return "Filtered"
 
-def analyze_subscriptions(workspace_dir: str = ".", days: int = 30, start_date: str = None, end_date: str = None):
+def analyze_subscriptions(workspace_dir: str = ".", days: int = 30, start_date: str = None, end_date: str = None, *, reports_dir=None, data_dir=None):
     """Compute newsletter statistics and triage recommendations."""
     if not end_date:
         end_date = datetime.now().strftime("%Y-%m-%d")
@@ -138,8 +139,8 @@ def analyze_subscriptions(workspace_dir: str = ".", days: int = 30, start_date: 
         start_dt = datetime.strptime(end_date, "%Y-%m-%d") - timedelta(days=days)
         start_date = start_dt.strftime("%Y-%m-%d")
 
-    reports_dir = os.path.join(workspace_dir, "reports")
-    data_dir = os.path.join(workspace_dir, "data")
+    reports_dir = os.fspath(reports_dir) if reports_dir is not None else os.path.join(workspace_dir, "reports")
+    data_dir = os.fspath(data_dir) if data_dir is not None else os.path.join(workspace_dir, "data")
 
     # 1. Gather all newsletter report files within date range
     reports_by_source = defaultdict(list)
@@ -310,13 +311,28 @@ def main():
     parser.add_argument("--days", type=int, default=30, help="Number of past days to analyze (default: 30)")
     parser.add_argument("--start-date", type=str, help="Start date (YYYY-MM-DD)")
     parser.add_argument("--end-date", type=str, help="End date (YYYY-MM-DD)")
-    parser.add_argument("--workspace", type=str, default=".", help="Workspace root directory")
+    parser.add_argument("--workspace", type=str, default=None, help="Legacy single-repository workspace root")
     parser.add_argument("--json", action="store_true", help="Output raw JSON instead of markdown table")
     
+    parser.add_argument("--reports-root", type=Path)
+    parser.add_argument("--data-root", type=Path)
+    parser.add_argument("--config", type=Path)
     args = parser.parse_args()
+    reports_root, data_root = args.reports_root, args.data_root
+    if args.workspace is None and (reports_root is None or data_root is None):
+        sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "scripts"))
+        from workspace_paths import SetupError, load_workspace
+        try:
+            workspace = load_workspace(args.config)
+        except SetupError as exc:
+            parser.error(str(exc))
+        reports_root = reports_root or workspace.reports
+        data_root = data_root or workspace.personal_data
     
     data = analyze_subscriptions(
-        workspace_dir=args.workspace,
+        workspace_dir=args.workspace or ".",
+        reports_dir=reports_root,
+        data_dir=data_root,
         days=args.days,
         start_date=args.start_date,
         end_date=args.end_date

@@ -32,7 +32,7 @@ graph TD
 
 | ADR | Title | Decision Summary | Status | Key Rationale |
 | :--- | :--- | :--- | :--- | :--- |
-| **[ADR-0001](#adr-0001-hybrid-architecture-deterministic-python-script--llm-synthesis)** | Hybrid Architecture | Dedicated Python script for data crunching; LLM for qualitative reasoning | Accepted | Prevents LLM mental arithmetic hallucinations across 200+ report files and 650+ suggestions. |
+| **[ADR-0001](#adr-0001-hybrid-architecture-deterministic-python-script--llm-synthesis)** | Hybrid Architecture | Dedicated Python script for data crunching; LLM for qualitative reasoning | Accepted | Prevents LLM mental arithmetic hallucinations across large report and suggestion histories. |
 | **[ADR-0002](#adr-0002-multi-dimensional-triage-criteria)** | Multi-Dimensional Criteria | Evaluate Acceptance Rate, Yield Rate, Hard-Veto frequency, and Paywall ratio | Accepted | Prevents naive single-metric sorting; distinguishes between high-noise and high-value sources. |
 | **[ADR-0003](#adr-0003-human-in-the-loop-for-irreversible-subscription-actions)** | Human-in-the-Loop Boundary | Agent outputs search queries; user executes external unsubscribing/filtering | Accepted | Unsubscribing is an irreversible external action often requiring auth; avoids destructive automation. |
 | **[ADR-0004](#adr-0004-decoupled-scheduling-via-runtime-environment)** | Decoupled Scheduling | Skill remains pure On-Demand; monthly cadence handled via Antigravity scheduler | Accepted | Preserves modularity and single responsibility; avoids pipeline coupling. |
@@ -157,3 +157,20 @@ review-newsletter-subscriptions/
 | Version | Date | Changes |
 |---|---|---|
 | **v1.0.0** | 2026-09-08 | Initial release of `review-newsletter-subscriptions` skill with Hybrid Architecture, 4-dimensional triage heuristics, Human-in-the-Loop execution boundary, and ADRs 0001–0004. |
+
+
+## Home Repo setup
+
+All required skill files come from this clone. See [macOS setup](../../../docs/setup.md) for the per-skill tool/capability matrix and [publication protocol](../content-summary/references/storage.md) for report workflows. Install external tools separately. Keep personal configuration, accounts and runtime data outside the checkout. For bundled third-party skills, retain the upstream license and provenance in the repository registry.
+
+## ADR: Portable public Home Repo
+
+- **Status:** Accepted.
+- **Decision:** Keep reusable skill resources together and resolve report/personal roots from external configuration. Maintenance skills use the selected project; content workflows use the configured report repository.
+- **Trade-off:** A report-producing skill needs explicit setup instead of assuming the author's working directory. Unavailable tools/capabilities stop only the affected workflow.
+
+## Changelog — Home Repo migration
+
+- Included complete reusable resources and documented external prerequisites.
+- Preserved current workflow behavior and real human suggestion review.
+- Removed dependence on personal paths and global companion skill installations.

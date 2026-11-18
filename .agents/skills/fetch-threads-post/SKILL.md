@@ -6,6 +6,10 @@ allowed-tools: Bash(agent-browser:*)
 
 # fetch-threads-post
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 Extract all content from a Threads post using `agent-browser` (browser automation via CDP).
 
 ## Supported URL Formats
@@ -248,7 +252,8 @@ Report to the user: "Threads is showing a CAPTCHA. Please solve it manually usin
 ### Fallback: Raw text extraction
 If structured extraction fails, extract everything as raw text:
 ```bash
-agent-browser --session threads get text body > /tmp/threads-raw.txt
+mkdir -p .tmp
+agent-browser --session threads get text body > .tmp/threads-raw.txt
 ```
 Then parse the output manually to identify post content, author, and replies from the text flow.
 

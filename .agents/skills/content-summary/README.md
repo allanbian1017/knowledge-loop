@@ -70,6 +70,7 @@ This skill has no trigger phrases. It has no executable procedure. If you find y
 | v4.4.0 | 2026-08-19 | Added `## 🧠 What Can I Learn From It` section between TL;DR and Core Thesis. Reader-centric learning points (2–5 bullets, Zone A). Updated `summarise.md` with guidance, CoT instruction, and 6th self-verification check. (RFC: content-summary-what-can-i-learn.md, ADR-0005, ADR-0006, ADR-0007). |
 | v4.5.0 | 2026-09-03 | Decoupled output language configuration from `user_preferences.md` into dedicated `data/lang_preferences.md` (`Preferred Report Language`). |
 | v4.6.0 | 2026-09-30 | Enforced 5 Action Archetypes (JIRA_BACKLOG, ADR_DOC, PROMPT_TEMPLATE, TEST_FIXTURE, TAKEAWAY_ONLY) in ai_analysis.md, strictly forbidding Forced Prompt Wrapping and bypassing pending queue for TAKEAWAY_ONLY (ADR-0008). |
+| v4.6.1 | 2026-11-18 | Use relative report links in the suggestion log format. |
 
 ## Architecture Decisions
 
@@ -161,3 +162,24 @@ This skill has no trigger phrases. It has no executable procedure. If you find y
 4. Stage `JIRA_BACKLOG` as proposals in `suggestions_pending.md`, creating real Jira issues via Atlassian MCP (`createJiraIssue`) only upon user review acceptance.
 
 **Consequences**: Eliminates prompt monoculture, preserves 100% actionable review backlog, and aligns suggestions with appropriate engineering artifacts.
+
+### ADR-0009 — Resolve generated report links from the suggestion log
+
+Accepted on 2026-11-18. Generated links in `data/*.md` use `../reports/{report_relative_path}`. The placeholder includes the source/date directory and Markdown filename. Resolving from the containing log preserves the destination after relocating the repository.
+
+
+## Home Repo setup
+
+All required skill files come from this clone. See [macOS setup](../../../docs/setup.md) for the per-skill tool/capability matrix and [publication protocol](../content-summary/references/storage.md) for report workflows. Install external tools separately. Keep personal configuration, accounts and runtime data outside the checkout. For bundled third-party skills, retain the upstream license and provenance in the repository registry.
+
+## ADR: Portable public Home Repo
+
+- **Status:** Accepted.
+- **Decision:** Keep reusable skill resources together and resolve report/personal roots from external configuration. Maintenance skills use the selected project; content workflows use the configured report repository.
+- **Trade-off:** A report-producing skill needs explicit setup instead of assuming the author's working directory. Unavailable tools/capabilities stop only the affected workflow.
+
+## Changelog — Home Repo migration
+
+- Included complete reusable resources and documented external prerequisites.
+- Preserved current workflow behavior and real human suggestion review.
+- Removed dependence on personal paths and global companion skill installations.

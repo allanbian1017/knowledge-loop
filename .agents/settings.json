@@ -8,11 +8,6 @@
             "name": "prevent-dangerous-commands",
             "type": "command",
             "command": "./scripts/hooks/prevent_dangerous_commands.sh"
-          },
-          {
-            "name": "ensure-lang-preferences",
-            "type": "command",
-            "command": "./scripts/hooks/ensure_lang_preferences.sh"
           }
         ]
       }
@@ -24,12 +19,7 @@
           {
             "name": "sync-subagents-and-validate",
             "type": "command",
-            "command": "python3 scripts/validate_skill.py && python3 scripts/sync_subagents.py"
-          },
-          {
-            "name": "ensure-lang-preferences",
-            "type": "command",
-            "command": "./scripts/hooks/ensure_lang_preferences.sh"
+            "command": "python3 scripts/validate_skill.py && python3 scripts/validate_public.py && python3 scripts/sync_subagents.py"
           }
         ]
       }

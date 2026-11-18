@@ -41,4 +41,4 @@
 
 ## Phase 4: Preferences Persistence
 
-- [x] Append confirmed preferences from the `/grill-me` session to `/Users/allanbian/.gemini/config/skills/grill-me/preferences.md`.
+- [x] Append confirmed preferences from the `/grill-me` session to `<EXTERNAL_PATH>`.

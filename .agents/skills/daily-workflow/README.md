@@ -123,3 +123,20 @@ data/
 | v2.0.0 | 2026-07-24 | **Parallel dispatch rewrite (RFC: parallel-content-processing)**. Main agent rewritten as pure metadata dispatcher. Steps 2–5 replaced with: pre-create directories (Step 2), fire-and-forget parallel subagent dispatch for all content types (Step 3a–3d), 30-minute global timeout barrier (Step 4), and suggestion merge (Step 4M). Each content item now gets a focused full-lifecycle subagent scoped to only its relevant skill. Wall-clock time reduced from ~30–80 min sequential to ~8–15 min (slowest item). |
 | v2.1.0 | 2026-07-29 | **Context Engineering Refactor (`skill-context-refactor`)**. Restructured `SKILL.md` into a 100-line Lean Spine (55.5% line reduction). Extracted prompt parameter templates, classification rules, and summary schemas into `references/dispatch_spec.md`. Removed obsolete step markers and unhobbled restrictive directives. |
 | v3.0.0 | 2026-07-31 | **Declarative Sub-Agent Personas & Cross-Platform Sync (RFC: path-free-subagent-personas-and-sync)**. Establishes 6 path-free sub-agent personas (`.agents/subagents/*.md`) as Single Source of Truth (`newsletter_worker`, `threads_worker`, `website_worker`, `youtube_worker`, `rubric_grader`, `distiller_reviewer`). Implemented `scripts/sync_subagents.py` to sync across Google Antigravity, Claude Code (`.claude/agents/*.md`), and OpenAI Codex (`.codex/agents/*.toml`). Injects dynamic parameters via first user message to maximize system prompt caching. |
+
+
+## Home Repo setup
+
+All required skill files come from this clone. See [macOS setup](../../../docs/setup.md) for the per-skill tool/capability matrix and [publication protocol](../content-summary/references/storage.md) for report workflows. Install external tools separately. Keep personal configuration, accounts and runtime data outside the checkout. For bundled third-party skills, retain the upstream license and provenance in the repository registry.
+
+## ADR: Portable public Home Repo
+
+- **Status:** Accepted.
+- **Decision:** Keep reusable skill resources together and resolve report/personal roots from external configuration. Maintenance skills use the selected project; content workflows use the configured report repository.
+- **Trade-off:** A report-producing skill needs explicit setup instead of assuming the author's working directory. Unavailable tools/capabilities stop only the affected workflow.
+
+## Changelog — Home Repo migration
+
+- Included complete reusable resources and documented external prerequisites.
+- Preserved current workflow behavior and real human suggestion review.
+- Removed dependence on personal paths and global companion skill installations.

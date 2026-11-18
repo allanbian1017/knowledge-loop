@@ -10,11 +10,13 @@ The entry format generated and managed by the `rubric-grader` skill.
 ### YYYY-MM-DD | {SourceType} | [{Title}]({source_url})
 - 🏷️ {分類} | 📊 {total}/6 (A:{n} P:{n} G:{n})
 - 📋 建議：{建議下一步}
-- 📄 [報告](file:///absolute/path/to/report.md)
+- 📄 [報告](../reports/{report_relative_path})
 ```
 
 Where `{SourceType}` is one of: `Newsletter`, `Threads`, `YouTube`, `Website`.
 `{total}` is the composite score, and `A`, `P`, `G` represent Actionability, Preference Alignment, and Goal Relevance.
+
+Use the publisher’s report_link, relative to the configured ledger. The ../reports template is only a legacy co-located example.
 
 ## Parameters
 
@@ -36,3 +38,5 @@ When omitted:
   # 📋 Pending Suggestions
   ```
 - Checked and routed automatically. Do not manually append to `suggestions_pending.md` in ingestion skills.
+
+New ingestion prepares candidate JSON under HomeRoot/.tmp for report_store.py publish. Publication binds and stages it under PersonalDataRoot/suggestions_pending. The grader routes keyed publications with report_store.py merge, never a raw append.

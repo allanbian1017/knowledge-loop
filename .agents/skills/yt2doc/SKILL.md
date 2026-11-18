@@ -5,6 +5,10 @@ description: Transcribe and organize a YouTube video into a structured Markdown 
 
 # yt2doc Skill
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 This skill converts a YouTube video into a clean, structured Markdown document using the local `yt2doc` CLI tool. The process downloads audio, runs transcription via Whisper, and segments the content into chapters.
 
 ## Prerequisites
@@ -24,7 +28,7 @@ Extract the YouTube URL from the user's message. Derive a `snake_case` filename 
 
 Create the output directory before running the command:
 ```bash
-mkdir -p ./reports/YouTube_YYYY_MM_DD
+mkdir -p ".tmp/yt2doc/<run>"
 ```
 
 ### 2. Video Strategist — Select the Right Model
@@ -52,7 +56,7 @@ Use `run_command` with a generous `WaitMsBeforeAsync` (5000ms is fine), then pol
 ```bash
 yt2doc \
   --video "<YouTube URL>" \
-  --output ./reports/YouTube_YYYY_MM_DD/<filename>.md \
+  --output ".tmp/yt2doc/<run>/<filename>.md" \
   --whisper-model <model> \
   --add-table-of-contents
 ```

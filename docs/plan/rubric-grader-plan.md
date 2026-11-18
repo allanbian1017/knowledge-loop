@@ -29,7 +29,7 @@ Introduce a `rubric-grader` skill that scores AI-generated suggestions against a
 
 #### [NEW] [data/rubric_blocklist.md](../../data/rubric_blocklist.md)
 - Seed with known hard-veto patterns from `data/user_preferences.md`:
-  - Topic blocks: Claude Code / Cursor, token budget reduction, GPU clustering, blockchain / Web3 / NFT.
+  - Topic blocks: user-defined exclusions only; the public template has no personal topic defaults.
   - Ambiguity blocklist: 研究看看, 了解一下, 評估看看, 觀察看看.
 
 #### [NEW] [data/suggestions_filtered.md](../../data/suggestions_filtered.md)

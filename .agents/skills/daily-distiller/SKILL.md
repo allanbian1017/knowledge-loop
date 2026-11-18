@@ -5,15 +5,19 @@ description: Reviews today's reports in ./reports/ and generates a synthesized K
 
 # Daily Distiller
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 This skill automates reviewing today's intelligence reports and synthesizing them into a high-quality Knowledge Distillation document — capturing what's technically significant, how concepts connect, and what actions follow.
 
 ## Workflow
 
 ### Step 1: Discover Today's Reports
-Find all `.md` files created today in the `./reports/` directory, **excluding** `reports/distillations/`. Use today's local date.
+Use the fixed ReportDate and helper inventory; exclude distillations/revisions. Filesystem timestamps are not report dates.
 
 ```bash
-find reports -not -path "reports/distillations/*" -type f -name "*.md" -newermt "YYYY-MM-DD" ! -newermt "YYYY-MM-DD+1"
+python3 scripts/report_store.py today-reports --date "$ReportDate"
 ```
 
 If no reports are found, notify the user and stop.

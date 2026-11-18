@@ -5,6 +5,10 @@ description: "Fetch a generic website URL and produce a summary report in the co
 
 # ingest-website
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 Full lifecycle for a single website task: fetch via Jina Reader → summarise → write report → append suggestion → mark done.
 
 > **Prerequisites**: Network access to `r.jina.ai`. For Google Tasks API calls, refer to `../gws-tasks/SKILL.md`.
@@ -89,3 +93,7 @@ Log: `"✅ Task '<title>' marked as completed. Report saved to reports/Website_Y
 **Jina returns empty or garbled content**: Dynamic React/SPA sites may not render well. Fall back to `content-cleaner` and proceed with whatever text is extracted.
 
 **`gws tasks tasks patch` fails**: Double-check `tasklist` and `task` are IDs (not titles).
+
+## URL-fetch capability
+
+Use the host’s documented URL-fetch tool when available. Command-capable hosts without it may use this explicitly supported route: `curl --fail --location --silent --show-error "https://r.jina.ai/<TARGET_URL>" --output ".tmp/<skill>/<run>/source.md"` after creating scratch. Replace placeholders, quote URL/path, and read the complete capture. HTTP/auth failures stop this route; no undocumented API or scraping substitute is authorized.
