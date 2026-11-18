@@ -76,7 +76,7 @@ Each suggestion in `suggestions_pending.md` follows this format:
 ### YYYY-MM-DD | {Source Type} | [Title](source_url)
 - 🏷️ {分類} | 📊 {total}/6 (A:{n} P:{n} G:{n})
 - 📋 建議：{建議下一步}
-- 📄 [報告](file:///path/to/report.md)
+- 📄 [報告](../reports/{report_relative_path})
 ```
 
 *(Note: Legacy entries using `- 🏷️ {分類} | 💎 {價值評分} | ⚡ {可行動性} | 🎯 {決策建議}` are also parsed and supported.)*
@@ -201,3 +201,25 @@ Remove Defer. Use only Accept and Reject. Suggestions not mentioned in the user'
 |---|---|---|
 | v1.0.0 | 2026-05-07 | Initial skill: 7-step review workflow with artifact presentation, Accept/Reject feedback collection, two-file state management, and recency-weighted preference profile generation. Integrates with `newsletter-summary` (Step 2-4b) and `process-delegate-tasks` (Steps 6Tb, 6Yb) for suggestion ingestion. See ADR-0001, ADR-0002, ADR-0003. |
 | v2.0.0 | 2026-06-11 | Integrated `rubric-grader` skill support. Parsers support dynamic formats (legacy `💎 | ⚡ | 🎯` and new `📊`). Removed Decision Calibration from preference profiling and added `rubric-grader` (maintain mode) invocation. |
+| v2.0.1 | 2026-11-18 | Use relative report links in review examples and stored suggestion entries. |
+
+### ADR-0004 — Resolve report links from their containing file
+
+Accepted on 2026-11-18. New suggestion entries in `data/*.md` use `../reports/{report_relative_path}`. Presentation resolves each existing link from its containing file. This preserves report navigation after moving a checkout and supports existing entries during review.
+
+
+## Home Repo setup
+
+All required skill files come from this clone. See [macOS setup](../../../docs/setup.md) for the per-skill tool/capability matrix and [publication protocol](../content-summary/references/storage.md) for report workflows. Install external tools separately. Keep personal configuration, accounts and runtime data outside the checkout. For bundled third-party skills, retain the upstream license and provenance in the repository registry.
+
+## ADR: Portable public Home Repo
+
+- **Status:** Accepted.
+- **Decision:** Keep reusable skill resources together and resolve report/personal roots from external configuration. Maintenance skills use the selected project; content workflows use the configured report repository.
+- **Trade-off:** A report-producing skill needs explicit setup instead of assuming the author's working directory. Unavailable tools/capabilities stop only the affected workflow.
+
+## Changelog — Home Repo migration
+
+- Included complete reusable resources and documented external prerequisites.
+- Preserved current workflow behavior and real human suggestion review.
+- Removed dependence on personal paths and global companion skill installations.

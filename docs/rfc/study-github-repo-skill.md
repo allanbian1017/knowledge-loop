@@ -37,7 +37,7 @@ No existing skill in the pipeline addressed this need. The closest skill (`web-t
 - Destination: `.tmp/github_study/{owner}_{repo}/` (project's pre-authorized staging area)
 - Shallow clone (`--depth=1`) — full history not needed; commit history is fetched via API
 - Deleted after report is written — repos can be large and the report captures all useful content
-- HTTPS forced via `-c url.https://github.com/.insteadOf=git@github.com:` to avoid SSH key issues
+- HTTPS forced via `-c url.https://github.com/.insteadOf=user@example.invalid:` to avoid SSH key issues
 
 ---
 
@@ -199,7 +199,7 @@ Verified against `sindresorhus/slugify` (public, small, clean):
 | Clone directory cleaned up | ✅ |
 
 Three bugs were found and fixed during verification testing:
-1. SSH clone failure → forced HTTPS via `-c url.https://github.com/.insteadOf=git@github.com:`
+1. SSH clone failure → forced HTTPS via `-c url.https://github.com/.insteadOf=user@example.invalid:`
 2. `gh api` URL glob expansion in zsh → single-quoted all API URLs
 3. `tree` not installed → replaced with portable `find` command
 
@@ -265,5 +265,5 @@ Implement `study-github-repo` as an independent, self-contained skill that shall
 
 ## Implementation Notes
 - Always use single-quoted URLs in `gh api` calls to prevent zsh glob expansion
-- Use `-c url.https://github.com/.insteadOf=git@github.com:` in `gh repo clone` for HTTPS fallback
+- Use `-c url.https://github.com/.insteadOf=user@example.invalid:` in `gh repo clone` for HTTPS fallback
 - Use `find` instead of `tree` for directory listing (portability)

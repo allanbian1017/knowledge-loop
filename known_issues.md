@@ -1,31 +1,18 @@
 # Known Issues Registry
 
-Environment-specific failures and workarounds. Read at session start. Append directly on failure.
+Reusable environment failures and supported recovery steps. Keep private execution evidence and machine-specific paths outside the public checkout.
 
-## gws
-- **CLI execution in macOS sandbox**: `gws` commands fail — the terminal sandbox's permission wrapper doesn't recognize `gws` as an allowed command → Use absolute path `gws` to bypass the wrapper
-- **bash -c wrapping**: Direct `gws` calls sometimes fail in sandbox — permission wrapper intercepts even absolute paths → Wrap in `bash -c "gws ..."`
-- **Auth token expiry**: Commands fail with "expired or revoked" — OAuth tokens have a limited lifetime → User must run `gws auth login` to re-authenticate
-- **Tasks update API quirk**: `gws tasks tasks update` returns "Missing task ID" — API requires `id` in JSON body despite also being in URL path params → Include `id` in both path and body
-- **Subagent concurrency**: 7+ parallel subagents trigger 429 quota exhaustion — rate limiting on the underlying API → Limit concurrency or fallback to main thread processing
-
-## sandbox
-- **agent-browser on macOS**: Socket path permission denied — macOS sandbox doesn't expose the Unix domain socket that agent-browser needs → Use Jina Reader via `read_url_content` as fallback for web scraping
-- **Chrome mode**: agent-browser local chrome mode fails — only supported on Linux, not macOS → Use headless mode or Jina Reader fallback
-- **run_command execution error**: `run_command` fails with `sandbox configuration error: readonly node: non-absolute file path` — relative or tilde-prefixed paths exist in active permission grants or settings files (e.g., `read_file(node)`, `command(~/.virtualenvs...)`) → Replace all relative paths with absolute ones in `.gemini/config/config.json`, `.gemini/config/projects/*.json`, and `.agents/settings.json`, then start a new chat session to reload configuration.
-- **git global config in sandbox**: `git` fails with `fatal: unable to access '/Users/allanbian/.gitconfig': Operation not permitted` — macOS sandbox blocks access to global `.gitconfig` in user home directory → Prefix git commands with `GIT_CONFIG_GLOBAL=/dev/null git ...`
-
-## content_ingestion
-- **Threads login wall**: Posts redirect to login/invalid_post page — `threads-auth.json` is missing or expired → Skip or use Jina Reader for public post extraction
-- **Cloudflare 403 (Medium, etc.)**: Headless scraping blocked — Cloudflare WAF bot protection detects automated requests → Use `search_web` as last-resort fallback
-- **X/Twitter login wall**: Direct x.com URLs fail on Jina Reader with 403 / login wall — X bot protection blocks x.com domain → Rewrite URL to twitter.com domain when fetching via Jina Reader (e.g., `https://r.jina.ai/https://twitter.com/...`)
-
-## shell
-- **Backticks in zsh double quotes**: Shell commands with backticks in double-quoted patterns trigger command substitution — zsh interprets backticks as command substitution delimiters → Use single quotes for patterns containing backticks
-
-## python_testing
-- **pytest_recording urllib3 incompatibility**: `pytest` fails with `AttributeError: module 'urllib3.connectionpool' has no attribute 'VerifiedHTTPSConnection'` — global pytest-recording plugin incompatible with system urllib3 → Pass `-p no:recording` when invoking pytest
-
-- **Daily workflow gws keyring authorization (2026-09-04)**: Newsletter reads initially succeeded, but subsequent full-content reads failed with `Platform secure storage failure / Unable to obtain authorization` and `failed to build authorized user authenticator` — macOS keyring access was denied → Stop ingestion under the fail-fast rule; restore gws keyring authorization before rerunning.
-- **Gws redirected-read diagnosis (2026-09-04)**: The same Gmail HTML read succeeds directly (exit 0, ~28k tokens) but fails with shell output redirection (exit 2, 147-byte artifact) — execution-dependent keyring access denial; different sandbox/approval context is the leading unverified mechanism → Proposed next step is explicit approved execution of the redirected read, not repeated reauthentication. See [RCA](docs/rca/daily_workflow_rca_2026-09-04_V1.md); remediation pending approval.
-- **Gws redirected-read verified remediation (2026-09-04)**: Explicit `require_escalated` execution of the same redirected read succeeded (exit 0, 111,390 bytes; automated header and complete-HTML assertions passed) → Use the tool approval mechanism for keyring-dependent redirected captures; no credential/configuration changes were required.
+- **[Google Workspace authentication]**: Commands report expired/revoked credentials — OAuth authorization is invalid → Use the documented user authentication flow, then verify bounded read access before resuming.
+- **[macOS keyring]**: A direct read and a redirected capture can have different authorization outcomes — Host execution permissions may differ → Stop the affected workflow and restore the supported authorization; do not infer that repeated login is always the fix.
+- **[Source access]**: Threads login walls or protected websites prevent complete extraction — The documented route lacks required access → Stop and report the missing access rather than bypassing tools or fabricating content.
+- **[Browser mode]**: Some native/CDP modes differ across operating systems — Installation alone does not establish mode support → Use only documented, verified macOS modes.
+- **[Worker capacity]**: Excessive parallel dispatch can exhaust quotas — Tool/host limits vary → Bound waves to actual available worker capacity and preserve every completion/failure.
+- **[Google Tasks update]**: Some update methods require identity in both path parameters and JSON body — API contracts differ by method → Inspect the documented CLI schema before invoking the selected method.
+- **[Python testing]**: An optional recording plugin can fail with newer HTTP libraries — The globally installed plugin is incompatible → Run the documented pytest command with `-p no:recording`.
+- **[Protected agent directories]**: Sandbox writes can fail despite a writable project root — Directory-specific grants require scoped approval → Stage changes and use the normal approved write mechanism; do not alter protection settings.
+- **[Code graph]**: An existing graph directory can have an unreadable database — Index availability is not guaranteed → Report the failure and preserve the index; use source inspection when project rules permit it.
+- **[GitHub preflight]**: A connector can return not-found while a local checkout exists — Remote access is not verified by local Git state → Restore authorized repository access before remote operations; do not assume visibility or PR status.
+- **[Historical source tests]**: An obsolete session-learning test imports an absent module — Source history contains a removed implementation → Keep this baseline separate from tests of migrated active functionality.
+- **[Cross-repository cutover]**: Default-sandbox preflight reports configured output directories are not writable — Directory grants differ by execution context → Normal scoped approval passes preflight and an isolated staging probe; verify unattended host access separately, without changing protection settings or assuming one approval grants future access.
+- **[GitHub SSH transport]**: Fetch or push fails with public-key authentication and unavailable interactive askpass — The execution session has no usable SSH identity → Verify the existing GitHub CLI account and use its credential helper for a scoped HTTPS Git invocation, without printing tokens or changing the saved remote.
+- **[GitHub PR creation]**: The connected integration can read repository metadata but returns permission denied when creating a pull request — Read access does not establish write capability → Use the separately verified, authorized GitHub CLI account for the requested PR operation; retain the same repository and branch scope.

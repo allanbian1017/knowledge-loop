@@ -11,6 +11,7 @@ Usage:
   python3 scripts/sync_subagents.py
 """
 
+import argparse
 import sys
 from pathlib import Path
 import re
@@ -95,6 +96,9 @@ def build_codex_toml(name: str, description: str, body_text: str) -> str:
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--check', action='store_true', help='Check adapters without writing files')
+    args = parser.parse_args()
     repo_root = Path(__file__).resolve().parent.parent
     source_dir = repo_root / ".agents" / "agents"
 
@@ -113,19 +117,16 @@ def main():
         print(f"Warning: No sub-agent .md files found in {source_dir}.")
         sys.exit(0)
 
-    claude_agents_dir.mkdir(parents=True, exist_ok=True)
-    claude_subagents_dir.mkdir(parents=True, exist_ok=True)
-    codex_agents_dir.mkdir(parents=True, exist_ok=True)
-    codex_subagents_dir.mkdir(parents=True, exist_ok=True)
+    if not args.check:
+        for directory in [claude_agents_dir, claude_subagents_dir, codex_agents_dir, codex_subagents_dir]:
+            directory.mkdir(parents=True, exist_ok=True)
 
     print(f"Found {len(source_files)} sub-agent persona(s) in {source_dir.relative_to(repo_root)}:\n")
 
     errors = []
     synced_count = 0
 
-    # Clean up obsolete .md files in .codex/subagents/ if present
-    for old_md in codex_subagents_dir.glob("*.md"):
-        old_md.unlink()
+    # Obsolete files need an explicit cleanup decision; generation never deletes them.
 
     for src_file in source_files:
         content = src_file.read_text(encoding="utf-8")
@@ -147,14 +148,17 @@ def main():
         claude_content = build_claude_content(fm_text, body_text)
         codex_toml = build_codex_toml(name, description, body_text)
 
-        # Write Claude targets (.claude/agents/<name>.md & .claude/subagents/<name>.md)
-        (claude_agents_dir / src_file.name).write_text(claude_content, encoding="utf-8")
-        (claude_subagents_dir / src_file.name).write_text(claude_content, encoding="utf-8")
-
-        # Write Codex targets (.codex/agents/<name>.toml & .codex/subagents/<name>.toml)
         toml_name = f"{src_file.stem}.toml"
-        (codex_agents_dir / toml_name).write_text(codex_toml, encoding="utf-8")
-        (codex_subagents_dir / toml_name).write_text(codex_toml, encoding="utf-8")
+        targets = [(claude_agents_dir / src_file.name, claude_content),
+                   (claude_subagents_dir / src_file.name, claude_content),
+                   (codex_agents_dir / toml_name, codex_toml),
+                   (codex_subagents_dir / toml_name, codex_toml)]
+        for target, expected in targets:
+            if args.check:
+                if not target.is_file() or target.read_text(encoding='utf-8') != expected:
+                    errors.append(f'Adapter drift: {target.relative_to(repo_root)}')
+            else:
+                target.write_text(expected, encoding='utf-8')
 
         print(f"  ✓ {src_file.name} -> .claude/agents/ & .codex/agents/")
         synced_count += 1

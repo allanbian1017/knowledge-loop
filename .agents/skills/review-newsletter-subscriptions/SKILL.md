@@ -5,6 +5,10 @@ description: "Audit and evaluate newsletter subscriptions based on past 30 days 
 
 # review-newsletter-subscriptions
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 Audit and triage newsletter subscriptions by cross-referencing ingestion reports with user suggestion review history over the past 30 days (or a custom date range).
 
 ---
@@ -50,7 +54,7 @@ Consult `references/triage_criteria.md` to evaluate each newsletter source again
    - Has produced high-value project skills, prompt templates, or architecture improvements.
 2. **🔴 Unsubscribe (建議取消訂閱)**:
    - Acceptance Rate $< 40\%$ (with $\ge 3$ reviews), OR
-   - High Hard-Veto ratio (e.g. Paper reading, Claude Code/Cursor), OR
+   - High Hard-Veto ratio against the current user’s configured blocklist, OR
    - High paywalled teaser / course sales marketing ratio, OR
    - High volume ($N \ge 10$) with negligible yield ($< 8\%$).
 3. **🟡 Adjust / Filter (設定 Gmail 篩選器)**:
@@ -64,7 +68,7 @@ Consult `references/triage_criteria.md` to evaluate each newsletter source again
 ## Step 3 — Generate Audit Artifact
 
 Create a dedicated Markdown Artifact using `references/review_template.md`:
-- Target Path: `<appDataDir>/brain/<conversation-id>/newsletter_subscription_audit_YYYY-MM-DD.md`
+- Target Path: `.tmp/review-newsletter-subscriptions/<run>/newsletter_subscription_audit_YYYY-MM-DD.md`
 - Title: `# 📬 Newsletter Subscription Audit (YYYY-MM-DD ~ YYYY-MM-DD)`
 - Contents:
   1. Telemetry Table (Markdown table from `analyze_subscriptions.py`)

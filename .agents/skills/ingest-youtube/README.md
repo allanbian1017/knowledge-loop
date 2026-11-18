@@ -74,3 +74,20 @@ reports/
 | v1.1.0 | 2026-05-14 | Unified output template moved to `content-summary/references/output_template.md`. |
 | v1.2.0 | 2026-06-16 | Made output language globally configurable, defaulting to English and preferring Traditional Chinese. |
 | v1.3.0 | 2026-07-24 | Skill now runs as a full-lifecycle parallel subagent when dispatched by `daily-workflow` (owns transcription → poll → summarise → suggest → mark-done). Added optional `SuggestionOutputPath` parameter passed through to `suggestion_log.md` for per-subagent file isolation (RFC: parallel-content-processing). |
+
+
+## Home Repo setup
+
+All required skill files come from this clone. See [macOS setup](../../../docs/setup.md) for the per-skill tool/capability matrix and [publication protocol](../content-summary/references/storage.md) for report workflows. Install external tools separately. Keep personal configuration, accounts and runtime data outside the checkout. For bundled third-party skills, retain the upstream license and provenance in the repository registry.
+
+## ADR: Portable public Home Repo
+
+- **Status:** Accepted.
+- **Decision:** Keep reusable skill resources together and resolve report/personal roots from external configuration. Maintenance skills use the selected project; content workflows use the configured report repository.
+- **Trade-off:** A report-producing skill needs explicit setup instead of assuming the author's working directory. Unavailable tools/capabilities stop only the affected workflow.
+
+## Changelog — Home Repo migration
+
+- Included complete reusable resources and documented external prerequisites.
+- Preserved current workflow behavior and real human suggestion review.
+- Removed dependence on personal paths and global companion skill installations.

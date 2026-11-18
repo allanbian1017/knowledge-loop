@@ -9,9 +9,9 @@ The `rubric-grader` skill implements a two-tier quality gate for AI-generated su
 ## Problem Statement
 
 The suggestion pipeline previously appended all generated suggestions directly to the pending queue without quality control. This resulted in:
-1.  **High rejection rate**: ~29% of suggestions were rejected by the user.
+1.  **Review quality**: Vague or mismatched suggestions can burden human review; personal rejection measurements are not public defaults.
 2.  **Ambiguous/vague suggestions**: The generator frequently violated its own "no abstract descriptions" rule.
-3.  **Low-signal suggestions**: Topic categories explicitly avoided by the user (such as Claude Code or GPU memory optimizations) were repeatedly presented.
+3.  **Low-signal suggestions**: Suggestions can repeat topic categories that the current user explicitly excludes; exclusions must come from that user’s configuration.
 4.  **Legacy metadata clutter**: Legacy fields like 價值評分 and 決策建議 were poorly calibrated and ignored by the user.
 
 ---
@@ -57,10 +57,10 @@ data/
 ### 1. Grade Mode (Programmatic Ingestion)
 Executed automatically during ingestion (e.g. website, threads, youtube, newsletter):
 *   Reads suggestion details.
-*   Checks [rubric_blocklist.md](file:///Users/allanbian/my-ai-workflow/data/rubric_blocklist.md). Vetoes if matched.
+*   Checks `PersonalDataRoot/rubric_blocklist.md`. Vetoes if matched.
 *   Grades A, P, G dimensions (0, 1, or 2).
-*   If composite $\ge 4$: Appends with `📊` format to [suggestions_pending.md](file:///Users/allanbian/my-ai-workflow/data/suggestions_pending.md).
-*   If composite $< 4$: Appends to [suggestions_filtered.md](file:///Users/allanbian/my-ai-workflow/data/suggestions_filtered.md).
+*   If composite $\ge 4$: Appends with `📊` format to `PersonalDataRoot/suggestions_pending.md`.
+*   If composite $< 4$: Appends to `PersonalDataRoot/suggestions_filtered.md`.
 
 ### 2. Backtest Mode (Chat Trigger)
 Triggered by asking the agent to "backtest the rubric":
@@ -96,6 +96,7 @@ Invoked automatically at the end of suggestion reviews:
 |---|---|---|
 | v1.0.0 | 2026-06-11 | Initial release: Implemented Grade, Backtest, and Maintain modes. Seeded blocklists, filtered suggestions log, and threshold scoring. |
 | v1.1.0 | 2026-09-30 | Added Archetype-Content Fit scoring to rubric.md and Forced Prompt Wrapping hard-veto to blocklist (ADR-0001). |
+| v1.1.1 | 2026-11-18 | Replace machine-specific rubric and data links with file-relative links. |
 
 ---
 
@@ -114,3 +115,23 @@ Invoked automatically at the end of suggestion reviews:
 
 **Consequences**: Eliminates degenerate prompt gaming, re-aligns rubric scoring with genuine task actionability, and ensures prompt templates are created only when an interactive tool is appropriate.
 
+### ADR-0002 — Resolve reference links from the containing Markdown file
+
+Accepted on 2026-11-18. Skill and reference links use paths relative to the containing Markdown file. Links into `data/` traverse to the repository root. This keeps links resolvable after relocation while retaining the shared repository data dependency.
+
+
+## Home Repo setup
+
+All required skill files come from this clone. See [macOS setup](../../../docs/setup.md) for the per-skill tool/capability matrix and [publication protocol](../content-summary/references/storage.md) for report workflows. Install external tools separately. Keep personal configuration, accounts and runtime data outside the checkout. For bundled third-party skills, retain the upstream license and provenance in the repository registry.
+
+## ADR: Portable public Home Repo
+
+- **Status:** Accepted.
+- **Decision:** Keep reusable skill resources together and resolve report/personal roots from external configuration. Maintenance skills use the selected project; content workflows use the configured report repository.
+- **Trade-off:** A report-producing skill needs explicit setup instead of assuming the author's working directory. Unavailable tools/capabilities stop only the affected workflow.
+
+## Changelog — Home Repo migration
+
+- Included complete reusable resources and documented external prerequisites.
+- Preserved current workflow behavior and real human suggestion review.
+- Removed dependence on personal paths and global companion skill installations.

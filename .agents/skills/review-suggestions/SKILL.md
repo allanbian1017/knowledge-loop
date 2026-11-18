@@ -5,13 +5,17 @@ description: "Review pending AI suggestions from processed reports. Presents unr
 
 # review-suggestions
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 Review pending AI suggestions, collect feedback, and update the user preference profile to calibrate future AI analysis.
 
 ---
 
 ## Step 1 — Load pending suggestions
 
-Read `data/suggestions_pending.md`.
+Read `data/suggestions_pending.md`. Resolve report links relative to the file containing them when presenting the review. New links written to `data/*.md` use `../reports/{report_relative_path}`, where the placeholder includes the source/date directory and `.md` filename.
 
 If the file doesn't exist or contains no suggestion entries (only the heading), tell the user:
 
@@ -32,7 +36,7 @@ Parse each suggestion entry (each starts with `### `) and split by date:
 
 ## Step 3 — Present as artifact
 
-Create an artifact with `RequestFeedback: true`. Number each suggestion sequentially for easy reference.
+Write a Markdown review artifact under `.tmp/review-suggestions/<run>/` and present it using the host display capability. Collect actual feedback in chat. Number each suggestion sequentially for easy reference.
 
 Support both legacy and new rubric metadata formats dynamically.
 
@@ -56,7 +60,7 @@ Use this format:
 ### #1 — [Title](source_url)
 - 📂 Newsletter | 🏷️ 技術 | 📊 5/6 (A:2 P:1 G:2)
 - 📋 **建議**：在本地使用 pgvector 實作混合查詢流程
-- 📄 [完整報告](file:///path/to/report.md)
+- 📄 [完整報告](../reports/{report_relative_path})
 
 ---
 
@@ -65,7 +69,7 @@ Use this format:
 ### #3 — [Title](source_url)
 - 📂 Threads | 🏷️ 技術 | 💎 Mid | ⚡ Mid | 🎯 Store
 - 📋 **建議**：將這個觀點加入 learnings/lessons.md
-- 📄 [完整報告](file:///path/to/report.md)
+- 📄 [完整報告](../reports/{report_relative_path})
 ```
 
 If there are no today's suggestions, omit the `📅 今日建議` section.
@@ -99,7 +103,7 @@ For each suggestion the user provided feedback on:
 ### 2026-05-07 | Newsletter | [Title](source_url)
 - 🏷️ 技術 | 📊 5/6 (A:2 P:1 G:2)
 - 📋 建議：在本地使用 pgvector 實作混合查詢流程
-- 📄 [報告](file:///path/to/report.md)
+- 📄 [報告](../reports/{report_relative_path})
 - **Feedback**: ✅ Accept
 - **Comment**: 我週末來試 pgvector
 - **Reviewed**: 2026-05-07T14:00:00+08:00
@@ -205,7 +209,7 @@ Report the results:
 |---|---|---|
 | 1 | Load pending | `data/suggestions_pending.md` (read) |
 | 2 | Split today vs. backlog | — |
-| 3 | Present artifact | Antigravity artifact |
+| 3 | Present artifact | Markdown review artifact |
 | 4 | Parse feedback | — |
 | 5 | Update files | `suggestions_pending.md` (rewrite), `suggestions_reviewed.md` (append) |
 | 6 | Regenerate profile | `suggestions_reviewed.md` (read), `user_preferences.md` (write), invokes `rubric-grader` (maintain) |

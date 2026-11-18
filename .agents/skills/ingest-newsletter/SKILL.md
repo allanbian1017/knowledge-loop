@@ -5,6 +5,10 @@ description: 抓取未讀電子報並產出 Markdown 摘要報表（On-Demand Ne
 
 # ingest-newsletter
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 抓取未讀電子報、產出 Markdown 摘要、更新信件狀態。此流程需「反覆迭代」直到所有未讀信件皆被處理完畢。
 
 > **前置需求**：確認已可使用 `gws` CLI（透過 `gws-gmail` 技能）。如需驗證或全域旗標，先閱讀 `../gws-shared/SKILL.md`。

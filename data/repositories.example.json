@@ -1,0 +1,6 @@
+{
+  "report_repository": "<REPORT_REPOSITORY>",
+  "personal_data": "<PERSONAL_DATA_DIRECTORY>",
+  "task_list": "Delegate",
+  "newsletter_query": "label:newsletter is:unread"
+}

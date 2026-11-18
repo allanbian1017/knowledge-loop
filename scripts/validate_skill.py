@@ -11,6 +11,7 @@ Usage:
 import sys
 import os
 import glob
+from pathlib import Path
 import yaml
 
 def validate_skill_file(filepath):
@@ -54,9 +55,9 @@ def main():
     if len(sys.argv) > 1:
         targets = sys.argv[1:]
     else:
-        # Default: scan all SKILL.md files in .agents/skills/ and .gemini/config/skills/
-        targets = glob.glob('.agents/skills/**/SKILL.md', recursive=True) + \
-                  glob.glob('../.gemini/config/skills/**/SKILL.md', recursive=True)
+        # Validate the clone's bundled skills independently of the shell cwd.
+        root = Path(__file__).resolve().parents[1]
+        targets = glob.glob(str(root / '.agents/skills/**/SKILL.md'), recursive=True)
         targets = sorted(list(set(targets)))
 
     if not targets:

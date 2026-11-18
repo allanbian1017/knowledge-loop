@@ -1,10 +1,14 @@
 ---
 name: ingest-youtube
 description: "Transcribe a YouTube video using yt2doc CLI and produce a summary report in the configured output language (defaulting to English), then mark the Google Task as completed. Use when the user provides a YouTube URL to transcribe, says 'transcribe this YouTube video', 'get the content of this YouTube video', or any request involving a youtube.com or youtu.be URL where the goal is readable content. Always prefer this skill over manual browser-based approaches."
-allowed-tools: Bash(gws:*)
+allowed-tools: Bash(python3:*) Bash(gws:*) Bash(yt2doc:*)
 ---
 
 # ingest-youtube
+
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
 
 Full lifecycle for a single YouTube task: launch transcription → poll → summarise → write report → append suggestion → mark done.
 
@@ -37,11 +41,11 @@ If duration is unknown, look it up via web search or `yt-dlp --print duration_st
 ### Step 2 — Launch transcription
 
 ```bash
-mkdir -p reports/YouTube_YYYY_MM_DD
+mkdir -p ".tmp/ingest-youtube/<run>"
 
 yt2doc \
   --video "<YouTube URL>" \
-  --output ./reports/YouTube_YYYY_MM_DD/<video_id>.md \
+  --output ".tmp/ingest-youtube/<run>/<video_id>.md" \
   --whisper-model <model> \
   --add-table-of-contents
 ```
@@ -100,7 +104,7 @@ gws tasks tasks patch \
   --json '{"status": "completed"}'
 
 # Remove intermediate raw transcription file
-rm "reports/YouTube_YYYY_MM_DD/<video_id>.md"
+# Retain the staged transcript for recovery; approved cleanup uses macOS Trash.
 ```
 
 Log: `"✅ Task '<title>' marked as completed. Report saved to reports/YouTube_YYYY_MM_DD/<filename>.md. Intermediate file removed."`

@@ -143,3 +143,20 @@ Extract shared logic into a `content-summary` reference library. Rename `newslet
 | v2.5.0 | 2026-05-15 | **HTML-by-default (RCA-2026-05-15)**: Fetch full `text/html` body to prevent plain-text truncation. Explicitly omit the Raw Content section for newsletters to avoid HTML noise. |
 | v2.6.0 | 2026-06-16 | Made output language globally configurable, defaulting to English and preferring Traditional Chinese. |
 | v2.7.0 | 2026-07-24 | Added **single-email mode**: when `MESSAGE_ID` is provided (by `daily-workflow` parallel dispatch), skip Step 1 batch discovery and process only that email. Added optional `SuggestionOutputPath` parameter passed through to `suggestion_log.md` for per-subagent file isolation (RFC: parallel-content-processing). |
+
+
+## Home Repo setup
+
+All required skill files come from this clone. See [macOS setup](../../../docs/setup.md) for the per-skill tool/capability matrix and [publication protocol](../content-summary/references/storage.md) for report workflows. Install external tools separately. Keep personal configuration, accounts and runtime data outside the checkout. For bundled third-party skills, retain the upstream license and provenance in the repository registry.
+
+## ADR: Portable public Home Repo
+
+- **Status:** Accepted.
+- **Decision:** Keep reusable skill resources together and resolve report/personal roots from external configuration. Maintenance skills use the selected project; content workflows use the configured report repository.
+- **Trade-off:** A report-producing skill needs explicit setup instead of assuming the author's working directory. Unavailable tools/capabilities stop only the affected workflow.
+
+## Changelog — Home Repo migration
+
+- Included complete reusable resources and documented external prerequisites.
+- Preserved current workflow behavior and real human suggestion review.
+- Removed dependence on personal paths and global companion skill installations.

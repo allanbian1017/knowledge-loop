@@ -157,7 +157,7 @@ Reports became substantially richer. But three operational problems emerged simu
 **Problem C: No website ingestion.** Generic URLs (blog posts, documentation) delegated via Google Tasks were simply skipped.
 - *Decision*: Created `ingest-website` using Jina Reader API with fallback routing ([ingest-website-skill.md](docs/rfc/ingest-website-skill.md)).
 
-> 🔁 **New problem discovered**: With richer analysis came more AI-generated suggestions (recommendations appended to reports). But ~29% of them were rejected during review — too vague ("研究看看"), not aligned with my goals, or just noise.
+> 🔁 **New problem discovered**: With richer analysis came more AI-generated suggestions (recommendations appended to reports). A quality gate is needed for vague suggestions, goal mismatch and low-value noise.
 
 ---
 
@@ -170,7 +170,7 @@ This phase attacked quality from two angles: filtering bad suggestions and impro
 
 ### 🔍 Problem 1: Low-Signal Suggestions
 
-~29% of AI suggestions were rejected during user review. The top rejection reason: ambiguous phrasing. Three legacy metadata fields (💎 Value, ⚡ Urgency, 🎯 Alignment) provided poor signal.
+Ambiguous suggestions need explicit quality checks before user review. Three legacy metadata fields (💎 Value, ⚡ Urgency, 🎯 Alignment) provided poor signal.
 
 ### 🛤️ Options
 
@@ -184,7 +184,7 @@ Option 2 with elements of Option 1. Built `rubric-grader` with 3 scoring dimensi
 
 ### 📊 Result
 
-User acceptance rate improved from ~71% to ≥80%. The blocklist caught the most obvious noise, while the rubric handled nuanced quality assessment.
+The design separates explicit user exclusions from graded quality assessment. Personal acceptance measurements are excluded from this public record.
 
 ---
 
@@ -482,7 +482,7 @@ This occurred regardless of source content: distributed database replication alg
 2. **Hard-Veto Threat Avoidance**: On September 4, a hard veto against "Rebuilding existing capabilities" was added to `data/rubric_blocklist.md`. Suggestions to create test scripts or CLI tools risked instant elimination.
 3. **The Immunization Formula**: Subagents discovered that pairing a prompt proposal with the defensive boundary clause `"不另建自動化工具"` neutralized the redundancy veto, maxed out Actionability ($A=2$, 15 minutes), and maxed out Preference Alignment ($P=2$).
 
-The result during human review was cognitive exhaustion and a **50% rejection spike** (7 of 14 rejected on September 29), prompting the question: *"why all the suggestion output is to save a prompt.md? why?"*
+A repeated output archetype can overload human review and obscure whether suggestions fit the source. Personal feedback quotes and review counts are excluded from this public record.
 
 ### 🛤️ Options
 
@@ -498,13 +498,13 @@ The result during human review was cognitive exhaustion and a **50% rejection sp
 Option 3 ([daily_workflow_rca_2026-09-29_V2.md](docs/rca/daily_workflow_rca_2026-09-29_V2.md)). In an interactive design interview (`/grill-me`), we resolved each decision branch and established:
 
 1. **5 Explicit Action Archetypes** in `.agents/skills/content-summary/references/ai_analysis.md`:
-   - `JIRA_BACKLOG`: System design patterns, distributed architectures, and model routing, structured as proposals linked to Domain Epics (`AW-1` to `AW-7`).
+   - `JIRA_BACKLOG`: System design patterns, distributed architectures, and model routing, structured as proposals for the configured project backlog.
    - `ADR_DOC`: Architectural trade-offs and engineering lessons documented in `docs/adr/`.
    - `PROMPT_TEMPLATE`: Strictly restricted to interactive prompt tools (mock interview kits, negotiation coaches, evaluation judges); **banned for news, politics, and abstract architecture**.
    - `TEST_FIXTURE`: Concrete edge-case test fixtures and assertion scenarios added to automated test suites.
    - `TAKEAWAY_ONLY`: High-signal conceptual takeaways or macro news requiring no code or task action.
 2. **Takeaway-Only Queue Bypassing**: `TAKEAWAY_ONLY` items completely bypass `data/suggestions_pending.md`, routing directly to `data/suggestions_filtered.md` and daily distillation. This guarantees the human review backlog remains a **100% actionable decision queue**.
-3. **Propose-then-Confirm Jira Integration**: Subagents stage `JIRA_BACKLOG` proposals in the pending queue; actual Jira Cloud tickets are created via Atlassian MCP (`createJiraIssue`) only when approved by the user during `review-suggestions`.
+3. **Propose-then-Confirm Jira Integration**: Subagents stage `JIRA_BACKLOG` proposals in the pending queue; acceptance records feedback and calibrates preferences; any implementation or external issue creation needs a separate explicit request and configured destination.
 4. **Dual-Enforcement Anti-Gaming**:
    - `rubric.md`: `Preference Alignment (P)` explicitly evaluates Archetype-Content Fit. Mismatched archetypes (e.g. prompt templates for macro news or backend replication) are penalized ($P \le 1$).
    - `data/rubric_blocklist.md`: Hard-veto for "Forced Prompt Wrapping" auto-filters inappropriate prompt proposals.
@@ -652,7 +652,7 @@ Expanded our capabilities to 14 skills. Periodic newsletter audits now produce e
 | 2 | Apr 2026 | Only one content source | Add Threads, YouTube, distillation | Multi-source, but duplicated code |
 | 3 | May 2026 | 70% instruction duplication | Extract `content-summary` shared layer | DRY architecture, easy to extend |
 | 4 | May–Jun 2026 | Shallow analysis, operational bugs | 7 Layers of Learning, anti-cache, website skill | Deeper analysis, but noisy suggestions |
-| 5 | Jun–Jul 2026 | 29% suggestion rejection, scan fatigue | Rubric grading, thesis-driven redesign | ≥80% acceptance, scannable reports |
+| 5 | Jun–Jul 2026 | Suggestion quality and scan fatigue | Rubric grading, thesis-driven redesign | Explicit quality gates, scannable reports |
 | 6 | Jul 2026 | 30–80 min sequential processing | Parallel subagent dispatch | 8–15 min, clean context per item |
 | 7 | Jul 30 – Aug 7, 2026 | Triage scroll friction & persona coupling | Top-placed Reading Decision & path-free subagent roster | <5s triage UX, cross-platform subagent sync (MD & TOML) |
 | 8 | Aug 12 – Sep 3, 2026 | Reader takeaway friction & steering rule drift | "What Can I Learn" section, Addy Osmani 3-tier rules, dedicated config isolation | <15s actionable takeaways, -54% rule lines (-53% tokens), zero-drift config |

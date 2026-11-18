@@ -19,8 +19,8 @@ It is **no longer** appended to the content report directly.
 
 1. `JIRA_BACKLOG`：
    - **適用情境**：複雜系統架構設計、分散式資料副本、狀態機併發控制、模型分級路由等需要結構化跟進的工程設計。
-   - **格式範例**：`[JIRA_BACKLOG] 本週花 15 分鐘，將 [X 架構原則] 整理為 Jira 待辦項目提案（目標 Epic: AW-3），包含具體驗收條件與架構設計邊界，不另建自動化代碼。`
-   - **生命週期**：在 `data/suggestions_pending.md` 呈現為待審提案，使用者審查通過後，由代理人調用 Atlassian MCP (`createJiraIssue`) 建立正式 Jira issue。
+   - **格式範例**：`[JIRA_BACKLOG] 本週花 15 分鐘，將 [X 架構原則] 整理為 待辦項目提案（存入專案 backlog.md），包含具體驗收條件與架構設計邊界，不另建自動化代碼。`
+   - **生命週期**：在 `data/suggestions_pending.md` 呈現為待審提案，接受後記錄回饋並更新偏好；實作或建立外部 issue 需要另外明確請求與設定。`JIRA_BACKLOG` 是保留相容性的既有標籤，預設目的地為專案 backlog.md，不依賴 Jira。
 
 2. `ADR_DOC`：
    - **適用情境**：架構權衡（Trade-offs）、設計反模式（Anti-patterns）、系統選型邊界（如 MCP vs Local Function Calling）。

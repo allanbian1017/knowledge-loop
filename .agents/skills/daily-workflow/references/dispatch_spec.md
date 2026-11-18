@@ -106,5 +106,9 @@ YouTube:
   ⚠️ Another Video — FAILED (reason)
 Skipped Z task(s) (no URL found).
 Suggestions merged: <count> pending → data/suggestions_pending.md
-Distillation complete. Suggestions reviewed.
+Distillation: <completed/failed/skipped>. Suggestions: <reviewed/pending human feedback>.
 ```
+
+## Resolved runtime parameters
+
+Every worker brief also supplies HomeRoot, ReportRoot, PersonalDataRoot, ScratchRoot, ReportDate and RunId. Report directory is absolute. SuggestionOutputPath is a candidate under ScratchRoot until publication stages the bound JSON. Return publication key, actual path, acknowledgement state and failures. The grader uses publication_key and report_store.py merge. Path examples designate configured roots, never the Home Repo cwd.

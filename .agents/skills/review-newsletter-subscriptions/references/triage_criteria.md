@@ -46,7 +46,7 @@ High-noise or misaligned publications that consistently generate rejected propos
 4. **Volume Fatigue with Negligible Yield**: $N \ge 10$ and Overall Yield $< 8\%$ with Acceptance Rate $< 60\%$.
 
 **Qualitative Indicators**:
-- **Hard-Veto Violations**: Frequently hits user blocklists (e.g., Hugging Face Daily Papers triggering "Paper reading tasks / 論文研讀", Gary Chen triggering "Claude Code / Cursor").
+- **Hard-Veto Violations**: Frequently hits user blocklists (only the current user's configured exclusions apply; publication names alone are not vetoes).
 - **Paywall / Teaser Clutter**: Emails that only provide brief summaries while locking all actionable prompts or architecture diagrams behind paid tiers (e.g., Patreon, Substack paid).
 - **Theoretical Interview Prep vs. Engineering Practice**: High-level, abstract diagrams or course advertisements without hands-on applicability to the current workflow (e.g., ByteByteGo, System Design One).
 

@@ -8,6 +8,9 @@ tools:
   - view_file
   - list_dir
   - grep_search
+  - run_command
+  - write_to_file
+  - replace_file_content
 skills:
   - rubric-grader
 ---
@@ -28,3 +31,7 @@ You are the **Autonomous Quality Gate & Hard-Veto Evaluator**, specialized in au
 1. Read target staging JSON file paths or batch execution parameters passed in your first user message.
 2. Follow instructions in `rubric-grader` skill (`.agents/skills/rubric-grader/SKILL.md`).
 3. Route approved suggestions to `data/suggestions_pending.md` (or staging area) and rejected/filtered suggestions to `data/suggestions_filtered.md`.
+
+## Runtime workspace
+
+Follow `.agents/skills/content-summary/references/storage.md` before executing. Use the supplied HomeRoot, ReportRoot, PersonalDataRoot, ScratchRoot and ReportDate. Stage candidates in ScratchRoot, publish through `scripts/report_store.py`, and acknowledge sources only after verified publication. Interpret report/data path examples under their configured roots. Use the returned report_link for personal ledgers. Never invent feedback or implement an accepted suggestion without a separate request.

@@ -5,6 +5,10 @@ description: Extracts pure article text from a raw text file, HTML dump, or URL.
 
 # Content Cleaner Skill
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 This skill transforms noisy web content (like raw HTML dumps, messy copy-pastes with JSON/navigation, or URLs) into clean, readable Markdown articles.
 
 ## Input Handling

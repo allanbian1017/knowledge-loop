@@ -5,6 +5,10 @@ description: Converts any website URL into a clean Markdown file using the Jina 
 
 # Web to Markdown
 
+## Workspace and publication
+
+Before executing this skill, follow the [workspace and publication protocol](../content-summary/references/storage.md). Resolve personal configuration and report storage outside this checkout. Runtime paths in older examples are logical paths under the resolved roots, never the current working directory.
+
 Converts any website URL into a clean Markdown file via the Jina Reader API (`r.jina.ai`).
 
 ## How It Works
@@ -42,3 +46,7 @@ Derive `slugified_title` from the page title: lowercase, replace spaces/special 
 
 - If Jina returns an error or empty content, report the failure and suggest the user try `content-cleaner` skill as fallback (which uses direct `read_url_content` + manual cleaning).
 - If the URL is behind authentication or a paywall, Jina may return partial content. Note this to the user.
+
+## URL-fetch capability
+
+Use the host’s documented URL-fetch tool when available. Command-capable hosts without it may use this explicitly supported route: `curl --fail --location --silent --show-error "https://r.jina.ai/<TARGET_URL>" --output ".tmp/<skill>/<run>/source.md"` after creating scratch. Replace placeholders, quote URL/path, and read the complete capture. HTTP/auth failures stop this route; no undocumented API or scraping substitute is authorized.

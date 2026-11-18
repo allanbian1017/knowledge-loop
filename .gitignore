@@ -1,4 +1,11 @@
 .tmp/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.env.*
+*.local.json
 node_modules/
 package-lock.json
 .codegraph/
