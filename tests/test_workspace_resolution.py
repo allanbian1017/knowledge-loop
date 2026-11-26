@@ -111,7 +111,6 @@ def test_init_workspace_scaffolds_and_preserves_existing_data(tmp_path):
     assert (data_repo / "data" / "lang_preferences.md").is_file()
     assert (data_repo / "data" / "goals.md").is_file()
     assert (data_repo / "data" / "integrations.md").is_file()
-    assert (data_repo / "data" / "newsletter_aliases.json").is_file()
 
     # Customize goals.md and re-run: must NEVER overwrite existing user data
     custom_goals = "# Custom Private Goals\n- Ship safely\n"

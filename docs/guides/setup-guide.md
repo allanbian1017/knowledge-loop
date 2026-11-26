@@ -106,7 +106,6 @@ cp examples/data/user_preferences.md ../my-knowledge-data/data/
 cp examples/data/rubric_blocklist.md ../my-knowledge-data/data/
 cp examples/data/suggestions_*.md ../my-knowledge-data/data/
 cp examples/data/integrations.example.md ../my-knowledge-data/data/integrations.md
-cp examples/data/newsletter_aliases.example.json ../my-knowledge-data/data/newsletter_aliases.json
 ```
 
 | File in `$DATA_REPO/data/` | Example Template | How to Customize |
@@ -119,7 +118,6 @@ cp examples/data/newsletter_aliases.example.json ../my-knowledge-data/data/newsl
 | `suggestions_reviewed.md` | [examples/data/suggestions_reviewed.md](../../examples/data/suggestions_reviewed.md) | Archive of Accept/Reject feedback. Leave header as-is initially. |
 | `suggestions_filtered.md` | [examples/data/suggestions_filtered.md](../../examples/data/suggestions_filtered.md) | Archive of vetoed or low-scoring suggestions. Leave header as-is initially. |
 | `integrations.md` | [examples/data/integrations.example.md](../../examples/data/integrations.example.md) | Override default Gmail newsletter query (`label:newsletter is:unread`) or Google Tasks list name (`Delegate`). |
-| `newsletter_aliases.json` | [examples/data/newsletter_aliases.example.json](../../examples/data/newsletter_aliases.example.json) | Map filename/subject substrings to canonical newsletter names for `review-newsletter-subscriptions`. |
 
 **Example `data/lang_preferences.md`:**
 ```markdown
@@ -136,16 +134,6 @@ cp examples/data/newsletter_aliases.example.json ../my-knowledge-data/data/newsl
 - Build and maintain reliable AI agent workflows
 - Strengthen software engineering & system design skills
 - Improve personal research synthesis and productivity
-```
-
-**Example `data/newsletter_aliases.json`:**
-```json
-{
-  "aliases": [
-    { "patterns": ["example_ai_weekly", "exampleai"], "canonical": "Example AI Weekly" },
-    { "patterns": ["sample_tech_digest", "sampletech"], "canonical": "Sample Tech Digest" }
-  ]
-}
 ```
 
 ---

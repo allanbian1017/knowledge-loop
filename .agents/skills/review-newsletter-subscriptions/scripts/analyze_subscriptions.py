@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 import re
 import sys
+from urllib.parse import urlparse
 
 # Allow importing shared workspace_paths from knowledge-loop
 _REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -27,44 +28,23 @@ try:
 except ImportError:
     resolve_data_repo = None  # type: ignore[assignment]
 
-DEFAULT_ALIASES: list[dict] = []  # Configure optional custom aliases in $DATA_REPO/data/newsletter_aliases.json
-
-def load_newsletter_aliases(workspace_dir: str | Path | None = None) -> list[dict]:
-    """Load optional user-configured newsletter aliases from $DATA_REPO/data/newsletter_aliases.json."""
-    aliases = list(DEFAULT_ALIASES)
-    if workspace_dir:
-        alias_file = Path(workspace_dir) / "data" / "newsletter_aliases.json"
-        if alias_file.is_file():
-            try:
-                loaded = json.loads(alias_file.read_text(encoding="utf-8"))
-                custom = loaded.get("aliases", []) if isinstance(loaded, dict) else []
-                if isinstance(custom, list):
-                    # Prepend user aliases so user overrides take precedence
-                    aliases = custom + aliases
-            except Exception:
-                pass
-    return aliases
-
-
-def normalize_source(
-    filename: str = "",
-    title_url: str = "",
-    aliases: list[dict] | None = None,
-) -> str:
-    """Normalize filename, subject, and URL patterns to canonical newsletter names."""
-    combined = f"{filename} {title_url}".lower()
-    active_aliases = aliases if aliases is not None else DEFAULT_ALIASES
-
-    for rule in active_aliases:
-        patterns = rule.get("patterns", [])
-        canonical = rule.get("canonical", "")
-        if canonical and any(str(pat).lower() in combined for pat in patterns):
-            return canonical
-
+def normalize_source(filename: str = "", title_url: str = "") -> str:
+    """Derive a clean canonical newsletter name dynamically from filename or URL (no static map required)."""
     if filename:
-        clean_fn = os.path.splitext(filename)[0]
-        parts = clean_fn.split("_")
-        return " ".join(parts[:2])
+        stem = os.path.splitext(os.path.basename(filename))[0]
+        # Strip trailing date patterns like _2026_09_01 or -2026-09-01
+        stem = re.sub(r"[_-]\d{4}[_-]\d{2}[_-]\d{2}.*$", "", stem)
+        tokens = [t for t in re.split(r"[_\-]+", stem) if t]
+        if tokens:
+            return " ".join(tokens[:2])
+
+    url_match = re.search(r"https?://[^\s\)]+", title_url or "")
+    if url_match:
+        host = urlparse(url_match.group(0)).netloc.lower()
+        host = re.sub(r"^www\.", "", host)
+        if host:
+            return host
+
     return "Other / Unknown"
 
 
@@ -149,7 +129,6 @@ def analyze_subscriptions(workspace_dir: str, days: int = 30, start_date: str = 
 
     start_str = start_dt.strftime("%Y-%m-%d")
     end_str = end_dt.strftime("%Y-%m-%d")
-    aliases = load_newsletter_aliases(workspace_dir)
 
     stats = defaultdict(lambda: {
         "reports_count": 0,
@@ -179,7 +158,7 @@ def analyze_subscriptions(workspace_dir: str, days: int = 30, start_date: str = 
 
         for md_file in glob.glob(os.path.join(folder, "*.md")):
             fn = os.path.basename(md_file)
-            src = normalize_source(filename=fn, aliases=aliases)
+            src = normalize_source(filename=fn)
             stats[src]["reports_count"] += 1
             stats[src]["report_dates"].add(d_str)
 
@@ -191,7 +170,7 @@ def analyze_subscriptions(workspace_dir: str, days: int = 30, start_date: str = 
         if not (start_str <= d_str <= end_str):
             continue
         rp_fn = os.path.basename(entry["report_path"].split("(")[-1].rstrip(")")) if "(" in entry["report_path"] else ""
-        src = normalize_source(filename=rp_fn, title_url=entry["title_url"], aliases=aliases)
+        src = normalize_source(filename=rp_fn, title_url=entry["title_url"])
         stats[src]["reviewed_count"] += 1
         if "✅" in entry["feedback"] or "Accept" in entry["feedback"]:
             stats[src]["accepted_count"] += 1
@@ -208,7 +187,7 @@ def analyze_subscriptions(workspace_dir: str, days: int = 30, start_date: str = 
         if not (start_str <= d_str <= end_str):
             continue
         rp_fn = os.path.basename(entry["report_path"].split("(")[-1].rstrip(")")) if "(" in entry["report_path"] else ""
-        src = normalize_source(filename=rp_fn, title_url=entry["title_url"], aliases=aliases)
+        src = normalize_source(filename=rp_fn, title_url=entry["title_url"])
         stats[src]["filtered_count"] += 1
         reason = extract_veto_category(entry["score_status"])
         stats[src]["veto_reasons"][reason] += 1
@@ -222,7 +201,7 @@ def analyze_subscriptions(workspace_dir: str, days: int = 30, start_date: str = 
         if not (start_str <= d_str <= end_str):
             continue
         rp_fn = os.path.basename(entry["report_path"].split("(")[-1].rstrip(")")) if "(" in entry["report_path"] else ""
-        src = normalize_source(filename=rp_fn, title_url=entry["title_url"], aliases=aliases)
+        src = normalize_source(filename=rp_fn, title_url=entry["title_url"])
         stats[src]["pending_count"] += 1
 
     results = []

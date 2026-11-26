@@ -67,12 +67,13 @@ class TestReviewNewsletterSubscriptionsSkill(unittest.TestCase):
         for token in ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0004", "Changelog"]:
             self.assertIn(token, content)
 
-    def test_source_normalizer_fallback_and_custom_aliases(self):
-        # No hardcoded personal defaults; falls back cleanly to filename prefix
-        self.assertEqual(analyze_mod.DEFAULT_ALIASES, [])
+    def test_source_normalizer_dynamic(self):
         self.assertEqual(normalize_source("Example_Weekly_issue_12.md"), "Example Weekly")
-        custom = [{"patterns": ["acme_digest"], "canonical": "Acme Engineering Digest"}]
-        self.assertEqual(normalize_source("acme_digest_issue_42.md", aliases=custom), "Acme Engineering Digest")
+        self.assertEqual(normalize_source("Sample_Digest_2026_09_01.md"), "Sample Digest")
+        self.assertEqual(
+            normalize_source("", "[Issue](https://www.example.com/post/1)"),
+            "example.com",
+        )
 
     def test_veto_category_extractor(self):
         self.assertEqual(
@@ -88,15 +89,11 @@ class TestReviewNewsletterSubscriptionsSkill(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "data").mkdir()
-            (root / "data" / "newsletter_aliases.json").write_text(
-                json.dumps({"aliases": [{"patterns": ["sample_weekly"], "canonical": "Sample Weekly"}]}),
-                encoding="utf-8",
-            )
             for day in ("01", "02", "03"):
                 d = root / "reports" / f"Newsletter_2026_09_{day}"
                 d.mkdir(parents=True)
                 (d / f"Example_Digest_issue_{day}.md").write_text("# Report", encoding="utf-8")
-                (d / f"sample_weekly_{day}.md").write_text("# Report", encoding="utf-8")
+                (d / f"Sample_Weekly_issue_{day}.md").write_text("# Report", encoding="utf-8")
 
             (root / "data" / "suggestions_reviewed.md").write_text(
                 "### 2026-09-02 | Newsletter | [Example Digest Issue](https://example.com/1)\n"
@@ -109,7 +106,7 @@ class TestReviewNewsletterSubscriptionsSkill(unittest.TestCase):
             (root / "data" / "suggestions_filtered.md").write_text(
                 "### 2026-09-03 | Newsletter | [Sample Weekly](https://example.com/2)\n"
                 "- 🏷️ 技術 | 📊 VETO (Hard-veto: Paper reading tasks)\n"
-                "- [完整報告](reports/Newsletter_2026_09_03/sample_weekly_03.md)\n",
+                "- [完整報告](reports/Newsletter_2026_09_03/Sample_Weekly_issue_03.md)\n",
                 encoding="utf-8",
             )
             (root / "data" / "suggestions_pending.md").write_text("# Pending\n", encoding="utf-8")
