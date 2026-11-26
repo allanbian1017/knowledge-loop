@@ -144,6 +144,6 @@ Extract shared logic into a `content-summary` reference library. Rename `newslet
 | v2.6.0 | 2026-06-16 | Made output language globally configurable, defaulting to English and preferring Traditional Chinese. |
 | v2.7.0 | 2026-07-24 | Added **single-email mode**: when `MESSAGE_ID` is provided (by `daily-workflow` parallel dispatch), skip Step 1 batch discovery and process only that email. Added optional `SuggestionOutputPath` parameter passed through to `suggestion_log.md` for per-subagent file isolation (RFC: parallel-content-processing). |
 
-### ADR (Home Repo Pattern Portability)
+### ADR (Portable Data Repo Separation)
 - **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
-- **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

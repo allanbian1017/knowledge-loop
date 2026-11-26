@@ -9,10 +9,10 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HOME_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 # shellcheck source=../lib/resolve_data_repo.sh
-source "${HOME_ROOT}/scripts/lib/resolve_data_repo.sh"
+source "${REPO_ROOT}/scripts/lib/resolve_data_repo.sh"
 
 DATA_REPO="$(_kl_resolve_data_repo 2>/dev/null || true)"
 if [[ -z "$DATA_REPO" ]]; then

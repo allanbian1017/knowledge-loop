@@ -86,6 +86,6 @@ Minimal `~/.gemini/config/mcp_config.json` entry:
 | v1.1.0 | 2026-11-25 | Added `per_report` mode as the new default (1 Forum post per source report + top Daily Digest post), multi-thread tracking (`thread_ids`, `posts_created`), polite pacing, and in-memory `.md` attachment sanitization (strips `<details>`/`<summary>`/`<b>` and flattens tables for Discord file previews while leaving local `.md` files untouched). |
 | v1.0.0 | 2026-11-25 | Initial release: `deliver-discord-reports` skill paired with local `discord-reports` Python MCP server (`mcp_servers/discord_reports/`), Forum threading, v5.0 sanitization, `.md` batching, and SHA-256 idempotency ledger. |
 
-### ADR (Home Repo Pattern Portability)
+### ADR (Portable Data Repo Separation)
 - **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
-- **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

@@ -1,7 +1,7 @@
 # AGENTS.md
 
 ## Project
-**Knowledge Loop** is a public **Knowledge Loop** repository following the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern). It hosts reusable agent skills, sub-agent personas, lifecycle hooks, MCP servers, design guidelines, and verification tooling for the `daily-workflow` content-intelligence loop.
+**Knowledge Loop** is a public **Knowledge Loop** repository following the a separated Data Repo architecture. It hosts reusable agent skills, sub-agent personas, lifecycle hooks, MCP servers, design guidelines, and verification tooling for the `daily-workflow` content-intelligence loop.
 
 Personal data, generated reports, and private preferences live in a separate **Data Repo** referenced via `$DATA_REPO`.
 

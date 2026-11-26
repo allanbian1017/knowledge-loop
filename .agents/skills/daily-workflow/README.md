@@ -138,6 +138,6 @@ data/
 | v2.1.0 | 2026-07-29 | **Context Engineering Refactor (`skill-context-refactor`)**. Restructured `SKILL.md` into a 100-line Lean Spine (55.5% line reduction). Extracted prompt parameter templates, classification rules, and summary schemas into `references/dispatch_spec.md`. Removed obsolete step markers and unhobbled restrictive directives. |
 | v3.0.0 | 2026-07-31 | **Declarative Sub-Agent Personas & Cross-Platform Sync (RFC: path-free-subagent-personas-and-sync)**. Establishes 6 path-free sub-agent personas (`.agents/subagents/*.md`) as Single Source of Truth (`newsletter_worker`, `threads_worker`, `website_worker`, `youtube_worker`, `rubric_grader`, `distiller_reviewer`). Implemented `scripts/sync_subagents.py` to sync across Google Antigravity, Claude Code (`.claude/agents/*.md`), and OpenAI Codex (`.codex/agents/*.toml`). Injects dynamic parameters via first user message to maximize system prompt caching. |
 
-### ADR (Home Repo Pattern Portability)
+### ADR (Portable Data Repo Separation)
 - **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
-- **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

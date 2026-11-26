@@ -16,7 +16,7 @@ import re
 import subprocess
 import sys
 
-HOME_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 SKIP_DIRS = {
     ".git",
@@ -194,7 +194,7 @@ def scan_internal_links(root: Path) -> list[str]:
     return violations
 
 
-def audit(root: Path = HOME_ROOT) -> list[str]:
+def audit(root: Path = REPO_ROOT) -> list[str]:
     files = iter_candidate_files(root)
     violations = scan_file_contents(root, files)
     violations.extend(scan_internal_links(root))
@@ -203,7 +203,7 @@ def audit(root: Path = HOME_ROOT) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit Knowledge Loop knowledge-loop for PII, absolute paths, and broken links.")
-    parser.add_argument("--root", type=Path, default=HOME_ROOT, help="Repository root to audit")
+    parser.add_argument("--root", type=Path, default=REPO_ROOT, help="Repository root to audit")
     args = parser.parse_args()
 
     violations = audit(args.root.resolve())

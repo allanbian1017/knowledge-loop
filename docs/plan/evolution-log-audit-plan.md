@@ -49,7 +49,7 @@ Add an automated audit function to the `/evolution-log` skill, enabling it to de
 
 ### Manual & Behavioral Verification
 1. **Live Repository Audit**:
-   - Run the audit steps defined in `SKILL.md` on `<HOME_ROOT>/EvolutionLog.md`.
+   - Run the audit steps defined in `SKILL.md` on `<REPO_ROOT>/EvolutionLog.md`.
    - Verify that 0 phantom commits and 0 missing links are found on the cleaned file.
 2. **Documentation & ADR Review**:
    - Verify that `README.md` contains a complete ADR-001 and an updated Changelog.

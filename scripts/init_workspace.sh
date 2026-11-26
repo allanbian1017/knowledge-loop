@@ -11,7 +11,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HOME_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 DATA_REPO_INPUT=""
 TIMEZONE_INPUT=""
@@ -117,7 +117,7 @@ expand_target() {
 ' "$raw"
   else
     printf '%s/%s
-' "$HOME_ROOT" "$raw"
+' "$REPO_ROOT" "$raw"
   fi
 }
 
@@ -125,10 +125,10 @@ DATA_REPO_ABS="$(expand_target "$DATA_REPO_INPUT")"
 mkdir -p "$DATA_REPO_ABS/data" "$DATA_REPO_ABS/reports/distillations" "$DATA_REPO_ABS/.tmp"
 DATA_REPO_ABS="$(cd "$DATA_REPO_ABS" && pwd)"
 
-ENV_FILE="${HOME_ROOT}/workspace.local.env"
+ENV_FILE="${REPO_ROOT}/workspace.local.env"
 if [[ ! -f "$ENV_FILE" || "$FORCE_LOCAL_FILES" == true ]]; then
   cat > "$ENV_FILE" <<EOF
-# Local Home Repo configuration (gitignored — never commit)
+# Local Knowledge Loop configuration (gitignored — never commit)
 DATA_REPO_DIR="${DATA_REPO_INPUT}"
 USER_TIMEZONE="${TIMEZONE_INPUT}"
 EOF
@@ -137,18 +137,18 @@ else
   echo "ℹ️  Preserved existing ${ENV_FILE} (pass --force to overwrite)"
 fi
 
-REPOS_FILE="${HOME_ROOT}/repos.local.md"
+REPOS_FILE="${REPO_ROOT}/repos.local.md"
 if [[ ! -f "$REPOS_FILE" || "$FORCE_LOCAL_FILES" == true ]]; then
-  sed "s|<DATA_REPO_PATH>|${DATA_REPO_INPUT}|g"     "${HOME_ROOT}/examples/repos.local.md.example" > "$REPOS_FILE"
+  sed "s|<DATA_REPO_PATH>|${DATA_REPO_INPUT}|g"     "${REPO_ROOT}/examples/repos.local.md.example" > "$REPOS_FILE"
   echo "✅ Wrote ${REPOS_FILE}"
 else
   echo "ℹ️  Preserved existing ${REPOS_FILE} (pass --force to overwrite)"
 fi
 
 if [[ "$WITH_CODE_WORKSPACE" == true ]]; then
-  WS_FILE="${HOME_ROOT}/knowledge-loop.code-workspace"
+  WS_FILE="${REPO_ROOT}/knowledge-loop.code-workspace"
   if [[ ! -f "$WS_FILE" || "$FORCE_LOCAL_FILES" == true ]]; then
-    sed "s|<DATA_REPO_PATH>|${DATA_REPO_INPUT}|g"       "${HOME_ROOT}/examples/knowledge-loop.code-workspace.example" > "$WS_FILE"
+    sed "s|<DATA_REPO_PATH>|${DATA_REPO_INPUT}|g"       "${REPO_ROOT}/examples/knowledge-loop.code-workspace.example" > "$WS_FILE"
     echo "✅ Wrote ${WS_FILE}"
   else
     echo "ℹ️  Preserved existing ${WS_FILE}"
@@ -156,7 +156,7 @@ if [[ "$WITH_CODE_WORKSPACE" == true ]]; then
 fi
 
 echo "📂 Scaffolding missing starter templates into ${DATA_REPO_ABS}/data/..."
-for src in "${HOME_ROOT}"/examples/data/*; do
+for src in "${REPO_ROOT}"/examples/data/*; do
   [[ -f "$src" ]] || continue
   base="$(basename "$src")"
   dest_name="${base/.example/}"
@@ -170,9 +170,9 @@ for src in "${HOME_ROOT}"/examples/data/*; do
 done
 
 if [[ "$SKIP_UV" == false ]] && command -v uv >/dev/null 2>&1; then
-  if [[ -f "${HOME_ROOT}/mcp_servers/discord_reports/pyproject.toml" ]]; then
+  if [[ -f "${REPO_ROOT}/mcp_servers/discord_reports/pyproject.toml" ]]; then
     echo "📦 Pre-warming discord-reports MCP virtual environment with uv..."
-    uv sync --directory "${HOME_ROOT}/mcp_servers/discord_reports" ||       echo "⚠️  uv sync failed (network unavailable?); rerun manually later." >&2
+    uv sync --directory "${REPO_ROOT}/mcp_servers/discord_reports" ||       echo "⚠️  uv sync failed (network unavailable?); rerun manually later." >&2
   fi
 fi
 
@@ -181,7 +181,7 @@ cat <<EOF
 
 🎉 Workspace initialized!
 
-  Knowledge Loop : ${HOME_ROOT}
+  Knowledge Loop : ${REPO_ROOT}
   Data Repo : ${DATA_REPO_ABS}
   Timezone  : ${TIMEZONE_INPUT}
 
@@ -190,7 +190,7 @@ Next steps:
   2. Open both folders together in a multi-root workspace (or pass --add-dir "${DATA_REPO_ABS}")
   3. Optional Discord MCP config (~/.gemini/config/mcp_config.json):
      "command": "${UV_BIN}"
-     "args": ["run", "--directory", "${HOME_ROOT}/mcp_servers/discord_reports", "python", "server.py"]
+     "args": ["run", "--directory", "${REPO_ROOT}/mcp_servers/discord_reports", "python", "server.py"]
      "env": { "KNOWLEDGE_LOOP_DATA_REPO": "${DATA_REPO_ABS}", "DISCORD_WEBHOOK_URL": "..." }
   4. Verify setup:
      python3 scripts/validate_skill.py && python3 scripts/validate_language_config.py

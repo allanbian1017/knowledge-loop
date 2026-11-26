@@ -90,6 +90,6 @@ This skill can be invoked via natural language prompts, including:
 3. **Traceability**: All referenced RFCs, RCAs, and decision docs must use valid relative workspace Markdown links.
 4. **Non-Destructive Updates**: In Update Mode, pre-existing phases are never overwritten or deleted.
 
-### ADR (Home Repo Pattern Portability)
+### ADR (Portable Data Repo Separation)
 - **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
-- **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

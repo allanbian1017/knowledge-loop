@@ -1,15 +1,15 @@
-# RFC: Adopt Home Repo Pattern (`knowledge-loop` as knowledge-loop, `<data-repo>` as Data Repo)
+# RFC: Adopt Separated Data Repo Architecture (`knowledge-loop` as knowledge-loop, `<data-repo>` as Data Repo)
 
 ## 1. Summary
 
-Adopt the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern) by decoupling agent infrastructure from personal data across two repositories: **`knowledge-loop`** (public `knowledge-loop` repository owning all agent skills, personas, hooks, MCP servers, scripts, tests, design docs, guidelines, and starter configuration examples) and **`<data-repo>`** (private **Data Repo** owning personal goals, preferences, reports, diaries, private integration mappings, and personal logs). All skills, scripts, hooks, MCP servers, and documentation in `knowledge-loop` will be fully sanitized of PII and hardcoded absolute paths so any user can clone, configure, and run the system on any macOS machine.
+Adopt the a separated Data Repo architecture by decoupling agent infrastructure from personal data across two repositories: **`knowledge-loop`** (public `knowledge-loop` repository owning all agent skills, personas, hooks, MCP servers, scripts, tests, design docs, guidelines, and starter configuration examples) and **`<data-repo>`** (private **Data Repo** owning personal goals, preferences, reports, diaries, private integration mappings, and personal logs). All skills, scripts, hooks, MCP servers, and documentation in `knowledge-loop` will be fully sanitized of PII and hardcoded absolute paths so any user can clone, configure, and run the system on any macOS machine.
 
 ## 2. Status
 
 - **Current Status**: Proposed
 - **Proposal Date**: 2026-11-26
 - **Last Updated**: 2026-11-26
-- **Implementation Plan**: [Home Repo Pattern Architecture Plan](../plan/home-repo-pattern-architecture-plan.md)
+- **Implementation Plan**: [separated Data Repo architecture Architecture Plan](../plan/data-repo-separation-architecture-plan.md)
 - **Supersedes**: Legacy one-way copy script (`scripts/sync_knowledge_loop.py`)
 
 ## 3. Motivation
@@ -78,14 +78,14 @@ To eliminate all hardcoded absolute paths while supporting AI agents, shell hook
      DATA_REPO_DIR="../<data-repo>"
      USER_TIMEZONE="Asia/Taipei"
      ```
-   - `repos.local.md` (copied from `examples/repos.local.md.example`): Home Repo Pattern plain-text pointer map read by `AGENTS.md` so any coding agent (Antigravity, Claude Code, Codex, Cursor) can orient itself across the Data Repo and any additional user repositories.
+   - `repos.local.md` (copied from `examples/repos.local.md.example`): separated Data Repo architecture plain-text pointer map read by `AGENTS.md` so any coding agent (Antigravity, Claude Code, Codex, Cursor) can orient itself across the Data Repo and any additional user repositories.
    - `knowledge-loop.code-workspace` (optional, gitignored; copied from `examples/knowledge-loop.code-workspace.example`): multi-root workspace descriptor mounting `.` (knowledge-loop) and `../<your-data-repo>` (Data Repo) side by side so macOS workspace sandboxes grant read/write access to both repositories natively without bypassing sandbox rules.
 
 2. **Deterministic Resolution Precedence** (implemented in shared `scripts/lib/workspace_paths.py` and `scripts/lib/resolve_data_repo.sh`):
    1. Explicit CLI argument (`--data-repo <path>`) when provided.
-   2. Environment variable `KNOWLEDGE_LOOP_DATA_REPO` (supports `~` expansion; relative paths resolve against `HOME_ROOT`).
-   3. `DATA_REPO_DIR` from `<HOME_ROOT>/workspace.local.env` (if file exists).
-   4. Single-repo fallback: `<HOME_ROOT>` itself if `<HOME_ROOT>/data/` exists (allows external users to try `knowledge-loop` standalone in single-repo mode without creating a second repo first).
+   2. Environment variable `KNOWLEDGE_LOOP_DATA_REPO` (supports `~` expansion; relative paths resolve against `REPO_ROOT`).
+   3. `DATA_REPO_DIR` from `<REPO_ROOT>/workspace.local.env` (if file exists).
+   4. Single-repo fallback: `<REPO_ROOT>` itself if `<REPO_ROOT>/data/` exists (allows external users to try `knowledge-loop` standalone in single-repo mode without creating a second repo first).
    5. Fail-fast error with setup pointer (`scripts/init_workspace.sh` / `docs/guides/setup-guide.md`) if none of the above resolve to an existing directory.
 
 3. **Symbolic Path Convention in Skills & Personas**:
@@ -178,17 +178,17 @@ A dedicated Python verification script (zero external dependencies) and pytest s
 
 - **Option A: Keep `scripts/sync_knowledge_loop.py` Copy Model (Status Quo)**
   - *Description*: Maintain `<data-repo>` as source of truth and copy selected files to `knowledge-loop` with a sanitizer script.
-  - *Rationale for Rejection*: Perpetuates dual-maintenance drift, requires fragile automated text-rewriting regexes for sanitization, and contradicts the Home Repo Pattern where the central repo IS the knowledge-loop.
+  - *Rationale for Rejection*: Perpetuates dual-maintenance drift, requires fragile automated text-rewriting regexes for sanitization, and contradicts the separated Data Repo architecture where the central repo IS the knowledge-loop.
 - **Option B: Symlink Data Directories (`data/`, `reports/`, `diary/`) Inside `knowledge-loop`**
   - *Description*: Create gitignored symlinks inside `knowledge-loop` pointing to `../<data-repo>/{data,reports,diary}` so all existing `./data/...` paths keep working unchanged.
-  - *Rationale for Rejection*: Multiple existing safety checks (`sync_diary.py`, `discord_reports/server.py` `resolve()`, and sandbox path-confinement rules) explicitly reject or break across symlinks; symlinks also obscure the Home/Data boundary for AI agents and fail on non-POSIX environments. Explicit `DATA_REPO_DIR` / `workspace.local.env` + `repos.local.md` is clearer, safer, and aligned with the Home Repo Pattern.
+  - *Rationale for Rejection*: Multiple existing safety checks (`sync_diary.py`, `discord_reports/server.py` `resolve()`, and sandbox path-confinement rules) explicitly reject or break across symlinks; symlinks also obscure the Home/Data boundary for AI agents and fail on non-POSIX environments. Explicit `DATA_REPO_DIR` / `workspace.local.env` + `repos.local.md` is clearer, safer, and aligned with the separated Data Repo architecture.
 - **Option C: Git Submodule for Private Data Repo Inside `knowledge-loop`**
   - *Description*: Mount `<data-repo>` as a private git submodule inside public `knowledge-loop`.
   - *Rationale for Rejection*: Exposes the private repository's Git URL and commit hashes in `.gitmodules` inside the public repository and breaks `git clone --recursive` for external users.
 
 ---
 
-# ADR: Adopt Home Repo Pattern with Externalized Local Workspace Pointers
+# ADR: Adopt Separated Data Repo Architecture with Externalized Local Workspace Pointers
 
 ## Context
 

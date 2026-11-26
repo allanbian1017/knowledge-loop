@@ -3,10 +3,10 @@
 Resolution precedence for the Data Repo:
 1. Explicit ``override`` path (e.g., ``--data-repo`` CLI flag)
 2. ``KNOWLEDGE_LOOP_DATA_REPO`` environment variable
-3. ``DATA_REPO_DIR`` defined in ``<HOME_ROOT>/workspace.local.env``
-4. Single-repo fallback: ``<HOME_ROOT>`` if ``<HOME_ROOT>/data`` exists
+3. ``DATA_REPO_DIR`` defined in ``<REPO_ROOT>/workspace.local.env``
+4. Single-repo fallback: ``<REPO_ROOT>`` if ``<REPO_ROOT>/data`` exists
 
-Relative paths are resolved against ``HOME_ROOT``. ``~`` is expanded via
+Relative paths are resolved against ``REPO_ROOT``. ``~`` is expanded via
 ``os.path.expanduser``. Zero hardcoded absolute paths are required.
 """
 
@@ -20,16 +20,16 @@ ENV_TIMEZONE = "USER_TIMEZONE"
 LOCAL_ENV_FILENAME = "workspace.local.env"
 
 
-def get_home_root(start: Path | None = None) -> Path:
+def get_repo_root(start: Path | None = None) -> Path:
     """Return the Knowledge Loop knowledge-loop directory."""
     if start is not None:
         return Path(start).expanduser().resolve()
     return Path(__file__).resolve().parents[2]
 
 
-def load_local_env(home_root: Path | None = None) -> dict[str, str]:
-    """Parse KEY=VALUE pairs from ``<HOME_ROOT>/workspace.local.env`` if present."""
-    root = get_home_root(home_root)
+def load_local_env(repo_root: Path | None = None) -> dict[str, str]:
+    """Parse KEY=VALUE pairs from ``<REPO_ROOT>/workspace.local.env`` if present."""
+    root = get_repo_root(repo_root)
     env_file = root / LOCAL_ENV_FILENAME
     values: dict[str, str] = {}
     if not env_file.is_file():
@@ -51,22 +51,22 @@ def load_local_env(home_root: Path | None = None) -> dict[str, str]:
     return values
 
 
-def _resolve_candidate(raw_path: str, home_root: Path) -> Path:
+def _resolve_candidate(raw_path: str, repo_root: Path) -> Path:
     expanded = os.path.expanduser(raw_path.strip())
     candidate = Path(expanded)
     if not candidate.is_absolute():
-        candidate = home_root / candidate
+        candidate = repo_root / candidate
     return candidate.resolve()
 
 
 def resolve_data_repo(
     override: str | Path | None = None,
     *,
-    home_root: Path | None = None,
+    repo_root: Path | None = None,
     require_exists: bool = True,
 ) -> Path:
     """Resolve the active Data Repo directory using deterministic precedence."""
-    root = get_home_root(home_root)
+    root = get_repo_root(repo_root)
     candidate: Path | None = None
 
     if override is not None and str(override).strip():
@@ -98,17 +98,17 @@ def resolve_data_repo(
     return candidate
 
 
-def data_dir(override: str | Path | None = None, *, home_root: Path | None = None, require_exists: bool = False) -> Path:
-    return resolve_data_repo(override, home_root=home_root, require_exists=require_exists) / "data"
+def data_dir(override: str | Path | None = None, *, repo_root: Path | None = None, require_exists: bool = False) -> Path:
+    return resolve_data_repo(override, repo_root=repo_root, require_exists=require_exists) / "data"
 
 
-def reports_dir(override: str | Path | None = None, *, home_root: Path | None = None, require_exists: bool = False) -> Path:
-    return resolve_data_repo(override, home_root=home_root, require_exists=require_exists) / "reports"
+def reports_dir(override: str | Path | None = None, *, repo_root: Path | None = None, require_exists: bool = False) -> Path:
+    return resolve_data_repo(override, repo_root=repo_root, require_exists=require_exists) / "reports"
 
 
-def get_timezone(home_root: Path | None = None, default: str = "UTC") -> str:
+def get_timezone(repo_root: Path | None = None, default: str = "UTC") -> str:
     env_tz = os.environ.get(ENV_TIMEZONE, "").strip()
     if env_tz:
         return env_tz
-    local_tz = load_local_env(home_root).get(ENV_TIMEZONE, "").strip()
+    local_tz = load_local_env(repo_root).get(ENV_TIMEZONE, "").strip()
     return local_tz or default

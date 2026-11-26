@@ -4,15 +4,15 @@
 # Precedence:
 #   1. First positional argument (optional explicit override)
 #   2. KNOWLEDGE_LOOP_DATA_REPO environment variable
-#   3. DATA_REPO_DIR in <HOME_ROOT>/workspace.local.env
-#   4. Single-repo fallback: <HOME_ROOT> if <HOME_ROOT>/data exists
+#   3. DATA_REPO_DIR in <REPO_ROOT>/workspace.local.env
+#   4. Single-repo fallback: <REPO_ROOT> if <REPO_ROOT>/data exists
 #
 # Prints the resolved absolute path to stdout, or exits 1 with a setup hint.
 
 set -euo pipefail
 
 _KL_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-_KL_HOME_ROOT="${KNOWLEDGE_LOOP_HOME_ROOT:-$(cd "${_KL_SCRIPT_DIR}/../.." && pwd)}"
+_KL_REPO_ROOT="${KNOWLEDGE_LOOP_ROOT:-$(cd "${_KL_SCRIPT_DIR}/../.." && pwd)}"
 
 _kl_expand_path() {
   local raw="$1"
@@ -25,13 +25,13 @@ _kl_expand_path() {
 ' "$raw"
   else
     printf '%s/%s
-' "$_KL_HOME_ROOT" "$raw"
+' "$_KL_REPO_ROOT" "$raw"
   fi
 }
 
 _kl_read_local_env_var() {
   local key="$1"
-  local env_file="${_KL_HOME_ROOT}/workspace.local.env"
+  local env_file="${_KL_REPO_ROOT}/workspace.local.env"
   [[ -f "$env_file" ]] || return 0
   local line
   while IFS= read -r line || [[ -n "$line" ]]; do
@@ -62,8 +62,8 @@ _kl_resolve_data_repo() {
   if [[ -z "$raw" ]]; then
     raw="$(_kl_read_local_env_var DATA_REPO_DIR)"
   fi
-  if [[ -z "$raw" && -d "${_KL_HOME_ROOT}/data" ]]; then
-    raw="$_KL_HOME_ROOT"
+  if [[ -z "$raw" && -d "${_KL_REPO_ROOT}/data" ]]; then
+    raw="$_KL_REPO_ROOT"
   fi
   if [[ -z "$raw" ]]; then
     echo "[knowledge-loop] Data Repo not configured. Run ./scripts/init_workspace.sh or set KNOWLEDGE_LOOP_DATA_REPO." >&2

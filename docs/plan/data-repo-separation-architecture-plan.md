@@ -1,8 +1,8 @@
-# Implementation Plan - Adopt Home Repo Pattern (`knowledge-loop` knowledge-loop + `<data-repo>` Data Repo)
+# Implementation Plan - Adopt Separated Data Repo Architecture (`knowledge-loop` knowledge-loop + `<data-repo>` Data Repo)
 
 Transform `knowledge-loop` into a public, portable, zero-PII `knowledge-loop` repository containing the **20 approved agent skills** (18 `daily-workflow` pipeline skills + `evolution-log` + `review-newsletter-subscriptions`), 6 sub-agent personas, hooks, scripts, MCP servers, sanitized design docs/guidelines, and starter configuration examples, while refactoring `<data-repo>` into a clean private **Data Repo**.
 
-For the detailed technical architecture, validated dependency closure, design trade-offs, and ADR, please refer to the corresponding RFC: [Adopt Home Repo Pattern](../rfc/home-repo-pattern-architecture.md).
+For the detailed technical architecture, validated dependency closure, design trade-offs, and ADR, please refer to the corresponding RFC: [Adopt Separated Data Repo Architecture](../rfc/data-repo-separation-architecture.md).
 
 ## Confirmed Decisions
 
@@ -55,7 +55,7 @@ All open questions resolved and signed off (2026-11-26).
   12. `content-summary-what-can-i-learn.md`
   13. `daily-workflow-discord-delivery.md`
   14. `daily-workflow-evals.md`
-  15. `home-repo-pattern-architecture.md`
+  15. `data-repo-separation-architecture.md`
   16. `ingest-unified-output-format.md`
   17. `ingest-website-skill.md`
   18. `newsletter-subscription-rubric.md`
@@ -96,7 +96,7 @@ All open questions resolved and signed off (2026-11-26).
   9. `daily-workflow-discord-delivery-plan.md`
   10. `daily-workflow-evals-plan.md`
   11. `evolution-log-audit-plan.md` *(for kept `evolution-log` skill)*
-  12. `home-repo-pattern-architecture-plan.md`
+  12. `data-repo-separation-architecture-plan.md`
   13. `ingest-website-plan.md`
   14. `newsletter-subscription-rubric-plan.md` *(for kept `review-newsletter-subscriptions` skill)*
   15. `parallel-content-processing-plan.md` & `parallel-content-processing-task.md`
@@ -143,11 +143,11 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
 ### Phase 1: knowledge-loop Bootstrap & Portable Path Infrastructure (`knowledge-loop`)
 
 #### [NEW] `knowledge-loop/scripts/lib/workspace_paths.py`
-* Shared zero-dependency Python module resolving `HOME_ROOT` and `DATA_REPO` via deterministic precedence:
+* Shared zero-dependency Python module resolving `REPO_ROOT` and `DATA_REPO` via deterministic precedence:
   1. explicit `override` argument (`--data-repo`)
-  2. `KNOWLEDGE_LOOP_DATA_REPO` environment variable (supports `~` and paths relative to `HOME_ROOT`)
-  3. `DATA_REPO_DIR` key parsed from `<HOME_ROOT>/workspace.local.env`
-  4. single-repo fallback (`HOME_ROOT` if `<HOME_ROOT>/data/` exists)
+  2. `KNOWLEDGE_LOOP_DATA_REPO` environment variable (supports `~` and paths relative to `REPO_ROOT`)
+  3. `DATA_REPO_DIR` key parsed from `<REPO_ROOT>/workspace.local.env`
+  4. single-repo fallback (`REPO_ROOT` if `<REPO_ROOT>/data/` exists)
 * Provides helper accessors: `data_dir()`, `reports_dir()`, `diary_dir()`, `tmp_dir()`.
 
 #### [NEW] `knowledge-loop/scripts/lib/resolve_data_repo.sh`
@@ -163,7 +163,7 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
 
 #### [NEW] `knowledge-loop/examples/` (Starter Configuration Package)
 * `examples/workspace.local.env.example` — `DATA_REPO_DIR="../my-knowledge-data"`, `USER_TIMEZONE="UTC"`.
-* `examples/repos.local.md.example` — Home Repo pointer template listing `DATA_REPO` and optional additional code repositories.
+* `examples/repos.local.md.example` — Data Repo pointer template listing `DATA_REPO` and optional additional code repositories.
 * `examples/knowledge-loop.code-workspace.example` — Multi-root workspace config mounting `.` and `../my-knowledge-data`.
 * `examples/mcp_config.example.json` — Generic MCP server setup for `discord-reports` with `KNOWLEDGE_LOOP_DATA_REPO` env var and placeholders.
 * `examples/data/lang_preferences.md` — Default `English` / `English`.
@@ -175,7 +175,7 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
 * `examples/data/integrations.example.md` — Configurable Gmail newsletter label (`newsletter`), Google Tasks list name (`Delegate`), and optional Jira project/epic mapping.
 
 #### [NEW / MODIFY] `knowledge-loop/{AGENTS.md,CLAUDE.md,CONTEXT.md,README.md,known_issues.md,.gitignore}`
-* `AGENTS.md`: Rewritten for Home Repo Pattern — instructs agents to read `repos.local.md` (or `workspace.local.env`) to resolve `$DATA_REPO`, removes hardcoded Jira project `<PROJECT_KEY>` / `PROJ-1..PROJ-7` (delegating to optional `$DATA_REPO/data/integrations.md`), keeps 3-Tier Rules Architecture, skill validation, ADR, and language rules.
+* `AGENTS.md`: Rewritten for separated Data Repo architecture — instructs agents to read `repos.local.md` (or `workspace.local.env`) to resolve `$DATA_REPO`, removes hardcoded Jira project `<PROJECT_KEY>` / `PROJ-1..PROJ-7` (delegating to optional `$DATA_REPO/data/integrations.md`), keeps 3-Tier Rules Architecture, skill validation, ADR, and language rules.
 * `CLAUDE.md`: Pointer to `AGENTS.md` and `repos.local.md`.
 * `CONTEXT.md`: Portable glossary (`Trace`, `Dreamer`, `Memory Injection`, `knowledge-loop`, `Data Repo`).
 * `README.md`: Public-facing architecture overview (knowledge-loop + Data Repo diagram), macOS quickstart (`git clone` → `./scripts/init_workspace.sh` → multi-root workspace / MCP setup), full skill catalog, and verification commands.

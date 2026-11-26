@@ -4,15 +4,15 @@ from pathlib import Path
 import subprocess
 import sys
 
-HOME_ROOT = Path(__file__).resolve().parents[1]
-if str(HOME_ROOT) not in sys.path:
-    sys.path.insert(0, str(HOME_ROOT))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.audit_public_repo import audit, scan_file_contents
 
 
 def test_public_repo_has_zero_hygiene_violations():
-    violations = audit(HOME_ROOT)
+    violations = audit(REPO_ROOT)
     assert violations == [], "Public hygiene violations detected:\n" + "\n".join(violations)
 
 
@@ -32,11 +32,11 @@ def test_audit_detects_synthetic_pii_and_absolute_paths(tmp_path):
 
 
 def test_all_20_skills_pass_validation():
-    skills = sorted((HOME_ROOT / ".agents" / "skills").glob("*/SKILL.md"))
+    skills = sorted((REPO_ROOT / ".agents" / "skills").glob("*/SKILL.md"))
     assert len(skills) == 20, f"Expected 20 approved skills, found {len(skills)}"
     res = subprocess.run(
         [sys.executable, "scripts/validate_skill.py"],
-        cwd=HOME_ROOT,
+        cwd=REPO_ROOT,
         capture_output=True,
         text=True,
     )
@@ -45,22 +45,22 @@ def test_all_20_skills_pass_validation():
 
 def test_subagent_personas_synced_without_drift():
     before = {
-        p.relative_to(HOME_ROOT): p.read_bytes()
+        p.relative_to(REPO_ROOT): p.read_bytes()
         for folder in (".claude/agents", ".claude/subagents", ".codex/agents", ".codex/subagents")
-        for p in sorted((HOME_ROOT / folder).glob("*"))
+        for p in sorted((REPO_ROOT / folder).glob("*"))
         if p.is_file()
     }
     res = subprocess.run(
         [sys.executable, "scripts/sync_subagents.py"],
-        cwd=HOME_ROOT,
+        cwd=REPO_ROOT,
         capture_output=True,
         text=True,
     )
     assert res.returncode == 0, res.stdout + res.stderr
     after = {
-        p.relative_to(HOME_ROOT): p.read_bytes()
+        p.relative_to(REPO_ROOT): p.read_bytes()
         for folder in (".claude/agents", ".claude/subagents", ".codex/agents", ".codex/subagents")
-        for p in sorted((HOME_ROOT / folder).glob("*"))
+        for p in sorted((REPO_ROOT / folder).glob("*"))
         if p.is_file()
     }
     assert before == after, "Generated persona adapters drifted from .agents/agents/"

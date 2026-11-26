@@ -1,4 +1,4 @@
-# Local Home Repo workspace pointers (never commit personal paths)
+# Local Knowledge Loop workspace pointers (never commit personal paths)
 workspace.local.env
 repos.local.md
 *.code-workspace

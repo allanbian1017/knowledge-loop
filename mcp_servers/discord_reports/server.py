@@ -79,7 +79,7 @@ def resolve_effective_data_root(repo_root: Path | None = None) -> Path:
     try:
         from scripts.lib.workspace_paths import resolve_data_repo
 
-        return resolve_data_repo(home_root=DEFAULT_REPO_ROOT, require_exists=False)
+        return resolve_data_repo(repo_root=DEFAULT_REPO_ROOT, require_exists=False)
     except Exception:
         env_dir = os.environ.get("KNOWLEDGE_LOOP_DATA_REPO", "").strip()
         if env_dir:

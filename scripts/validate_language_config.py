@@ -17,14 +17,14 @@ import shutil
 import subprocess
 import sys
 
-HOME_ROOT = Path(__file__).resolve().parent.parent
-if str(HOME_ROOT) not in sys.path:
-    sys.path.insert(0, str(HOME_ROOT))
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.lib.workspace_paths import resolve_data_repo
 
-HOOK_SCRIPT = HOME_ROOT / "scripts" / "hooks" / "ensure_lang_preferences.sh"
-SETTINGS_FILE = HOME_ROOT / ".agents" / "settings.json"
+HOOK_SCRIPT = REPO_ROOT / "scripts" / "hooks" / "ensure_lang_preferences.sh"
+SETTINGS_FILE = REPO_ROOT / ".agents" / "settings.json"
 
 
 def test_lang_preferences_file(lang_pref_file: Path) -> None:
@@ -55,7 +55,7 @@ def test_hook_auto_healing(data_repo: Path, lang_pref_file: Path) -> None:
         lang_pref_file.unlink()
         assert not lang_pref_file.exists()
 
-        res = subprocess.run([str(HOOK_SCRIPT)], capture_output=True, text=True, cwd=HOME_ROOT, env=env)
+        res = subprocess.run([str(HOOK_SCRIPT)], capture_output=True, text=True, cwd=REPO_ROOT, env=env)
         assert res.returncode == 0, f"Hook failed with {res.stderr}"
         assert lang_pref_file.is_file(), "Hook failed to recreate missing lang_preferences.md"
 
@@ -68,7 +68,7 @@ def test_hook_auto_healing(data_repo: Path, lang_pref_file: Path) -> None:
             "# Language Preferences\n\n- **Preferred Conversation Language**: English\n",
             encoding="utf-8",
         )
-        res = subprocess.run([str(HOOK_SCRIPT)], capture_output=True, text=True, cwd=HOME_ROOT, env=env)
+        res = subprocess.run([str(HOOK_SCRIPT)], capture_output=True, text=True, cwd=REPO_ROOT, env=env)
         assert res.returncode == 0, f"Hook failed with {res.stderr}"
 
         repaired = lang_pref_file.read_text(encoding="utf-8")
@@ -91,7 +91,7 @@ def test_hook_registered_in_settings() -> None:
 
 def test_agents_md_policy() -> None:
     print("[4/5] Testing AGENTS.md policy pointer...")
-    content = (HOME_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    content = (REPO_ROOT / "AGENTS.md").read_text(encoding="utf-8")
     assert "data/lang_preferences.md" in content
     assert "Preferred Conversation Language" in content
     assert "Preferred Report Language" in content
@@ -101,8 +101,8 @@ def test_agents_md_policy() -> None:
 def test_skills_reference_lang_preferences() -> None:
     print("[5/5] Testing skill files reference data/lang_preferences.md...")
     targets = [
-        (HOME_ROOT / ".agents/skills/content-summary/references/summarise.md", "summarise.md"),
-        (HOME_ROOT / ".agents/skills/daily-distiller/SKILL.md", "daily-distiller/SKILL.md"),
+        (REPO_ROOT / ".agents/skills/content-summary/references/summarise.md", "summarise.md"),
+        (REPO_ROOT / ".agents/skills/daily-distiller/SKILL.md", "daily-distiller/SKILL.md"),
     ]
     for path, label in targets:
         assert path.is_file(), f"Missing {path}"
@@ -119,7 +119,7 @@ def main() -> int:
 
     print("=== Running Language Configuration Verification Suite ===")
     try:
-        data_repo = resolve_data_repo(args.data_repo, home_root=HOME_ROOT, require_exists=True)
+        data_repo = resolve_data_repo(args.data_repo, repo_root=REPO_ROOT, require_exists=True)
         lang_pref_file = data_repo / "data" / "lang_preferences.md"
         test_lang_preferences_file(lang_pref_file)
         test_hook_auto_healing(data_repo, lang_pref_file)

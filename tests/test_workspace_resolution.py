@@ -8,15 +8,15 @@ import sys
 
 import pytest
 
-HOME_ROOT = Path(__file__).resolve().parents[1]
-if str(HOME_ROOT) not in sys.path:
-    sys.path.insert(0, str(HOME_ROOT))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.lib.workspace_paths import get_timezone, resolve_data_repo
 
 
 def test_precedence_override_env_local_and_fallback(tmp_path, monkeypatch):
-    home = tmp_path / "home-root"
+    home = tmp_path / "repo-root"
     home.mkdir()
     d_override = tmp_path / "d-override"
     d_env = tmp_path / "d-env"
@@ -28,26 +28,26 @@ def test_precedence_override_env_local_and_fallback(tmp_path, monkeypatch):
 
     # Unconfigured raises FileNotFoundError
     with pytest.raises(FileNotFoundError):
-        resolve_data_repo(home_root=home)
+        resolve_data_repo(repo_root=home)
 
     # 4. Single-repo fallback if <home>/data exists
     (home / "data").mkdir()
-    assert resolve_data_repo(home_root=home) == home.resolve()
+    assert resolve_data_repo(repo_root=home) == home.resolve()
 
     # 3. workspace.local.env overrides single-repo fallback (supports relative paths)
     (home / "workspace.local.env").write_text(
         'DATA_REPO_DIR="../d-local"\nUSER_TIMEZONE="America/New_York"\n',
         encoding="utf-8",
     )
-    assert resolve_data_repo(home_root=home) == d_local.resolve()
-    assert get_timezone(home_root=home) == "America/New_York"
+    assert resolve_data_repo(repo_root=home) == d_local.resolve()
+    assert get_timezone(repo_root=home) == "America/New_York"
 
     # 2. Env var overrides workspace.local.env
     monkeypatch.setenv("KNOWLEDGE_LOOP_DATA_REPO", str(d_env))
-    assert resolve_data_repo(home_root=home) == d_env.resolve()
+    assert resolve_data_repo(repo_root=home) == d_env.resolve()
 
     # 1. Explicit override beats env var
-    assert resolve_data_repo(override=d_override, home_root=home) == d_override.resolve()
+    assert resolve_data_repo(override=d_override, repo_root=home) == d_override.resolve()
 
 
 def test_bash_resolver_and_hook_in_arbitrary_data_repo(tmp_path):
@@ -58,8 +58,8 @@ def test_bash_resolver_and_hook_in_arbitrary_data_repo(tmp_path):
     env["KNOWLEDGE_LOOP_DATA_REPO"] = str(data_repo)
 
     res = subprocess.run(
-        [str(HOME_ROOT / "scripts/lib/resolve_data_repo.sh")],
-        cwd=HOME_ROOT,
+        [str(REPO_ROOT / "scripts/lib/resolve_data_repo.sh")],
+        cwd=REPO_ROOT,
         env=env,
         capture_output=True,
         text=True,
@@ -69,8 +69,8 @@ def test_bash_resolver_and_hook_in_arbitrary_data_repo(tmp_path):
 
     # Hook auto-creates data/lang_preferences.md in external Data Repo, never in knowledge-loop
     hook = subprocess.run(
-        [str(HOME_ROOT / "scripts/hooks/ensure_lang_preferences.sh")],
-        cwd=HOME_ROOT,
+        [str(REPO_ROOT / "scripts/hooks/ensure_lang_preferences.sh")],
+        cwd=REPO_ROOT,
         env=env,
         capture_output=True,
         text=True,
@@ -79,14 +79,14 @@ def test_bash_resolver_and_hook_in_arbitrary_data_repo(tmp_path):
     pref = data_repo / "data" / "lang_preferences.md"
     assert pref.is_file()
     assert "Preferred Report Language" in pref.read_text(encoding="utf-8")
-    assert not (HOME_ROOT / "data").exists()
+    assert not (REPO_ROOT / "data").exists()
 
 
 def test_init_workspace_scaffolds_and_preserves_existing_data(tmp_path):
     fake_home = tmp_path / "knowledge-loop-copy"
-    shutil.copytree(HOME_ROOT / "examples", fake_home / "examples")
+    shutil.copytree(REPO_ROOT / "examples", fake_home / "examples")
     (fake_home / "scripts").mkdir(parents=True)
-    shutil.copy2(HOME_ROOT / "scripts/init_workspace.sh", fake_home / "scripts/init_workspace.sh")
+    shutil.copy2(REPO_ROOT / "scripts/init_workspace.sh", fake_home / "scripts/init_workspace.sh")
 
     data_repo = tmp_path / "private-data"
     res = subprocess.run(

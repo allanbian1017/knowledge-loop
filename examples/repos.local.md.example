@@ -1,4 +1,4 @@
-# Local Repositories Map (Home Repo Pointer)
+# Local Repositories Map (Data Repo Pointer)
 
 > Copy to `./repos.local.md` (gitignored) or run `./scripts/init_workspace.sh`.
 > Agents read this file via `AGENTS.md` to resolve `$DATA_REPO` and any additional repositories.
