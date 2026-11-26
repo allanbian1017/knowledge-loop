@@ -64,7 +64,7 @@ Use this format:
 
 ### #3 — [Title](source_url)
 - 📂 Threads | 🏷️ 技術 | 💎 Mid | ⚡ Mid | 🎯 Store
-- 📋 **建議**：將這個觀點加入 known_issues.md
+- 📋 **建議**：將這個觀點加入 learnings/lessons.md
 - 📄 [完整報告](file:///path/to/report.md)
 ```
 
