@@ -1,5 +1,28 @@
-.tmp/
+# Local Home Repo workspace pointers (never commit personal paths)
+workspace.local.env
+repos.local.md
+*.code-workspace
+
+# Optional single-repo local data/outputs (use a separate private Data Repo in production)
+data/
+data/discord_delivery_log.json
+reports/
+diary/
+raw/
+tasks/*
+
+# Dependencies & runtime caches
 node_modules/
 package-lock.json
+package.json
+.tmp/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.benchmarks/
+.codebase-memory/
 .codegraph/
-docs/decision_logs/
+.DS_Store
+.obsidian/
+mcp_servers/discord_reports/.venv/

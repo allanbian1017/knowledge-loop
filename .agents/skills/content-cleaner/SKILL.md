@@ -33,4 +33,4 @@ ALWAYS format the final output as a clean Markdown file. Use this exact template
 ```
 
 ## Saving the Output
-Unless the user specifies otherwise, save the output to a clearly named Markdown file in a dated directory, for example: `./reports/Articles_YYYY_MM_DD/[source_name_snake_case].md`. Do not summarize the entire article in the chat window; just provide the path to the saved file and a 1-sentence confirmation.
+Unless the user specifies otherwise, save the output to a clearly named Markdown file in a dated directory, for example: `$DATA_REPO/reports/Articles_YYYY_MM_DD/[source_name_snake_case].md`. Do not summarize the entire article in the chat window; just provide the path to the saved file and a 1-sentence confirmation.

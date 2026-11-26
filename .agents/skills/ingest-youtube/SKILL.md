@@ -37,11 +37,11 @@ If duration is unknown, look it up via web search or `yt-dlp --print duration_st
 ### Step 2 — Launch transcription
 
 ```bash
-mkdir -p reports/YouTube_YYYY_MM_DD
+mkdir -p $DATA_REPO/reports/YouTube_YYYY_MM_DD
 
 yt2doc \
   --video "<YouTube URL>" \
-  --output ./reports/YouTube_YYYY_MM_DD/<video_id>.md \
+  --output $DATA_REPO/reports/YouTube_YYYY_MM_DD/<video_id>.md \
   --whisper-model <model> \
   --add-table-of-contents
 ```
@@ -100,10 +100,10 @@ gws tasks tasks patch \
   --json '{"status": "completed"}'
 
 # Remove intermediate raw transcription file
-rm "reports/YouTube_YYYY_MM_DD/<video_id>.md"
+rm "$DATA_REPO/reports/YouTube_YYYY_MM_DD/<video_id>.md"
 ```
 
-Log: `"✅ Task '<title>' marked as completed. Report saved to reports/YouTube_YYYY_MM_DD/<filename>.md. Intermediate file removed."`
+Log: `"✅ Task '<title>' marked as completed. Report saved to $DATA_REPO/reports/YouTube_YYYY_MM_DD/<filename>.md. Intermediate file removed."`
 
 ---
 

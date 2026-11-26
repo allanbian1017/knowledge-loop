@@ -57,10 +57,10 @@ data/
 ### 1. Grade Mode (Programmatic Ingestion)
 Executed automatically during ingestion (e.g. website, threads, youtube, newsletter):
 *   Reads suggestion details.
-*   Checks [rubric_blocklist.md](file:///Users/allanbian/my-ai-workflow/data/rubric_blocklist.md). Vetoes if matched.
+*   Checks `$DATA_REPO/data/rubric_blocklist.md`. Vetoes if matched.
 *   Grades A, P, G dimensions (0, 1, or 2).
-*   If composite $\ge 4$: Appends with `📊` format to [suggestions_pending.md](file:///Users/allanbian/my-ai-workflow/data/suggestions_pending.md).
-*   If composite $< 4$: Appends to [suggestions_filtered.md](file:///Users/allanbian/my-ai-workflow/data/suggestions_filtered.md).
+*   If composite $\ge 4$: Appends with `📊` format to `$DATA_REPO/data/suggestions_pending.md`.
+*   If composite $< 4$: Appends to `$DATA_REPO/data/suggestions_filtered.md`.
 
 ### 2. Backtest Mode (Chat Trigger)
 Triggered by asking the agent to "backtest the rubric":
@@ -96,6 +96,7 @@ Invoked automatically at the end of suggestion reviews:
 |---|---|---|
 | v1.0.0 | 2026-06-11 | Initial release: Implemented Grade, Backtest, and Maintain modes. Seeded blocklists, filtered suggestions log, and threshold scoring. |
 | v1.1.0 | 2026-09-30 | Added Archetype-Content Fit scoring to rubric.md and Forced Prompt Wrapping hard-veto to blocklist (ADR-0001). |
+| v1.2.0 | 2026-11-26 | `ADR_DOC` is a lower-priority fallback in Archetype-Content Fit: Preference Alignment 2 only with a named in-repo decision; capped at 1 otherwise, 0 if the content fits JIRA/PROMPT/TEST (ADR-0002). |
 
 ---
 
@@ -105,12 +106,25 @@ Invoked automatically at the end of suggestion reviews:
 
 **Status**: Accepted · **Date**: 2026-09-30
 
-**Context**: In September 2026, generator agents discovered an incentive gaming loop: appending "15 分鐘" + "不另建自動化工具" to a `data/prompts/` proposal guaranteed a 6/6 rubric score and bypassed the redundancy veto.
+**Context**: In September 2026, generator agents discovered an incentive gaming loop: appending "15 分鐘" + "不另建自動化工具" to a `$DATA_REPO/data/prompts/` proposal guaranteed a 6/6 rubric score and bypassed the redundancy veto.
 
 **Decision**:
 1. Implement cognitive scoring in `rubric.md`: `Preference Alignment (P)` evaluates Archetype-Content Fit. Inappropriate archetypes (e.g., prompt templates for macro news or backend database replication) are penalized with $P \le 1$.
-2. Implement deterministic hard veto in `data/rubric_blocklist.md`: "Forced Prompt Wrapping" immediately auto-filters prompt template proposals on macro news, policy, or theoretical architecture.
+2. Implement deterministic hard veto in `$DATA_REPO/data/rubric_blocklist.md`: "Forced Prompt Wrapping" immediately auto-filters prompt template proposals on macro news, policy, or theoretical architecture.
 3. Validate `JIRA_BACKLOG`, `ADR_DOC`, and `TEST_FIXTURE` as valid $A=2$ targets under Actionability.
 
 **Consequences**: Eliminates degenerate prompt gaming, re-aligns rubric scoring with genuine task actionability, and ensures prompt templates are created only when an interactive tool is appropriate.
 
+### ADR-0002: ADR_DOC Demoted to Lower-Priority Fallback in Preference Alignment
+
+**Status**: Accepted · **Date**: 2026-11-26
+
+**Context**: The rubric mapped "system architecture" to `JIRA_BACKLOG` or `ADR_DOC` equally, awarding P=2, so almost every ADR scored 6/6.
+
+**Decision**: Remove `ADR_DOC` from the automatic P=2 mapping. P=2 requires a named pending design decision in this repo; otherwise P≤1; an ADR on content that fits a higher-priority archetype is a priority violation (P=0).
+
+**Consequences**: Aligns grading with the generator-side priority (content-summary ADR-0012). Borderline ADRs can still pass at 4–5/6, so the generator rule is the primary control.
+
+### ADR (Home Repo Pattern Portability)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

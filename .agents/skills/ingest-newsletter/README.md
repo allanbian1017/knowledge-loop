@@ -24,7 +24,7 @@ Iterative batch-processing with a strict zero-hallucination summarisation prompt
    - **📌 關鍵重點**: Categorised bullet points with data, people, events.
    - **🚀 行動呼籲 / 期限**: CTAs and deadlines from the source.
    - **⚠️ 資訊免責聲明**: Flags unclear or incomplete source information.
-4. **Separate AI Analysis Backlog:** AI analysis is not written to the report. Instead it is appended to `data/suggestions_pending.md` using the shared `content-summary/references/ai_analysis.md` and `suggestion_log.md` rules.
+4. **Separate AI Analysis Backlog:** AI analysis is not written to the report. Instead it is appended to `$DATA_REPO/data/suggestions_pending.md` using the shared `content-summary/references/ai_analysis.md` and `suggestion_log.md` rules.
 5. **Write-before-archive Safety:** Email is marked as read and archived only after its report file is confirmed written.
 
 ## File Structure
@@ -85,7 +85,7 @@ Store user goals as a `## 🎯 My Current Goals` section directly in `AGENTS.md`
 - **Positive**: Zero overhead per skill invocation; single edit point; consistent across skills.
 - **Negative**: `AGENTS.md` blends behavioral rules with user intent.
 
-### ADR-0002: Goals Extracted to data/goals.md and Suggestion Feedback Loop
+### ADR-0002: Goals Extracted to $DATA_REPO/data/goals.md and Suggestion Feedback Loop
 
 **Status**: Accepted (Supersedes ADR-0001)
 **Date**: 2026-05-07
@@ -94,8 +94,8 @@ Store user goals as a `## 🎯 My Current Goals` section directly in `AGENTS.md`
 ADR-0001 placed user goals in `AGENTS.md`. This conflated agent behavioral rules with user intent. The `🏷️ AI 分析` section produced write-only suggestions with no mechanism to collect feedback or calibrate future suggestions.
 
 #### Decision
-1. Extract goals to `data/goals.md`.
-2. Introduce suggestion feedback loop: `data/suggestions_pending.md`, `data/suggestions_reviewed.md`, `data/user_preferences.md`.
+1. Extract goals to `$DATA_REPO/data/goals.md`.
+2. Introduce suggestion feedback loop: `$DATA_REPO/data/suggestions_pending.md`, `$DATA_REPO/data/suggestions_reviewed.md`, `$DATA_REPO/data/user_preferences.md`.
 3. Add `review-suggestions` skill for closed-loop feedback.
 4. Add backlog-append step to ingestion skills.
 
@@ -112,7 +112,7 @@ ADR-0001 placed user goals in `AGENTS.md`. This conflated agent behavioral rules
 Summarisation rules, AI analysis structure, suggestion logging logic, and filename conventions were duplicated across `newsletter-summary`, `process-delegate-tasks`, and their output templates. Adding a new analysis field required updating three separate files.
 
 #### Decision
-Extract shared logic into a `content-summary` reference library. Rename `newsletter-summary` → `ingest-newsletter`. Remove the AI 分析 block from the report template; write it only to `data/suggestions_pending.md`.
+Extract shared logic into a `content-summary` reference library. Rename `newsletter-summary` → `ingest-newsletter`. Remove the AI 分析 block from the report template; write it only to `$DATA_REPO/data/suggestions_pending.md`.
 
 #### Consequences
 - **Positive**: Single source of truth. Adding a new ingest source requires ~50 lines.
@@ -137,9 +137,13 @@ Extract shared logic into a `content-summary` reference library. Rename `newslet
 | v2.0.0 | 2026-04-30 | Added `🏷️ AI 分析` section to output template. |
 | v2.1.0 | 2026-04-30 | AI 分析 expanded to 5-field decision framework. |
 | v2.1.1 | 2026-04-30 | Goals moved to `AGENTS.md` (ADR-0001). |
-| v2.2.0 | 2026-05-07 | Suggestion feedback loop: append to `data/suggestions_pending.md` at ingestion (ADR-0002). |
+| v2.2.0 | 2026-05-07 | Suggestion feedback loop: append to `$DATA_REPO/data/suggestions_pending.md` at ingestion (ADR-0002). |
 | v2.3.0 | 2026-05-13 | **DRY refactoring (ADR-0003)**: Renamed to `ingest-newsletter`. Summarisation rules → `content-summary/references/summarise.md`. AI analysis → `content-summary/references/ai_analysis.md`. Suggestion log → `content-summary/references/suggestion_log.md`. AI 分析 block removed from report template. |
 | v2.4.0 | 2026-05-14 | Unified output template moved to `content-summary/references/output_template.md`. |
 | v2.5.0 | 2026-05-15 | **HTML-by-default (RCA-2026-05-15)**: Fetch full `text/html` body to prevent plain-text truncation. Explicitly omit the Raw Content section for newsletters to avoid HTML noise. |
 | v2.6.0 | 2026-06-16 | Made output language globally configurable, defaulting to English and preferring Traditional Chinese. |
 | v2.7.0 | 2026-07-24 | Added **single-email mode**: when `MESSAGE_ID` is provided (by `daily-workflow` parallel dispatch), skip Step 1 batch discovery and process only that email. Added optional `SuggestionOutputPath` parameter passed through to `suggestion_log.md` for per-subagent file isolation (RFC: parallel-content-processing). |
+
+### ADR (Home Repo Pattern Portability)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

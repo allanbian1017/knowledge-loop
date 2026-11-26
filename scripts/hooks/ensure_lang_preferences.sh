@@ -1,26 +1,30 @@
 #!/usr/bin/env bash
-
 # ==============================================================================
 # Lifecycle Hook: ensure_lang_preferences.sh
 # ==============================================================================
-# Description: Ensures data/lang_preferences.md always exists and contains valid
-#              keys for Preferred Report Language and Preferred Conversation Language.
-# Protocol:
-#   - Input: stdin JSON payload (if called by Antigravity hook harness)
-#   - Exit Code: 0 on success / auto-repair
+# Ensures $DATA_REPO/data/lang_preferences.md exists and contains valid keys for
+# Preferred Report Language and Preferred Conversation Language.
 # ==============================================================================
 
 set -euo pipefail
 
-# Find repository root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-PREF_FILE="${REPO_ROOT}/data/lang_preferences.md"
+HOME_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-# Auto-create if missing
+# shellcheck source=../lib/resolve_data_repo.sh
+source "${HOME_ROOT}/scripts/lib/resolve_data_repo.sh"
+
+DATA_REPO="$(_kl_resolve_data_repo 2>/dev/null || true)"
+if [[ -z "$DATA_REPO" ]]; then
+  echo "[Hook: ensure_lang_preferences] Data Repo not configured yet; skipping (run ./scripts/init_workspace.sh)." >&2
+  exit 0
+fi
+
+PREF_FILE="${DATA_REPO}/data/lang_preferences.md"
+
 if [[ ! -f "$PREF_FILE" ]]; then
   echo "[Hook: ensure_lang_preferences] ${PREF_FILE} missing, recreating default..." >&2
-  mkdir -p "${REPO_ROOT}/data"
+  mkdir -p "${DATA_REPO}/data"
   cat << 'EOF' > "$PREF_FILE"
 # Language Preferences
 
@@ -31,29 +35,20 @@ EOF
   exit 0
 fi
 
-# Validate content and repair missing keys if necessary
 NEEDS_REPAIR=false
-
 if ! grep -q "Preferred Report Language" "$PREF_FILE"; then
   NEEDS_REPAIR=true
 fi
-
 if ! grep -q "Preferred Conversation Language" "$PREF_FILE"; then
   NEEDS_REPAIR=true
 fi
 
 if [[ "$NEEDS_REPAIR" == true ]]; then
-  echo "[Hook: ensure_lang_preferences] Corrupted or missing keys in ${PREF_FILE}, repairing..." >&2
+  echo "[Hook: ensure_lang_preferences] Missing keys in ${PREF_FILE}, repairing..." >&2
   REPORT_LANG=$(grep "Preferred Report Language" "$PREF_FILE" | sed -E 's/.*:[[:space:]]*//' || true)
   CONV_LANG=$(grep "Preferred Conversation Language" "$PREF_FILE" | sed -E 's/.*:[[:space:]]*//' || true)
-
-  if [[ -z "$REPORT_LANG" ]]; then
-    REPORT_LANG="English"
-  fi
-  if [[ -z "$CONV_LANG" ]]; then
-    CONV_LANG="English"
-  fi
-
+  [[ -z "$REPORT_LANG" ]] && REPORT_LANG="English"
+  [[ -z "$CONV_LANG" ]] && CONV_LANG="English"
   cat << EOF > "$PREF_FILE"
 # Language Preferences
 

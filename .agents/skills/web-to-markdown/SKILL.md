@@ -34,7 +34,7 @@ Prepend `https://r.jina.ai/` to the target URL and fetch with `read_url_content`
 
 ## Saving the Output
 
-Unless the user specifies a path, save to: `./reports/Articles_YYYY_MM_DD/[slugified_title].md`
+Unless the user specifies a path, save to: `$DATA_REPO/reports/Articles_YYYY_MM_DD/[slugified_title].md`
 
 Derive `slugified_title` from the page title: lowercase, replace spaces/special chars with underscores, truncate to 80 chars. Confirm the saved path to the user in one sentence.
 

@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "discord-reports": {
+      "command": "<PATH_TO_UV>",
+      "args": [
+        "run",
+        "--directory",
+        "<HOME_REPO_ROOT>/mcp_servers/discord_reports",
+        "python",
+        "server.py"
+      ],
+      "env": {
+        "KNOWLEDGE_LOOP_DATA_REPO": "<DATA_REPO_ROOT>",
+        "DISCORD_WEBHOOK_URL": "https://discord.com/api/webhooks/YOUR_ID/YOUR_TOKEN",
+        "DISCORD_CHANNEL_TYPE": "forum",
+        "DISCORD_DEFAULT_MODE": "per_report",
+        "DISCORD_USERNAME": "Daily AI Digest"
+      }
+    }
+  }
+}

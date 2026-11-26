@@ -8,11 +8,11 @@ This reference document defines the multi-dimensional evaluation criteria used b
 
 | Metric | Formula | Description | High Quality Threshold | Poor Quality Threshold |
 |---|---|---|:---:|:---:|
-| **Reports Received ($N$)** | Total files in `reports/Newsletter_YYYY_MM_DD/` | Raw volume of newsletter emails received. | — | — |
-| **Reviewed ($R$)** | Count in `data/suggestions_reviewed.md` | Suggestions that passed initial filtering and received human review. | — | — |
+| **Reports Received ($N$)** | Total files in `$DATA_REPO/reports/Newsletter_YYYY_MM_DD/` | Raw volume of newsletter emails received. | — | — |
+| **Reviewed ($R$)** | Count in `$DATA_REPO/data/suggestions_reviewed.md` | Suggestions that passed initial filtering and received human review. | — | — |
 | **Accepted ($A$)** | Count of `✅ Accept` | Suggestions approved by the user for implementation or prompts. | — | — |
 | **Rejected ($J$)** | Count of `❌ Reject` | Suggestions explicitly turned down by the user. | — | — |
-| **Filtered ($F$)** | Count in `data/suggestions_filtered.md` | Suggestions filtered out by Rubric (< 4 pts) or blocked by Hard-Vetoes. | — | — |
+| **Filtered ($F$)** | Count in `$DATA_REPO/data/suggestions_filtered.md` | Suggestions filtered out by Rubric (< 4 pts) or blocked by Hard-Vetoes. | — | — |
 | **Acceptance Rate** | $A / R$ (when $R > 0$) | How often reviewed suggestions from this source are approved. | $\ge 60\%$ | $< 40\%$ |
 | **Overall Yield** | $A / N$ (when $N > 0$) | Conversion efficiency: how many accepted actions per email received. | $\ge 20\%$ | $< 8\%$ |
 
@@ -29,7 +29,7 @@ High-signal publications that deliver actionable, high-ROI engineering ideas, pr
 - Overall Yield $\ge 20\%$.
 
 **Qualitative Indicators**:
-- Suggestions result in accepted pull requests, new agent skills (e.g. `agent-rules-reviewer`, `decision-sparring`), or core prompt library updates (`data/prompts/`).
+- Suggestions result in accepted pull requests, new agent skills (e.g. `agent-rules-reviewer`, `decision-sparring`), or core prompt library updates (`$DATA_REPO/data/prompts/`).
 - Minimal marketing clutter or paywalled teasers.
 - Low volume with very high punchiness (e.g. 朱騏, Ally Hsieh).
 

@@ -13,8 +13,8 @@ This skill follows the same pattern as `gws-shared`: it provides reusable rules 
 
 | File | When to read | What it provides |
 |---|---|---|
-| `references/output_template.md` | Before structuring the report | Standard report structure (Thesis-Driven Analysis: TL;DR, What Can I Learn From It, Core Thesis, Reasoning Map, Reading Decision, Visual Map, AI Analysis) |
-| `references/summarise.md` | Before generating any summary | Configurable output language rules, Two-Zone rule (Extraction/Judgement), and thesis-driven guiding questions |
-| `references/ai_analysis.md` | Before generating the AI analysis | Field definitions, `data/goals.md` + `data/user_preferences.md` calibration instructions |
-| `references/suggestion_log.md` | After generating the AI analysis | Append format and rules for `data/suggestions_pending.md` |
+| `references/output_template.md` | Before structuring the report | Standard v5.0 Answer-First Pyramid template: Top 1-sentence conclusion + triage/action callout, 3–5 numbered `核心重點`, conditional `一張表看懂`, and per-topic `<details>` accordions (`深入解構` + `對我的意義與來源資訊`) |
+| `references/summarise.md` | Before generating any summary | Configurable output language rules, Inverted Pyramid (3s → 15s → 2m) hierarchy, Three-Zone rule with Just-in-Time inline analogies, and 6 low-cognitive-load guardrails |
+| `references/ai_analysis.md` | Before generating the AI analysis | Field definitions, `$DATA_REPO/data/goals.md` + `$DATA_REPO/data/user_preferences.md` calibration instructions |
+| `references/suggestion_log.md` | After generating the AI analysis | Append format and rules for `$DATA_REPO/data/suggestions_pending.md` |
 | `references/filename_rules.md` | Before writing any report file | Path sanitisation and directory naming convention |

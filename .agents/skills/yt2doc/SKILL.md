@@ -19,12 +19,12 @@ This skill converts a YouTube video into a clean, structured Markdown document u
 
 Extract the YouTube URL from the user's message. Derive a `snake_case` filename from the video URL (you can use the video ID or a short descriptive name). Decide the output directory:
 
-- Default: `./reports/YouTube_YYYY_MM_DD/` (use today's date)
+- Default: `$DATA_REPO/reports/YouTube_YYYY_MM_DD/` (use today's date)
 - If the user specifies a directory, use that instead
 
 Create the output directory before running the command:
 ```bash
-mkdir -p ./reports/YouTube_YYYY_MM_DD
+mkdir -p $DATA_REPO/reports/YouTube_YYYY_MM_DD
 ```
 
 ### 2. Video Strategist — Select the Right Model
@@ -52,14 +52,14 @@ Use `run_command` with a generous `WaitMsBeforeAsync` (5000ms is fine), then pol
 ```bash
 yt2doc \
   --video "<YouTube URL>" \
-  --output ./reports/YouTube_YYYY_MM_DD/<filename>.md \
+  --output $DATA_REPO/reports/YouTube_YYYY_MM_DD/<filename>.md \
   --whisper-model <model> \
   --add-table-of-contents
 ```
 
 **Key flags:**
 - `--whisper-model <model>` — set per the Video Strategist table above (e.g., `small`, `medium`, `base`)
-- `--output ./reports/...` — saves result to the correct directory
+- `--output $DATA_REPO/reports/...` — saves result to the correct directory
 - `--add-table-of-contents` — adds a TOC at the top of the document (recommended)
 - `--timestamp-paragraphs` — optionally include timestamps per paragraph (add if user asks)
 
@@ -90,7 +90,7 @@ Once done:
    - Approximate word/character count (optional)
 
 **Example report:**
-> ✅ Done! Saved to `./reports/YouTube_2026_04_29/lVdajtNpaGI.md`
+> ✅ Done! Saved to `$DATA_REPO/reports/YouTube_2026_04_29/lVdajtNpaGI.md`
 > **Title**: 【生成式人工智慧導論2025】第2講：上下文工程
 > **Sections**: 2 chapters
 > **~18,000 characters**

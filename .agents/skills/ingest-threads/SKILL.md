@@ -78,7 +78,7 @@ gws tasks tasks patch \
   --json '{"status": "completed"}'
 ```
 
-Log: `"✅ Task '<title>' marked as completed. Report saved to reports/Threads_YYYY_MM_DD/<filename>.md"`
+Log: `"✅ Task '<title>' marked as completed. Report saved to $DATA_REPO/reports/Threads_YYYY_MM_DD/<filename>.md"`
 
 ---
 

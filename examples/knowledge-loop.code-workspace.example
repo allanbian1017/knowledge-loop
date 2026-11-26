@@ -1,0 +1,18 @@
+{
+  "folders": [
+    {
+      "name": "knowledge-loop (Home Root)",
+      "path": "."
+    },
+    {
+      "name": "data-repo (Private Data)",
+      "path": "<DATA_REPO_PATH>"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.tmp": true,
+      "**/__pycache__": true
+    }
+  }
+}

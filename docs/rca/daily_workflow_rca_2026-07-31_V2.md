@@ -4,11 +4,11 @@
 **Date**: 2026-07-31  
 **Workflow**: `daily-workflow`  
 **Affected Skills**:
-- [daily-workflow SKILL.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/daily-workflow/SKILL.md)
-- [ingest-website SKILL.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/ingest-website/SKILL.md)
-- [content-summary SKILL.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/content-summary/SKILL.md)
-- [rubric-grader SKILL.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/rubric-grader/SKILL.md)
-- Persona definitions: [website_worker.md](file:///Users/allanbian/my-ai-workflow/.agents/agents/website_worker.md), [threads_worker.md](file:///Users/allanbian/my-ai-workflow/.agents/agents/threads_worker.md), [youtube_worker.md](file:///Users/allanbian/my-ai-workflow/.agents/agents/youtube_worker.md), [newsletter_worker.md](file:///Users/allanbian/my-ai-workflow/.agents/agents/newsletter_worker.md)
+- [daily-workflow SKILL.md](.agents/skills/daily-workflow/SKILL.md)
+- [ingest-website SKILL.md](.agents/skills/ingest-website/SKILL.md)
+- [content-summary SKILL.md](.agents/skills/content-summary/SKILL.md)
+- [rubric-grader SKILL.md](.agents/skills/rubric-grader/SKILL.md)
+- Persona definitions: [website_worker.md](.agents/agents/website_worker.md), [threads_worker.md](.agents/agents/threads_worker.md), [youtube_worker.md](.agents/agents/youtube_worker.md), [newsletter_worker.md](.agents/agents/newsletter_worker.md)
 
 ---
 

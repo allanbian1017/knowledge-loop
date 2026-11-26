@@ -1,107 +1,76 @@
 # {title}
 
-## 來源
-- **來源類型**: {Newsletter | Threads | YouTube | Website}
-- **作者 / 寄件者**: {author}       ← optional; omit if not applicable
-- **原文連結**: {url}
-- **處理時間**: {timestamp}
-- **任務 ID**: {task_id}            ← optional; omit for Newsletter
+> **🎯 一句話結論**：[≤45 字白話直接給出最終答案／核心概念；零鋪陳、零未解釋縮寫、零數學符號]
 
-## 🔖 來源 Metadata
-{Each skill fills source-specific metadata here.}
-- YouTube: Whisper Model, video duration
-- Newsletter: sender email address, subject line
-- Threads: engagement metrics (likes, replies, reposts)
-- Website: Domain/Host, original URL, scraped date (YYYY-MM-DD)
+- **⭐ 推薦度**：{★★★★★ | ★★★★☆ | ★★★☆☆ | ★★☆☆☆ | ★☆☆☆☆}（{≤15 字白話理由}）
+- **⚡ 下一步**：[{1 個具體行動 + 明確分鐘數}，或寫「純觀念吸收，無需待辦」]
+- **🔗 來源**：[{來源類型}：{author}]({url})
 
-## ⭐ Reading Decision
-- **推薦指數**: {★★★★★ | ★★★★☆ | ★★★☆☆ | ★★☆☆☆ | ★☆☆☆☆} ({語言對應標籤})
-- **判斷依據**:
-  - [依據 1：錨定 data/goals.md 之相關性與價值]
-  - [依據 2：內容深度 / 創新度 / 實用性]
-- **💡 真正的新資訊**:
-  - [最具有價值的全新觀念，或寫「主要重新整理已知觀念」]
+## 💡 核心重點
+<!-- Answer First！合併傳統 TL;DR 與學習點，嚴格限制 3–5 條編號短句，禁止寫段落！ -->
+<!-- 每條限 1 句話（≤45 字）；若出現專業詞彙，當場括號補 ≤10 字日常類比（Just-in-time context） -->
+1. **[核心重點 1]**：[1 句白話因果短句]
+2. **[核心重點 2]**：[1 句白話因果短句]
+3. **[核心重點 3]**：[1 句白話因果短句]
 
-<!-- 星級評判標準（標籤隨設定語言切換）： -->
-<!-- ★★★★★：突破性新框架 / 新做法，直接對應當前核心目標，必讀 -->
-<!-- ★★★★☆：具高價值新資訊且與目標高度相關，值得全文細讀 -->
-<!-- ★★★☆☆：良好背景知識，無突破性新意，閱讀 TL;DR / 摘要即可 -->
-<!-- ★★☆☆☆：邊緣相關或已知觀念重述，可快速跳過 -->
-<!-- ★☆☆☆☆：無實質新資訊、標題黨或重複內容，建議直接忽略 -->
+## 📊 一張表看懂
+<!-- 條件式生成：當文章比較 ≥2 個方案、階段或模組時必填（上限 5 列，每格 ≤18 字，把白話類比直接寫進表格） -->
+<!-- 若為單一觀點短貼文（如短篇 Threads）或無可對照項目，直接省略整個「📊 一張表看懂」區塊！ -->
+| 方案 / 概念 | 卡在哪裡（痛點） | 怎麼解決（白話直覺） | 效果 / 代價 |
+|---|---|---|---|
+| **[項目 1]** | [≤18 字] | [≤18 字] | [≤18 字] |
+| **[項目 2]** | [≤18 字] | [≤18 字] | [≤18 字] |
 
-## 📝 TL;DR
-- [3-5 句話精準概括：主題背景 + 核心問題 + 主要結論]
-
-## 🧠 What Can I Learn From It
-- [核心學習 1：從這篇內容中可以帶走的最重要知識、技能、方法論或洞察]
-- [核心學習 2：第二個關鍵學習點（若有）]
-- [核心學習 3–5（若有，每條必須有獨立價值，不可與其他 bullet 重疊）]
-
-## 🎯 Core Thesis
-> 一句話核心結論：[作者試圖讓讀者接受的單一核心主張]
-
-支撐論點：
-- [支撐論點 1]
-- [支撐論點 2]
-- [支撐論點 3（若有）]
-
-## 🗺️ Reasoning Map
-<!-- 依文章類型自適應選擇以下 3 種模板之一： -->
-
-<!-- 模板 1：Linear Chain（適用於研究報告、論述型文章） -->
-1. [作者的第一個前提 / 推論起點]
-   - [具體數據或案例證據，若為純邏輯推論則省略此行]
-2. [作者的第二個論證步驟 / 核心推導]
-   - [支撐此步驟的關鍵證據]
-3. [最終結論 / 推導結果]
-
-<!-- 模板 2：Parallel Arguments（適用於觀點評論、多角度文章） -->
-**Core Thesis**: [核心主張]
-- **支撐角度 A**: [第一個切入角度]
-  - [關鍵引言、案例或數據證據，若為純邏輯推論則省略此行]
-- **支撐角度 B**: [第二個切入角度]
-  - [支撐此角度的關鍵證據]
-- **支撐角度 C**: [第三個切入角度]
-  - [支撐此角度的關鍵證據]
-
-<!-- 模板 3：Minimal（適用於新聞報導、資訊整理型、低訊號文章） -->
-*(無複雜推導鏈，以下為事實資訊列舉)*
-- [事實重點 1]
-- [事實重點 2]
-- [事實重點 3]
-
-## 🗺️ Visual Map
-<!-- 條件式生成：僅當推薦指數為 ★★★★☆ 或 ★★★★★ 時產出 Mermaid 流程圖 -->
-<!-- 若推薦指數為 ★☆☆☆☆ ~ ★★★☆☆，請填寫： -->
-<!-- *(閱讀決定評級低於 ★★★★☆，省略視覺化圖表)* -->
-
+<!-- 條件式 Mermaid：僅 ★★★★☆ / ★★★★★ 且具明確系統流程時附精簡橫向圖（上限 6 個節點，標籤 ≤10 字）；否則直接省略 -->
 ```mermaid
-graph TD
-    A[前提 / 起點] --> B[核心推導]
-    B --> C[最終結論]
+flowchart LR
+    A["核心痛點"] --> B["關鍵解法"] --> C["最終效果"]
 ```
-
-## 🤖 AI Analysis
-
-### 個人相關性（Personal Relevance）
-- [讀取 data/goals.md，這與目前的工作有何交集？是否解決了目前的痛點？揭示了新機會？]
-
-### 可行動性（Actionability）
-- [現在可以做什麼？有什麼本週可以測試的實驗？必須具體且有時間限制，嚴禁寫「研究看看」。]
-
-### 靈感觸發（Idea Generation）
-- [這讓我想到什麼？這可以與什麼結合？哪些產業還沒開始用？觸發了什麼新專案想法？]
-
-### 反思與預測（Reflection & Prediction）
-- [二階效應是什麼？誰獲益，誰受損？什麼變得更有價值，什麼被淘汰？]
-
-## ⚠️ 資訊免責聲明（Disclaimers）
-- [若資訊完整清晰，此項可省略]
 
 ---
 
-## 📄 原始內容（Raw Content）
-- YouTube: verbatim yt2doc transcript, including TOC and all chapters
-- Threads: verbatim extracted post content from fetch-threads-post
-- Newsletter: Do NOT include this section. Due to HTML-heavy formatting and plain-text truncation, omit the raw content entirely.
-- Website: Do NOT include this section. Web pages can be massive; omit the raw Jina Markdown to keep reports lightweight for daily distillation.
+## 🔍 深入解構（點擊展開細節）
+<!-- Explain Later！將原本長篇推導拆成「獨立手風琴（Per-Topic Accordion）」，上限 5 個 <details>！ -->
+<!-- 每個 <summary> 本身就是「編號 + 主題 — 一句白話結論」，讀者點開想看的那一項時，畫面只出現 3 條短 bullet（絕不超過 6 行）！ -->
+<!-- 注意：</summary> 後方與 </details> 前方必須各留一行空白，確保 Markdown 與公式正常渲染！ -->
+
+<!-- 依內容本質自適應每個手風琴內部結構（上限 5 個區塊）： -->
+<!-- 1. 系統／教學型（如 CME 295）：拆為「為什麼卡住 / 怎麼解決（含關鍵公式） / 實測數據與代價」3 條短 bullet -->
+<!-- 2. 論點推導型（觀點長文／論文）：拆為「核心前提 / 關鍵證據與數據 / 適用邊界」2–3 條短 bullet -->
+<!-- 3. 多則情報型（新聞電子報）：每則新聞獨立 1 個 <details>，內含「發生什麼事 / 關鍵數據與影響」2 條短 bullet -->
+
+<details>
+<summary><b>1. [模組 / 論點 / 訊號 1]</b> — [≤25 字一句話白話結論]</summary>
+
+- **為什麼卡住**：[1 句短句；首次出現之術語直接括號附 ≤10 字類比]
+- **怎麼解決**：[1–2 句短句；精確公式與架構機制集中放這裡]
+- **數據與代價**：[1 句短句；Benchmark 數據與工程權衡放這裡]
+
+</details>
+
+<details>
+<summary><b>2. [模組 / 論點 / 訊號 2]</b> — [≤25 字一句話白話結論]</summary>
+
+- **為什麼卡住**：[1 句短句]
+- **怎麼解決**：[1–2 句短句]
+- **數據與代價**：[1 句短句]
+
+</details>
+
+<details>
+<summary>🧭 <b>對我的意義與來源資訊</b>（Personal Relevance & Metadata）</summary>
+
+- **目標關聯（`$DATA_REPO/data/goals.md`）**：[1–2 句點出解決了什麼個人痛點或面試／系統設計價值]
+- **延伸靈感／趨勢**：[選填（≤★★★☆☆ 或短貼文省略）：1–2 句可遷移做法或二階效應]
+- **⚠️ 免責聲明**：[僅在預告版截斷或數據缺漏時保留；若完整清晰請刪除此行]
+- **來源紀錄**：處理時間 `{timestamp}` · `{YouTube: Whisper 模型與片長 | Newsletter: 信件主旨與發信日期 | Threads: 互動數據 | Website: Domain 與發布日期}`（若有任務 ID 附 `· Task ID: {task_id}`）
+
+</details>
+
+<!-- 原始內容：僅 YouTube 與 Threads 保留並收折於此；Newsletter 與 Website 完全省略！ -->
+<details>
+<summary>📄 <b>展開原始內容</b>（Raw Content — 僅 YouTube / Threads）</summary>
+
+[Verbatim transcript or Threads post]
+
+</details>

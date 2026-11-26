@@ -6,7 +6,7 @@ The `daily-distiller` skill automates the synthesis of today's intelligence repo
 
 ## Problem Statement
 
-After processing newsletters, Threads posts, and YouTube videos daily, the raw reports pile up in `./reports/`. Reading them one-by-one is time-consuming and makes it easy to miss cross-cutting patterns. The real value is in the *connections* between ideas, not the individual summaries themselves.
+After processing newsletters, Threads posts, and YouTube videos daily, the raw reports pile up in `$DATA_REPO/reports/`. Reading them one-by-one is time-consuming and makes it easy to miss cross-cutting patterns. The real value is in the *connections* between ideas, not the individual summaries themselves.
 
 ## Solution
 
@@ -14,7 +14,7 @@ The skill discovers all of today's reports, reads them holistically, and synthes
 
 ### Key Features
 
-1. **Automatic Discovery:** Scans `./reports/` for all `.md` files created today (excluding `reports/distillations/`) using file timestamps.
+1. **Automatic Discovery:** Scans `$DATA_REPO/reports/` for all `.md` files created today (excluding `$DATA_REPO/reports/distillations/`) using file timestamps.
 2. **Cross-Source Synthesis:** Groups insights into 2–4 thematic "Major Pillars" named after *concepts*, not sources.
 3. **System Thinking:** Includes a "Synthesis" section that explains how pillars relate to each other as a system.
 4. **Actionable Takeaway:** Produces a single strategic call-to-action grounded in the day's data.
@@ -72,4 +72,21 @@ This skill triggers when the user says:
 | v1.1.0 | 2026-04-30 | **Output template extraction**: Moved inline document structure and markdown template out of `SKILL.md` into `assets/distillation_v1.md` for easier modification. |
 | v1.2.0 | 2026-04-30 | **Template consolidation**: Merged `assets/distillation_v1.md` and `assets/output_template.md` into a single `assets/output_template.md`. Translated all skill content to English. |
 | v1.3.0 | 2026-06-16 | Made output language globally configurable, defaulting to English and preferring Traditional Chinese. |
-| v1.4.0 | 2026-09-03 | Migrated language lookup from `user_preferences.md` to dedicated `data/lang_preferences.md` (`Preferred Report Language`). |
+| v1.4.0 | 2026-09-03 | Migrated language lookup from `user_preferences.md` to dedicated `$DATA_REPO/data/lang_preferences.md` (`Preferred Report Language`). |
+| v2.0.0 | 2026-11-24 | Reorganized into Answer-First Pyramid (`🎯 今日一句話結論` + `⚡ 本週唯一行動` → 3–4 numbered `💡 今日核心重點` → `📊 跨來源主題速覽` table → per-pillar `<details>` accordions with Just-in-Time context under `🔍 主題深入解構`), cutting initial cognitive load to ~20 scannable lines (RFC: content-summary-v5-reader-first.md, ADR-0001). |
+
+## Architecture Decisions
+
+### ADR-0001: Answer-First Pyramid & Per-Pillar Collapsible Accordions
+
+**Status**: Accepted · **Date**: 2026-11-24
+
+**Context**: Daily distillations previously opened Pillars with coined high-level abstractions and 100+ character nominalized prose paragraphs, overloading working memory when readers had not yet read every underlying report.
+
+**Decision**: Mirror `content-summary` v5.0 by leading on line 1 with `🎯 今日一句話結論` + minute-bounded `⚡ 本週唯一行動`, followed by 3–4 numbered 1-line takeaways, a 2–4 row cross-source summary table, and individual `<details>` accordions per Pillar (`≤3 short bullets` each, grounding concrete engineering pain points and inline analogies before metrics).
+
+**Consequences**: Reduces initial Distillation reading load to a 15-second single-screen scan while retaining standalone-readable cross-source evidence on click.
+
+### ADR (Home Repo Pattern Portability)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

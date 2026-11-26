@@ -42,7 +42,7 @@ The pipeline halted under the Fail-Fast rule without bypassing documented tools 
 ```json
 {
   "auth_method": "oauth2",
-  "client_config": "/Users/allanbian/.config/gws/client_secret.json",
+  "client_config": "~/.config/gws/client_secret.json",
   "client_config_exists": true,
   "client_id": "49987952....com",
   "credential_source": "client_secret.json",
@@ -50,7 +50,7 @@ The pipeline halted under the Fail-Fast rule without bypassing documented tools 
   "encryption_valid": true,
   "has_refresh_token": true,
   "keyring_backend": "keyring",
-  "project_id": "allanbian-ai-workflow",
+  "project_id": "<user>-ai-workflow",
   "token_error": "Token has been expired or revoked.",
   "token_valid": false
 }

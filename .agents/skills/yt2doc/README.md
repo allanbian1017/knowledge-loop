@@ -14,7 +14,7 @@ Because transcription is CPU-bound, the process time scales with video length �
 - **Automatic chapter segmentation** — uses chapters from YouTube metadata if present
 - **Video Strategist** — automatically selects the optimal Whisper model (`base` / `small` / `medium`) based on video duration and local RAM constraints
 - **Table of contents** — auto-generated TOC at the top of every document
-- **Organized output** — files saved to `./reports/YouTube_YYYY_MM_DD/` with `snake_case` filenames
+- **Organized output** — files saved to `$DATA_REPO/reports/YouTube_YYYY_MM_DD/` with `snake_case` filenames
 - **Long-run safe** — the agent polls every 60 seconds and reports progress; won't time out on lengthy videos
 - **Playlist support** — can process an entire YouTube playlist with a single command
 
@@ -53,10 +53,10 @@ Trigger the skill naturally in chat — just mention a YouTube URL alongside a t
 
 ## Output
 
-The skill saves a Markdown file to `./reports/YouTube_YYYY_MM_DD/<filename>.md`. The agent will **not** paste the full transcript into chat — instead it reports a summary:
+The skill saves a Markdown file to `$DATA_REPO/reports/YouTube_YYYY_MM_DD/<filename>.md`. The agent will **not** paste the full transcript into chat — instead it reports a summary:
 
 ```
-✅ Done! Saved to ./reports/YouTube_2026_04_28/building_better_agents.md
+✅ Done! Saved to $DATA_REPO/reports/YouTube_2026_04_28/building_better_agents.md
 Title: Building Better Agents
 Sections: 8 chapters
 ~3,200 words
@@ -126,10 +126,10 @@ Whisper (speech-to-text via faster-whisper)
 SAT model (sentence boundary detection / topic segmentation)
     │
     ▼
-Structured Markdown → ./reports/YouTube_YYYY_MM_DD/<filename>.md
+Structured Markdown → $DATA_REPO/reports/YouTube_YYYY_MM_DD/<filename>.md
 ```
 
-The local yt2doc CLI handles all of this end-to-end. The Antigravity agent runs the command and saves the output directly to your local `reports/` directory.
+The local yt2doc CLI handles all of this end-to-end. The Antigravity agent runs the command and saves the output directly to your local `$DATA_REPO/reports/` directory.
 
 ## Files
 
@@ -170,3 +170,7 @@ Merged adaptive model selection directly into the skill, eliminating the need to
 ### v1.0.0 — 2026-04-28
 
 **Initial release.** Basic yt2doc wrapper with background polling, TOC generation, and chapter segmentation support.
+
+### ADR (Home Repo Pattern Portability)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

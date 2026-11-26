@@ -5,7 +5,7 @@
       "id": 1,
       "name": "basic-distillation",
       "prompt": "Summarize today's reports into a new distillation document.",
-      "expected_output": "A file in reports/distillations/ following the distillation_v1.md template, synthesizing insights from existing reports."
+      "expected_output": "A file in $DATA_REPO/reports/distillations/ following the distillation_v1.md template, synthesizing insights from existing reports."
     },
     {
       "id": 2,

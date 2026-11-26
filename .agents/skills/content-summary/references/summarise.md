@@ -1,106 +1,70 @@
-# Content Summarisation Rules
+# Content Summarisation Rules (v5.0 — Answer-First Pyramid & Low-Cognitive-Load Hierarchy)
 
-All content summaries produced by ingest skills must follow these quality standards.
+All reports follow the **Answer First, Explain Later (Pyramid / BLUF)** principle and **ADHD-friendly working-memory limits**: give the 1-sentence conclusion on line 1, keep the visible top screen to ~20–30 scannable lines, and tuck explanations, formulas, and benchmarks into modular per-topic `<details>` accordions.
 
 ## Language
 
-Check `data/lang_preferences.md` for the `Preferred Report Language` configuration:
+Check `$DATA_REPO/data/lang_preferences.md` for the `Preferred Report Language` configuration:
 - Write all report headers, section titles, summaries, and contents in the configured preferred report language.
 - If the configuration is missing, empty, or invalid, default to **English**.
 
-## Quality Standards (Two-Zone Rule)
+---
 
-The report is divided into two distinct zones to balance strict factual extraction with personalized judgement:
+## Information Hierarchy (Inverted Pyramid: 3s → 15s → 2m)
 
-| Zone | Sections | Rule |
+| Reading Horizon | Section | Cognitive Budget & Purpose |
 |---|---|---|
-| **Zone A: Extraction** | TL;DR, What Can I Learn From It, Core Thesis, Reasoning Map, Visual Map | **Zero Hallucination**: Only source-faithful facts and author's explicit arguments. No external knowledge or unstated inference. |
-| **Zone B: Judgement** | Reading Decision (incl. 💡 真正的新資訊), AI Analysis | **Grounded Inference**: Inference allowed based on Zone A facts. Read `data/goals.md` to ground relevance in user priorities. No external facts. |
-
-- **全面性（Comprehensiveness）**：不可為了過度精簡而犧牲資訊完整度，必須涵蓋來源中的核心論點與關鍵證據。
-- **客觀性（Objectivity）**：保持中立的語氣，不加入任何個人評論、總結性讚美或情緒化字眼。
-
-## Thesis-Driven Analysis Guidance
-
-Each report follows the thesis-driven framework to directly answer four core reading questions: "Should I read this?", "What can I learn?", "What's the core argument?", and "How does the author prove it?"
-
-### ⚠️ Internal Reasoning Order vs Visual Output Order (Two-Step CoT)
-To preserve zero-hallucination accuracy while serving <5-second triage UX:
-1. **Internal CoT Step**: Perform Zone A factual extraction (TL;DR, What Can I Learn From It, Thesis, Reasoning Map) internally first, then synthesize Zone B evaluation against `data/goals.md`.
-2. **Visual Output Rendering**: Format the Markdown starting with `## ⭐ Reading Decision` immediately below Metadata, followed by `## 📝 TL;DR`, `## 🧠 What Can I Learn From It`, `## 🎯 Core Thesis`, etc.
+| **3 Seconds (Answer First)** | Hero `🎯 一句話結論` Quote + 3 Vertical Bullets (`⭐ 推薦度` / `⚡ 下一步` / `🔗 來源`) | **Line 1 IS the final answer** in plain words (≤45 chars), followed by 3 left-aligned vertical bullets for instant visual scanning (never crammed onto one `·`-separated line). |
+| **15 Seconds (Core Skim)** | `## 💡 核心重點` + conditional `## 📊 一張表看懂` | **3–5 numbered 1-line takeaways** (merging old `TL;DR` + `What Can I Learn` to eliminate duplicate summaries) + 1 compact comparison table (`≤5 rows`). |
+| **2 Minutes (Explain Later)** | `## 🔍 深入解構` (Per-Topic `<details>` Accordions) + `🧭 對我的意義與來源資訊` | **1 accordion per module/argument/news item (max 5)**. Each `<summary>` states `N. Topic — 1-line conclusion`; expanding opens **only 2–3 short bullets** with exact mechanisms, formulas, and benchmarks. |
 
 ---
 
-### 1. ⭐ Reading Decision (Zone B upfront for immediate triage)
-回答「**我**（使用者）是否應該讀這篇？」，錨定 `data/goals.md`：
+## Epistemic Integrity (Three-Zone Rule)
 
-| 星級評估 | 評判標準 (Criteria) |
-|---|---|
-| ★★★★★ | 突破性新框架 / 新做法，直接對應當前核心目標，必讀 |
-| ★★★★☆ | 具高價值新資訊且與目標高度相關，值得全文細讀 |
-| ★★★☆☆ | 良好背景知識，無突破性新意，閱讀 TL;DR / 摘要即可 |
-| ★★☆☆☆ | 邊緣相關或已知觀念重述，可快速跳過 |
-| ★☆☆☆☆ | 無實質新資訊、標題黨或重複內容，建議直接忽略 |
-
-包含子區塊 **💡 真正的新資訊**：標示原文中最具有價值的全新觀念或洞察；若無新意則誠實寫「`主要重新整理已知觀念`」。
-
-### 2. 📝 TL;DR
-- 3–5 句話精準概括：說明主題背景、探討的核心問題以及主要結論。
-
-### 3. 🧠 What Can I Learn From It
-- 列出 2–5 個從此內容可帶走的核心學習點。
-- 每個學習點必須是具體的知識、技能、方法論或洞察，而非模糊的主題描述。
-  - ❌ "了解 AI Agent 的發展趨勢"
-  - ✅ "LLM Agent 在多步驟任務中需要結構化記憶回放機制才能維持一致性"
-- 從讀者視角撰寫：「讀完這篇，我學到了什麼？」
-- 此為 Zone A 區塊：僅從原文提取，禁止加入外部推論或個人化建議。
-- 每條學習點必須有獨立價值，不可與其他 bullet 重疊。
-
-### 4. 🎯 Core Thesis
-- **一句話核心結論**：作者試圖說服讀者接受的最核心主張。
-  - 品質要求：必須是命題/主張層級（Thesis-level），而非主題敘述（Topic description）。
-  - ❌ "本文章討論了 AI Agent 的發展與應用。"
-  - ✅ "LLM Agent 必須結合長期記憶與結構化環境反饋，才能真正替代複雜的多步驟人類工作流程。"
-- **支撐論點**：2–3 個直接支持核心結論的主要次要論點。
-
-### 5. 🗺️ Reasoning Map Templates
-Agent 根據文章類型自適應選擇一種模板，追蹤作者的**推論邏輯流程**而非段落順序：
-
-| 模板 | 適用文章類型 | 結構說明 |
+| Zone | Scope | Rule |
 |---|---|---|
-| **Linear Chain** | 研究報告、論述型文章 | Ordered list: 1. → 2. → ... → Conclusion |
-| **Parallel Arguments** | 觀點評論、多角度文章 | Core Thesis ← 角度 A + 角度 B + 角度 C |
-| **Minimal** | 新聞報導、資訊整理、低訊號文章 | 無推導鏈，直列事實重點 |
+| **Zone A: Source Extraction** | `🎯 一句話結論`, `💡 核心重點`, `📊 一張表看懂`, `🔍 深入解構` | **100% Claim & Metric Fidelity**: Every attributed claim, mechanism, and benchmark must come strictly from the source. Never invent statistics or unstated author conclusions. |
+| **Zone A+: Just-in-Time Context Bridge** | Inline parenthetical analogies (`≤10–12 chars` right where a term appears) | **Foundational Definitions Allowed**: When the source assumes domain prerequisites (`SRAM vs. HBM`, `Prefill vs. Decode`, `KV Cache`, `Lean Kernel`), inject an everyday analogy *inline at point of use* (e.g., `SRAM（晶片內超快小桌面）`). Never ask the reader to memorize a front-loaded glossary, and never present analogies as novel author findings. |
+| **Zone B: Grounded Judgement** | `⭐ 推薦度`, `⚡ 下一步`, `🧭 對我的意義` | **Grounded Inference**: Score relevance and propose concrete time-bounded actions anchored to `$DATA_REPO/data/goals.md`. |
 
-**證據類型指引（Evidence Type Guidance）**：撰寫 sub-bullet 時，辨識以下證據類型，優先列出具體證據（Data、Case Study、Quote、Research、Personal Experience）。若該步驟僅有純邏輯推論（Reasoning），可省略 sub-bullet。不需在輸出中標註證據類型名稱。
+---
 
-### 6. 🗺️ Visual Map
-- **條件式生成**：僅當 Reading Decision 為 **★★★★☆** 或 **★★★★★** 時才生成 Mermaid 流程圖，放在 Reasoning Map 之後以視覺化推論鏈。
-- 若評級為 ★☆☆☆☆ ~ ★★★☆☆，請寫：`*(閱讀決定評級低於 ★★★★☆，省略視覺化圖表)*`
+## 6 Hard Cognitive-Load Guardrails
 
-### 7. 🤖 AI Analysis Guidance (Zone B)
-保留並提煉原 4-7 層的引導問題，進行個人化分析：
+1. **Answer First, Zero Preamble**:
+   - Line 1 after `# {title}` MUST be `> **🎯 一句話結論**` stating the actual takeaway—never `"本文介紹了…"`, `"這篇筆記探討…"`, or `"總結來說…"`.
+2. **One Summary List, Not Three**:
+   - Do **not** repeat the summary across separate `TL;DR`, `What Can I Learn`, and `Core Thesis` sections. `🎯 一句話結論` gives the 1-sentence bottom line; `💡 核心重點` gives the 3–5 numbered 1-line takeaways; `🔍 深入解構` explains *how and why*.
+3. **Hard Cap of ≤5 Items & Short 1-Line Bullets**:
+   - Every list, table, and accordion group is capped at **≤5 items**.
+   - Above the fold, every bullet is **1 short sentence (≤45 Chinese chars / ≤25 English words)** with zero raw formulas.
+   - Inside `<details>`, every bullet is **1–2 short sentences**—never write 150-character paragraph walls.
+4. **Tables Over Prose for Comparisons**:
+   - Whenever ≥2 methods, stages, or trade-offs are compared, render **1 compact table** (`≤5 rows`, `≤18 chars/cell`) under `📊 一張表看懂`. Omit `📊 一張表看懂` completely on single-point or short social posts (<500 words).
+5. **Per-Topic Accordions & Single-Home Benchmarks**:
+   - Under `🔍 深入解構`, give each module/argument/news story its **own** `<details>` block (`≤5 total`) containing at most **3 micro-bullets** (`為什麼卡住 / 怎麼解決 / 數據與代價`). Exact formulas and numbers appear **once** here.
+   - **GFM Blank-Line Rule**: Always leave **one blank line immediately after `</summary>` and one blank line before `</details>`** so Markdown and `$...$` math render properly.
+   - For ultra-short posts (<300 words) fully captured by `💡 核心重點`, omit `🔍 深入解構` entirely!
+6. **Specific Time Estimates on Next Actions**:
+   - `⚡ 下一步` must specify concrete minutes (`花 15 分鐘將 X 寫入 ADR`) or state `"純觀念吸收，無需待辦"`—never vague phrases (`"研究看看"`, `"花點時間了解"`).
 
-- **個人相關性（Personal Relevance）**：讀取 `data/goals.md`，這與目前的工作有何交集？是否解決了目前的痛點？揭示了新機會？
-- **可行動性（Actionability）**：現在可以做什麼？有什麼本週可以測試的實驗？必須具體且有時間限制，嚴禁寫「研究看看」。
-- **靈感觸發（Idea Generation）**：這讓我想到什麼？這可以與什麼結合？哪些產業還沒開始用？觸發了什麼新專案想法？
-- **反思與預測（Reflection & Prediction）**：二階效應是什麼？誰獲益，誰受損？什麼變得更有價值，什麼被淘汰？
+---
 
-## Self-Verification (6 Checks)
+## Internal Reasoning Order vs Visual Output Order (Two-Step CoT)
 
-產出摘要前，請以「審稿專家」角色執行 6 項 self-verification：
+1. **Internal CoT Step**: Internally extract Zone A facts/metrics, identify the content pattern (System/Tutorial modules vs. Argument steps vs. Multi-news signals), note terms needing inline analogies, and evaluate relevance against `$DATA_REPO/data/goals.md` using the 5-star scale (`★★★★★` must-read breakthrough → `★☆☆☆☆` skip).
+2. **Visual Output Rendering**: Render strictly in **Inverted Pyramid (Answer First → Explain Later)** order following `output_template.md`.
 
-1. **Core Thesis 是否真的是「一句話」？** 如果超過兩句，必須重寫精簡為單一句子。
-2. **Reasoning Map 是否追蹤作者的邏輯流程而非段落順序？** 若只是逐段摘錄，必須重新整理為邏輯推導。
-3. **Reading Decision 的星級是否有錨定 goals.md？** 必須根據使用者目標給出專屬評級。
-4. **Zone A sections 是否包含任何原文沒有的推論？** 如有，必須移除以確保零幻覺。
-5. **若原文模糊或資訊不足，是否誠實標示？** （例如「*原文未詳細說明此數據來源*」），絕不自行補全或猜測。
-6. **「What Can I Learn From It」是否為具體學習點而非主題描述？** 每個 bullet 必須是可帶走的知識或洞察，且從讀者視角撰寫。
+### Teaser Detection
+If the source is a truncated preview with no full article body, note `- **⚠️ 免責聲明**：此內容為精簡預告版，摘要僅反映可見資訊。` inside the `🧭 對我的意義與來源資訊` accordion without fabricating missing details.
 
-## Teaser Detection
+---
 
-If the source content is extremely short (e.g., a newsletter preview with no full article body), flag in `⚠️ 資訊免責聲明`:
+## Self-Verification (5 Pre-Send Checks)
 
-> 「此內容為精簡預告版，完整內容需透過原文連結閱讀，摘要僅反映信件中可見的有限資訊。」
-
-Present whatever limited summary is possible. **Do not fabricate missing fields.**
+1. **3-Second Test**: If the reader reads *only* the top `> 🎯 一句話結論` callout box, do they immediately get (a) the plain-language core answer, (b) star rating, and (c) one concrete minute-bounded next step?
+2. **Zero Redundancy & ≤30-Line Top Screen**: Is everything above `## 🔍 深入解構` ≤30 lines, with zero duplicate summary sections, zero paragraph walls, and zero raw math formulas?
+3. **Per-Topic Accordion Granularity**: Does clicking any single `<details>` under `🔍 深入解構` open **at most 3 short bullets (~5–6 lines)** rather than a giant wall of text, with blank lines after `</summary>` and before `</details>`?
+4. **Just-in-Time Context & ≤5 Cap**: Are niche terms explained inline (`≤10–12 chars`) right where they appear, and is every list/table/accordion group capped at ≤5 items?
+5. **Factual Fidelity**: Are all attributed claims and numbers 100% faithful to the source, stated once inside the relevant accordion?
