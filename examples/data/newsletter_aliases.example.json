@@ -1,9 +1,18 @@
 {
   "aliases": [
-    {"patterns": ["rundown"], "canonical": "The Rundown AI"},
-    {"patterns": ["bytebytego", "alex_xu"], "canonical": "ByteByteGo"},
-    {"patterns": ["pragmatic", "gergely"], "canonical": "The Pragmatic Engineer"},
-    {"patterns": ["system_design_one", "systemdesign"], "canonical": "System Design One"},
-    {"patterns": ["ai_hero", "aihero"], "canonical": "AI Hero"}
+    {
+      "patterns": [
+        "example_ai_weekly",
+        "exampleai"
+      ],
+      "canonical": "Example AI Weekly"
+    },
+    {
+      "patterns": [
+        "sample_tech_digest",
+        "sampletech"
+      ],
+      "canonical": "Sample Tech Digest"
+    }
   ]
 }

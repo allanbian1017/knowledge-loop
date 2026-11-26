@@ -67,11 +67,10 @@ class TestReviewNewsletterSubscriptionsSkill(unittest.TestCase):
         for token in ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0004", "Changelog"]:
             self.assertIn(token, content)
 
-    def test_source_normalizer_and_custom_aliases(self):
-        self.assertEqual(normalize_source("The_Rundown_AI_abc.md"), "The Rundown AI")
-        self.assertEqual(normalize_source("ByteByteGo_EP224.md"), "ByteByteGo (Alex Xu)")
-        self.assertEqual(normalize_source("Superhuman_AI_news.md"), "Superhuman")
-        self.assertEqual(normalize_source("The_Code_issue.md"), "The Code")
+    def test_source_normalizer_fallback_and_custom_aliases(self):
+        # No hardcoded personal defaults; falls back cleanly to filename prefix
+        self.assertEqual(analyze_mod.DEFAULT_ALIASES, [])
+        self.assertEqual(normalize_source("Example_Weekly_issue_12.md"), "Example Weekly")
         custom = [{"patterns": ["acme_digest"], "canonical": "Acme Engineering Digest"}]
         self.assertEqual(normalize_source("acme_digest_issue_42.md", aliases=custom), "Acme Engineering Digest")
 
@@ -90,27 +89,27 @@ class TestReviewNewsletterSubscriptionsSkill(unittest.TestCase):
             root = Path(tmp)
             (root / "data").mkdir()
             (root / "data" / "newsletter_aliases.json").write_text(
-                json.dumps({"aliases": [{"patterns": ["custom_weekly"], "canonical": "Custom Weekly"}]}),
+                json.dumps({"aliases": [{"patterns": ["sample_weekly"], "canonical": "Sample Weekly"}]}),
                 encoding="utf-8",
             )
             for day in ("01", "02", "03"):
                 d = root / "reports" / f"Newsletter_2026_09_{day}"
                 d.mkdir(parents=True)
-                (d / f"The_Code_issue_{day}.md").write_text("# Report", encoding="utf-8")
-                (d / f"custom_weekly_{day}.md").write_text("# Report", encoding="utf-8")
+                (d / f"Example_Digest_issue_{day}.md").write_text("# Report", encoding="utf-8")
+                (d / f"sample_weekly_{day}.md").write_text("# Report", encoding="utf-8")
 
             (root / "data" / "suggestions_reviewed.md").write_text(
-                "### 2026-09-02 | Newsletter | [The Code Issue](https://example.com/1)\n"
+                "### 2026-09-02 | Newsletter | [Example Digest Issue](https://example.com/1)\n"
                 "- 🏷️ 技術 | 📊 5/6 (A:2 P:2 G:1)\n"
                 "- **Feedback**: ✅ Accept\n"
                 "- **Comment**: Great actionable tip\n"
-                "- [完整報告](reports/Newsletter_2026_09_02/The_Code_issue_02.md)\n",
+                "- [完整報告](reports/Newsletter_2026_09_02/Example_Digest_issue_02.md)\n",
                 encoding="utf-8",
             )
             (root / "data" / "suggestions_filtered.md").write_text(
-                "### 2026-09-03 | Newsletter | [Custom Weekly](https://example.com/2)\n"
+                "### 2026-09-03 | Newsletter | [Sample Weekly](https://example.com/2)\n"
                 "- 🏷️ 技術 | 📊 VETO (Hard-veto: Paper reading tasks)\n"
-                "- [完整報告](reports/Newsletter_2026_09_03/custom_weekly_03.md)\n",
+                "- [完整報告](reports/Newsletter_2026_09_03/sample_weekly_03.md)\n",
                 encoding="utf-8",
             )
             (root / "data" / "suggestions_pending.md").write_text("# Pending\n", encoding="utf-8")
@@ -124,12 +123,12 @@ class TestReviewNewsletterSubscriptionsSkill(unittest.TestCase):
             self.assertEqual(data["total_newsletters_evaluated"], 2)
             self.assertEqual(data["total_reports"], 6)
             sources = {s["source"]: s for s in data["subscriptions"]}
-            self.assertIn("The Code", sources)
-            self.assertIn("Custom Weekly", sources)
-            self.assertEqual(sources["The Code"]["triage"], "Keep")
+            self.assertIn("Example Digest", sources)
+            self.assertIn("Sample Weekly", sources)
+            self.assertEqual(sources["Example Digest"]["triage"], "Keep")
             table = format_markdown_table(data)
             self.assertIn("| Source | Triage |", table)
-            self.assertIn("Custom Weekly", table)
+            self.assertIn("Sample Weekly", table)
 
 
 if __name__ == "__main__":

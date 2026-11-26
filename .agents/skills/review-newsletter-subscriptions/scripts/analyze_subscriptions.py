@@ -27,20 +27,7 @@ try:
 except ImportError:
     resolve_data_repo = None  # type: ignore[assignment]
 
-DEFAULT_ALIASES = [
-    {"patterns": ["rundown"], "canonical": "The Rundown AI"},
-    {"patterns": ["the_code", "the code", "codenewsletter.ai"], "canonical": "The Code"},
-    {"patterns": ["superhuman"], "canonical": "Superhuman"},
-    {"patterns": ["bytebytego", "alex_xu"], "canonical": "ByteByteGo (Alex Xu)"},
-    {"patterns": ["neo_kim", "system_design_one", "systemdesign"], "canonical": "System Design One (Neo Kim)"},
-    {"patterns": ["hugging", "huggingface"], "canonical": "Hugging Face Daily Papers"},
-    {"patterns": ["matt", "pocock"], "canonical": "Matt Pocock"},
-    {"patterns": ["ai_hero", "aihero"], "canonical": "AI Hero"},
-    {"patterns": ["pragmatic", "gergely"], "canonical": "The Pragmatic Engineer (Gergely Orosz)"},
-    {"patterns": ["microservices_io", "chris_richardson"], "canonical": "Microservices.IO (Chris Richardson)"},
-    {"patterns": ["backend_weekly"], "canonical": "Backend Weekly"},
-]
-
+DEFAULT_ALIASES: list[dict] = []  # Configure optional custom aliases in $DATA_REPO/data/newsletter_aliases.json
 
 def load_newsletter_aliases(workspace_dir: str | Path | None = None) -> list[dict]:
     """Load optional user-configured newsletter aliases from $DATA_REPO/data/newsletter_aliases.json."""

@@ -142,8 +142,8 @@ cp examples/data/newsletter_aliases.example.json ../my-knowledge-data/data/newsl
 ```json
 {
   "aliases": [
-    { "patterns": ["rundown"], "canonical": "The Rundown AI" },
-    { "patterns": ["bytebytego", "alex_xu"], "canonical": "ByteByteGo" }
+    { "patterns": ["example_ai_weekly", "exampleai"], "canonical": "Example AI Weekly" },
+    { "patterns": ["sample_tech_digest", "sampletech"], "canonical": "Sample Tech Digest" }
   ]
 }
 ```
