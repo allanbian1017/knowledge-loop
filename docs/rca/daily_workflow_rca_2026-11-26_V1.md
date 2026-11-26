@@ -1,6 +1,6 @@
 # RCA: `[ADR_DOC]` Monoculture in the Suggestion Queue
 
-- **Date**: 2026-11-26 | **Version**: V1 | **Status**: Awaiting approval (no fix implemented)
+- **Date**: 2026-11-26 | **Version**: V1 | **Status**: Partially implemented (2026-11-26); see [Implementation Status](#implementation-status)
 - **Affected skills**: [content-summary](../../.agents/skills/content-summary/README.md) (`references/ai_analysis.md`), [rubric-grader](../../.agents/skills/rubric-grader/README.md) (`references/rubric.md`), [review-suggestions](../../.agents/skills/review-suggestions/SKILL.md)
 - **Related**: [RCA 2026-09-29 V2](daily_workflow_rca_2026-09-29_V2.md) (the earlier `PROMPT_TEMPLATE` monoculture), [audit 2026-11-20, open question 5](../daily_workflow_deterministic_audit_2026-11-20.md)
 
@@ -52,3 +52,22 @@
 - **What**: pytest cases for (a) the ADR eligibility rules in `ai_analysis.md` and `rubric.md`, (b) the dedup/cap logic, (c) the bulk-batch exclusion.
 - **How**: `python3 -m pytest -p no:recording --ignore=tests/test_compile_session_learnings.py tests/test_suggestion_archetypes.py` plus new tests, and `python3 scripts/validate_skill.py` on both modified skills.
 - **Expected**: synthetic "Instacart/DoorDash-style" payloads route to `TAKEAWAY_ONLY` or fail the grade. In a replay of the last 10 days of ADR items, the pending ADR share falls below 30% and duplicates are collapsed.
+
+## Implementation Status
+
+Approved 2026-11-26 with a changed scope: priority is applied **per source item** (not per run), and `TAKEAWAY_ONLY` is discarded instead of being logged. Landed in `main` via the Home Repo migration (#2).
+
+| Proposed fix | Status | Where |
+|---|---|---|
+| 1. Tighten `ADR_DOC` eligibility | Done | `content-summary/references/ai_analysis.md` (Archetype Priority; ADR needs a named in-repo decision) |
+| Priority: `JIRA_BACKLOG`/`PROMPT_TEMPLATE`/`TEST_FIXTURE` > `ADR_DOC` > `TAKEAWAY_ONLY` | Done | same, plus ADR-0012 in `content-summary/README.md` |
+| `TAKEAWAY_ONLY` discarded (not written to pending or filtered) | Done | `ai_analysis.md`, `rubric.md` |
+| 2. Rubric demotes `ADR_DOC` | Done | `rubric-grader/references/rubric.md`, ADR-0002 in `rubric-grader/README.md` |
+| 3. Deterministic dedup and cap | Open | Planned with `suggestion_ops.py apply-grades` (see the [2026-11-20 audit](../daily_workflow_deterministic_audit_2026-11-20.md)) |
+| 4. Exclude bulk batches from preference learning | Open | `review-suggestions` / preference profile |
+| 5. ADR path (`docs/adr/` vs `docs/decisions/`) | Open | Data Repo decision |
+| 6. Backlog triage of pending `ADR_DOC` items | Open | Data Repo (`data/suggestions_pending.md`) |
+
+**Verification**: `tests/test_suggestion_archetypes.py` (priority order, rubric demotion, `TAKEAWAY_ONLY` discard) and the full suite pass; `scripts/audit_public_repo.py` reports 0 violations.
+
+**Known limitation**: the priority rule is applied by the LLM worker. There is no code-level enforcement, so a worker can still emit a lower-priority archetype until fix 3 lands.
