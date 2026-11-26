@@ -48,6 +48,9 @@ _HOME_PREFIX = "/" + "home/"
 _WIN_USERS = "C:" + "\\" + "Users" + "\\"
 _FILE_USERS = "file://" + _USERS_PREFIX
 _PERSONAL_HANDLE = "allan" + "bian"
+_PUBLIC_CLONE_COMMAND = (
+    "git clone git@" f"github.com:{_PERSONAL_HANDLE}1017/knowledge-loop.git knowledge-loop"
+)
 _PRIVATE_REPO = "my-ai-" + "workflow"
 _EMPLOYER_1 = "Conv" + "Pay"
 _EMPLOYER_2 = "Order" + "Manager"
@@ -146,6 +149,9 @@ def scan_file_contents(root: Path, files: list[Path]) -> list[str]:
             continue
 
         for lineno, line in enumerate(text.splitlines(), start=1):
+            # The public SSH example matches both the personal handle and email patterns.
+            if rel == "docs/guides/setup-guide.md" and line == _PUBLIC_CLONE_COMMAND:
+                continue
             for rule_name, pattern in CONTENT_RULES:
                 if pattern.search(line):
                     violations.append(f"{rel}:{lineno}: [{rule_name}] {line.strip()[:120]}")

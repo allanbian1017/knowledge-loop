@@ -1,75 +1,27 @@
 # Knowledge Loop
 
-A portable, open-source `knowledge-loop` repository implementing the a separated Data Repo architecture for an agentic **daily content-intelligence pipeline** (`daily-workflow`).
+Knowledge Loop helps you get through a reading backlog spread across your inbox, saved links, and video queue. An AI agent turns newsletters, articles, Threads posts, and YouTube videos into Markdown reports you can revisit. The daily workflow brings the day's reports together and suggests actions based on your goals.
 
-`knowledge-loop` holds all reusable agent skills, cross-platform sub-agent personas, lifecycle hooks, the local `discord-reports` MCP server, architecture RFCs/RCAs, and starter configuration examples — with **zero personal data** and **zero hardcoded absolute paths**. Your personal goals, preferences, reports, and suggestion history live in your own private **Data Repo** (`$DATA_REPO`).
+## Get started on macOS
 
----
+Start with one public article. Set up a local folder for your reports, put the article in Google Tasks, and ask your agent to process it. You'll get a Markdown summary in `reports/Website_YYYY_MM_DD/` inside your data folder, and the task will be marked complete after the report is saved. The article walkthrough uses Google Tasks and can be done before setting up Gmail, YouTube, Threads, or Discord.
 
-## Architecture: knowledge-loop + Private Data Repo
+[Set up Knowledge Loop and create your first report](docs/guides/setup-guide.md).
 
-```mermaid
-graph LR
-    subgraph Home["knowledge-loop (Public Repository)"]
-        Skills[".agents/skills/ (20 skills)"]
-        Personas[".agents/agents/ + .claude/ + .codex/"]
-        Hooks["scripts/hooks/ + .agents/settings.json"]
-        MCP["mcp_servers/discord_reports/"]
-        Docs["docs/ (RFCs, Plans, RCAs, Guides, Templates)"]
-        Examples["examples/ (Starter Configs)"]
-    end
+## How the daily workflow works
 
-    subgraph Data["Your Private Data Repo ($DATA_REPO)"]
-        Prefs["data/ (goals, lang_preferences, user_preferences, rubric_blocklist, suggestions_*)"]
-        Reports["reports/ (Newsletter, Threads, Website, YouTube, distillations)"]
-    end
+1. **Collect.** Save links to a Google Tasks list named `Delegate` and label newsletters `newsletter` in Gmail.
+2. **Process.** Ask your agent to “Run my daily workflow.” It summarizes queued links and unread newsletters. After saving each report, it marks the task complete or marks the newsletter read and archives it.
+3. **Review.** Read the daily digest, which connects takeaways across sources. Accept or reject suggested actions to shape future suggestions. Discord delivery is optional.
 
-    Skills -->|"reads/writes"| Prefs
-    Skills -->|"writes summaries"| Reports
-    Hooks -->|"auto-heals lang config"| Prefs
-    MCP -->|"publishes digests"| Reports
-    MCP -->|"tracks delivery ledger"| Prefs
-```
+## Where your data lives
 
-### How `$DATA_REPO` Resolves (Zero Absolute Paths)
-Scripts, hooks, and the `discord-reports` MCP server resolve `$DATA_REPO` automatically via `scripts/lib/workspace_paths.py` and `scripts/lib/resolve_data_repo.sh`:
-1. Explicit `--data-repo <path>` flag (when supported)
-2. `KNOWLEDGE_LOOP_DATA_REPO` environment variable
-3. `DATA_REPO_DIR` inside gitignored `./workspace.local.env`
-4. Single-repo fallback: `.` if `./data/` exists locally
+| Folder | What it holds |
+| --- | --- |
+| `knowledge-loop` | The public repository with reusable agent skills, scripts, and starter templates. |
+| Your private Data Repo | Your goals, language settings, suggestion history, and generated reports. The docs refer to this folder as `$DATA_REPO`. |
 
----
-
-## Quickstart (macOS)
-
-See the full walkthrough in [Setup Guide](docs/guides/setup-guide.md).
-
-### 1. Clone & Initialize Your Workspace
-```bash
-git clone <YOUR_KNOWLEDGE_LOOP_REPO_URL> knowledge-loop
-cd knowledge-loop
-
-# Link an existing private Data Repo or scaffold a new one (never overwrites existing files)
-./scripts/init_workspace.sh --data-repo ../my-knowledge-data --with-code-workspace
-```
-
-### 2. Install Prerequisites (macOS)
-- **Python 3.10+** & **`uv`** (`brew install uv`)
-- **Google Workspace CLI (`gws`)** for Gmail newsletters & Google Tasks:
-  ```bash
-  brew tap googleworkspace/cli && brew install gws
-  gws auth setup && gws auth login
-  ```
-- **YouTube Transcription (`yt2doc`)**: `uv tool install yt2doc`
-- **Browser Automation (`agent-browser`)**: optional for authenticated Threads scraping
-
-### 3. Open as a Multi-Root Workspace
-Open the generated gitignored `knowledge-loop.code-workspace` in your IDE (Antigravity / Cursor / VS Code), or pass `--add-dir ../my-knowledge-data` in CLI agents (Claude Code / Codex) so sandboxed tools have authorized access to both repositories.
-
-### 4. Configure Optional Discord Delivery
-Follow [Discord & MCP Setup Guide](docs/guides/discord-mcp-setup-guide.md) and copy [examples/mcp_config.example.json](examples/mcp_config.example.json) into your MCP client config (`~/.gemini/config/mcp_config.json`), setting `KNOWLEDGE_LOOP_DATA_REPO` and `DISCORD_WEBHOOK_URL`.
-
----
+The [setup guide's configuration reference](docs/guides/setup-guide.md#configuration-reference) explains how the two folders are linked. The [architecture decision record](docs/rfc/data-repo-separation-architecture.md) covers the design in more detail.
 
 ## Included Skills Catalog (20 Skills)
 
@@ -84,16 +36,16 @@ Follow [Discord & MCP Setup Guide](docs/guides/discord-mcp-setup-guide.md) and c
 
 ---
 
-## Verification & Public Hygiene Tests
+## Contributor checks
 
 ```bash
-# 1. Verify zero PII, zero absolute paths, and zero broken internal links
+# Check public repository hygiene and internal links
 python3 scripts/audit_public_repo.py
 
-# 2. Validate all 20 SKILL.md manifests & cross-platform persona sync
-python3 scripts/validate_skill.py && python3 scripts/sync_subagents.py
+# Validate the skill manifests
+python3 scripts/validate_skill.py
 
-# 3. Run the full offline test suite (uses isolated temp Data Repo fixtures)
+# Run the offline test suite, including the sub-agent sync check
 python3 -m pytest -p no:recording tests/ -v
 ```
 

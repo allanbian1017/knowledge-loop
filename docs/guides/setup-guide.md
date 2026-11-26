@@ -1,195 +1,117 @@
-# Setup Guide (macOS)
+# Set up Knowledge Loop on macOS
 
-This guide walks any macOS user through setting up **Knowledge Loop** (`knowledge-loop`) paired with a separate private **Data Repo** (`$DATA_REPO`) — with zero machine-specific paths committed to Git.
+Start with one public article. By the end of this guide, your agent will have turned it into a Markdown report and marked the corresponding Google Task complete. Once that works, you can add Gmail newsletters, YouTube videos, and Threads posts to your daily reading workflow.
 
----
+## Before you start
 
-## 1. Prerequisites (macOS)
+You'll need Git, Python 3.10 or later, and an AI agent that can read the repository's skills, run shell commands, fetch web pages, and write reports. The commands below use Homebrew to install the Google Workspace CLI (`gws`).
 
-- **Git** & **Python 3.10+**
-- **`uv`** (fast Python package/tool manager):
-  ```bash
-  brew install uv
-  ```
-- **Google Workspace CLI (`gws`)** (for Gmail newsletters & Google Tasks):
-  ```bash
-  brew tap googleworkspace/cli
-  brew install gws
-  gws auth setup
-  gws auth login
-  ```
-- **YouTube Transcription (`yt2doc`)**:
-  ```bash
-  uv tool install yt2doc
-  ```
-- **Python test/validation dependencies**:
-  ```bash
-  pip install -r requirements-dev.txt
-  ```
+You’ll work with two folders side by side. `knowledge-loop` holds the workflows. Your **Data Repo** holds your personal settings, suggestions, and reports. The guide uses `my-knowledge-data` for the folder name and `$DATA_REPO` as shorthand for its path.
 
----
+## 1. Set up your two folders
 
-## 2. Clone & Quick Initialize (Automated)
-
-Keep your personal data (goals, preferences, reports, suggestion history) in a **separate private repository** (for example `../my-knowledge-data`).
+With an SSH key configured for your GitHub account, run these commands in Terminal.
 
 ```bash
-git clone <YOUR_KNOWLEDGE_LOOP_REPO_URL> knowledge-loop
+git clone git@github.com:allanbian1017/knowledge-loop.git knowledge-loop
 cd knowledge-loop
-
-# Non-destructively link an existing Data Repo or scaffold a new one
-./scripts/init_workspace.sh --data-repo ../my-knowledge-data --with-code-workspace
+./scripts/init_workspace.sh --data-repo ../my-knowledge-data --with-code-workspace --skip-uv
 ```
 
-What `./scripts/init_workspace.sh` does automatically:
-1. Creates gitignored **`workspace.local.env`** in `knowledge-loop` from [examples/workspace.local.env.example](../../examples/workspace.local.env.example).
-2. Creates gitignored **`repos.local.md`** in `knowledge-loop` from [examples/repos.local.md.example](../../examples/repos.local.md.example).
-3. Creates gitignored **`knowledge-loop.code-workspace`** (when `--with-code-workspace` is passed) from [examples/knowledge-loop.code-workspace.example](../../examples/knowledge-loop.code-workspace.example).
-4. Copies any missing starter data files from [examples/data/](../../examples/data/) into `<DATA_REPO>/data/` **without overwriting existing files**.
-5. Runs `uv sync --directory mcp_servers/discord_reports` (unless `--skip-uv` is passed).
+Press Enter at the timezone prompt to accept the suggested value, or enter your own. The initializer creates the Data Repo folder, adds any missing starter files, and prints the folder it configured. It preserves existing files. If you already have a private Data Repo, pass its path instead. If you plan to sync your data with Git, use a private repository for that folder.
 
----
+Open both folders in the same agent workspace so the agent can read the skills and write to the Data Repo.
 
-## 3. Configuration Files & Examples (Manual Setup Reference)
+- **Antigravity, VS Code, or Cursor.** Open the generated `knowledge-loop.code-workspace` file or add your Data Repo to the current workspace.
+- **Claude Code or Codex CLI.** Start the agent from `knowledge-loop` with `--add-dir ../my-knowledge-data`.
 
-Every configuration file has a ready-to-copy template under [`examples/`](../../examples/). You can either let `./scripts/init_workspace.sh` scaffold them or copy and edit them manually.
+To tailor your first report, set `Preferred Report Language` in `my-knowledge-data/data/lang_preferences.md` and add your current goals to `my-knowledge-data/data/goals.md`. The starter settings work for a first run.
 
-### 3.1 Local Pointer Files (Stored in `knowledge-loop`, Gitignored)
+## 2. Connect Google Tasks
 
-| Local File | Example Template | Purpose |
-| :--- | :--- | :--- |
-| `./workspace.local.env` | [examples/workspace.local.env.example](../../examples/workspace.local.env.example) | Tells Python scripts, shell hooks, and the `discord-reports` MCP server where your Data Repo lives (`DATA_REPO_DIR`) and your timezone (`USER_TIMEZONE`). |
-| `./repos.local.md` | [examples/repos.local.md.example](../../examples/repos.local.md.example) | Plain-text repository map read by AI agents via `AGENTS.md` to locate `$DATA_REPO` and any extra repos. |
-| `./knowledge-loop.code-workspace` | [examples/knowledge-loop.code-workspace.example](../../examples/knowledge-loop.code-workspace.example) | Optional IDE multi-root workspace mounting `knowledge-loop` and your Data Repo side by side. |
+Install `gws` in Terminal.
 
-**Manual setup commands:**
 ```bash
-cp examples/workspace.local.env.example workspace.local.env
-cp examples/repos.local.md.example repos.local.md
-cp examples/knowledge-loop.code-workspace.example knowledge-loop.code-workspace
+brew install googleworkspace-cli
 ```
 
-**Example `workspace.local.env`:**
+Configure OAuth for the Google Tasks API. If you're already signed in to the `gcloud` CLI, run `gws auth setup`. For manual setup through Google Cloud Console, follow the [upstream authentication guide](https://github.com/googleworkspace/cli#authentication).
+
+Sign in to the Google account where you’ll queue your article. Grant access to list and update tasks, then check that the CLI can see your task lists.
+
 ```bash
-# Relative to the knowledge-loop directory, or ~/-prefixed path
-DATA_REPO_DIR="../my-knowledge-data"
-USER_TIMEZONE="Asia/Taipei"
+gws auth login -s tasks
+gws tasks tasklists list
 ```
 
-**Example `repos.local.md`:**
-```markdown
-## Primary Data Repo (`$DATA_REPO`)
-- **Path**: `../my-knowledge-data`
-- **Key directories**:
-  - `$DATA_REPO/data/` — preferences, goals, blocklist, suggestion queues, integrations
-  - `$DATA_REPO/reports/` — daily source reports and distillations
-```
+## 3. Generate your first report
 
-**Example `knowledge-loop.code-workspace`:**
-```json
-{
-  "folders": [
-    { "name": "knowledge-loop", "path": "." },
-    { "name": "data-repo (Private Data)", "path": "../my-knowledge-data" }
-  ]
-}
-```
+1. In Google Tasks, choose an existing list or create one. The default name is `Delegate`. Add a task with the article’s title and put its public URL in the task notes.
 
-### 3.2 Data Repo Starter Files (Stored in `<DATA_REPO>/data/`)
+   If you use a different list name, edit `$DATA_REPO/data/integrations.md` and set **Delegate Task List Name** to match the title in Google Tasks exactly. A list named `Reading Queue` uses this entry.
 
-Copy all starter templates into your private Data Repo (if not using `init_workspace.sh`):
-```bash
-mkdir -p ../my-knowledge-data/data ../my-knowledge-data/reports/distillations
-cp examples/data/lang_preferences.md ../my-knowledge-data/data/
-cp examples/data/goals.md ../my-knowledge-data/data/
-cp examples/data/user_preferences.md ../my-knowledge-data/data/
-cp examples/data/rubric_blocklist.md ../my-knowledge-data/data/
-cp examples/data/suggestions_*.md ../my-knowledge-data/data/
-cp examples/data/integrations.example.md ../my-knowledge-data/data/integrations.md
-```
-
-| File in `$DATA_REPO/data/` | Example Template | How to Customize |
-| :--- | :--- | :--- |
-| `lang_preferences.md` | [examples/data/lang_preferences.md](../../examples/data/lang_preferences.md) | Set `Preferred Report Language` (external summaries) and `Preferred Conversation Language` (chat & internal docs). |
-| `goals.md` | [examples/data/goals.md](../../examples/data/goals.md) | List 3–5 bullet goals; `content-summary` and `rubric-grader` score every suggestion against these goals. |
-| `user_preferences.md` | [examples/data/user_preferences.md](../../examples/data/user_preferences.md) | Describe preferred vs. avoided task styles; automatically calibrated over time by `review-suggestions`. |
-| `rubric_blocklist.md` | [examples/data/rubric_blocklist.md](../../examples/data/rubric_blocklist.md) | Add `Topic Blocks` and vague `Ambiguity Blocklist` phrases for `rubric-grader` hard-veto filtering. |
-| `suggestions_pending.md` | [examples/data/suggestions_pending.md](../../examples/data/suggestions_pending.md) | Queue of graded suggestions (`>= 4/6`) awaiting interactive review. Leave header as-is initially. |
-| `suggestions_reviewed.md` | [examples/data/suggestions_reviewed.md](../../examples/data/suggestions_reviewed.md) | Archive of Accept/Reject feedback. Leave header as-is initially. |
-| `suggestions_filtered.md` | [examples/data/suggestions_filtered.md](../../examples/data/suggestions_filtered.md) | Archive of vetoed or low-scoring suggestions. Leave header as-is initially. |
-| `integrations.md` | [examples/data/integrations.example.md](../../examples/data/integrations.example.md) | Override default Gmail newsletter query (`label:newsletter is:unread`) or Google Tasks list name (`Delegate`). |
-
-**Example `data/lang_preferences.md`:**
-```markdown
-# Language Preferences
-
-- **Preferred Report Language**: English
-- **Preferred Conversation Language**: English
-```
-
-**Example `data/goals.md`:**
-```markdown
-# My Current Goals
-
-- Build and maintain reliable AI agent workflows
-- Strengthen software engineering & system design skills
-- Improve personal research synthesis and productivity
-```
-
----
-
-## 4. Opening Both Repos in Your Agent IDE / CLI (macOS Sandbox Tip)
-
-Because macOS agent sandboxes restrict file writes outside the active workspace, mount **both** repos together:
-- **Antigravity / VS Code / Cursor**: Open the generated `knowledge-loop.code-workspace` file (or add your Data Repo folder via *Add Folder to Workspace*).
-- **Claude Code / Codex CLI**: Launch inside `knowledge-loop` with `--add-dir ../my-knowledge-data`.
-
----
-
-## 5. Optional: Connect the Local `discord-reports` MCP Server
-
-1. Copy [examples/mcp_config.example.json](../../examples/mcp_config.example.json) into `~/.gemini/config/mcp_config.json`.
-2. Run `which uv` in your terminal and paste that path as `"command"`.
-3. Replace `<KNOWLEDGE_LOOP_ROOT>` with your `knowledge-loop` clone path, `<DATA_REPO_ROOT>` with your Data Repo path, and `<DISCORD_WEBHOOK_URL>` with your Discord Forum channel webhook:
-   ```json
-   {
-     "mcpServers": {
-       "discord-reports": {
-         "command": "<PATH_TO_UV>",
-         "args": [
-           "run",
-           "--directory",
-           "<KNOWLEDGE_LOOP_ROOT>/mcp_servers/discord_reports",
-           "python",
-           "server.py"
-         ],
-         "env": {
-           "KNOWLEDGE_LOOP_DATA_REPO": "<DATA_REPO_ROOT>",
-           "DISCORD_WEBHOOK_URL": "https://discord.com/api/webhooks/YOUR_ID/YOUR_TOKEN",
-           "DISCORD_CHANNEL_TYPE": "forum",
-           "DISCORD_DEFAULT_MODE": "per_report",
-           "DISCORD_USERNAME": "Daily AI Digest"
-         }
-       }
-     }
-   }
+   ```markdown
+   - **Delegate Task List Name**: `Reading Queue`
    ```
-4. See [Discord & MCP Setup Guide](discord-mcp-setup-guide.md) for creating the Discord Forum channel, webhook, and dry-run walkthrough.
 
----
+2. In your agent chat, paste the prompt below and replace the placeholder with the same URL. If you use a different list name, replace `Delegate` in the prompt with that name.
 
-## 6. Verify Everything Works
+   > Use the skill in `.agents/skills/ingest-website/SKILL.md` to process the article at [paste article URL here]. Find its task in my `Delegate` list, save the Markdown summary to my Data Repo, and mark the task complete after the report is saved.
+
+3. Open the file under `my-knowledge-data/reports/Website_YYYY_MM_DD/`, where `YYYY_MM_DD` is the run date. The report should summarize the article and include its source. The task should now be complete.
+
+## Run the full daily workflow
+
+Keep adding article, Threads, or YouTube links to your Google Tasks list. Label newsletters `newsletter` in Gmail and leave the ones you want processed unread. For the full workflow, enable the Gmail API in the OAuth project and sign in with `gws auth login -s tasks,gmail`. Grant task access and Gmail access to read, mark read, and archive messages.
+
+| Integration | Setup |
+| --- | --- |
+| YouTube transcription | Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/) with `brew install uv`, then install [`yt2doc`](https://github.com/shun-liang/yt2doc) with `uv tool install yt2doc`. |
+| Threads | Install [`agent-browser`](https://agent-browser.dev/installation) with `brew install agent-browser`, then run `agent-browser install` to set up its browser. See the [Threads skill](../../.agents/skills/fetch-threads-post/SKILL.md) for authenticated access. |
+| Discord delivery | Follow the [Discord and MCP setup guide](discord-mcp-setup-guide.md) if you want the daily digest delivered to Discord. |
+
+Ask your agent, “Run my daily workflow.” If you use a custom list, include its name, for example, “Run my daily workflow using the Google Tasks list named Reading Queue.”
+
+The workflow processes the queue, writes source reports under `$DATA_REPO/reports/`, and saves the daily digest as `$DATA_REPO/reports/distillations/Knowledge_Distillation_YYYY_MM_DD.md`. You can then accept or reject suggested actions. The [daily workflow skill](../../.agents/skills/daily-workflow/SKILL.md) describes the full sequence.
+
+## Troubleshooting
+
+| If you see this | What to check |
+| --- | --- |
+| The agent cannot find or write to the Data Repo | Open both folders in the same workspace. If you linked a different folder, check that `workspace.local.env` and `repos.local.md` point to it. The initializer preserves existing local settings. |
+| `gws` cannot list your tasks | Confirm the Tasks API is enabled in the OAuth project, sign in again with `gws auth login -s tasks`, and rerun `gws tasks tasklists list`. Use the same Google account in Tasks and in `gws`. |
+| The agent finds nothing to process | Check that your task is still open in `Delegate` or the custom list you named in your prompt, and that it contains the full URL. The default Gmail queue contains only unread messages with the `newsletter` label. |
+| The article cannot be fetched | Try a public article that opens without signing in. If the fetch fails, the workflow leaves the task open. |
+
+## Configuration reference
+
+The initializer creates the files below in `knowledge-loop`. Git ignores them. For manual setup, copy the relevant template to the local filename in the table and replace the placeholder paths.
+
+| Local file | Template | Purpose |
+| --- | --- | --- |
+| `workspace.local.env` | [Environment template](../../examples/workspace.local.env.example) | Sets `DATA_REPO_DIR` for scripts and `USER_TIMEZONE` for date handling. |
+| `repos.local.md` | [Repository map template](../../examples/repos.local.md.example) | Tells the agent where to find the Data Repo. |
+| `knowledge-loop.code-workspace` | [Editor workspace template](../../examples/knowledge-loop.code-workspace.example) | Opens both folders together in a supported editor. |
+
+Scripts resolve the Data Repo using an explicit `--data-repo` path when supported, then `KNOWLEDGE_LOOP_DATA_REPO`, then `DATA_REPO_DIR` in `workspace.local.env`. They fall back to the current checkout if it contains a `data/` folder. Relative paths are resolved from the root of the `knowledge-loop` checkout.
+
+The [starter data files](../../examples/data/) go in `$DATA_REPO/data/`. For manual setup, copy missing templates only and save `integrations.example.md` as `integrations.md`.
+
+| Data file | What to customize |
+| --- | --- |
+| [`lang_preferences.md`](../../examples/data/lang_preferences.md) | Set the report language and the language for chat and internal documents. |
+| [`goals.md`](../../examples/data/goals.md) | Add goals that help the workflow choose relevant actions. |
+| [`user_preferences.md`](../../examples/data/user_preferences.md) | Describe the kinds of suggestions you prefer. Reviews help refine these preferences over time. |
+| [`rubric_blocklist.md`](../../examples/data/rubric_blocklist.md) | List topics and vague phrases the workflow should filter out. |
+| [`integrations.md`](../../examples/data/integrations.example.md) | Customize integration settings such as the default Gmail query and task list. |
+| [`suggestions_pending.md`](../../examples/data/suggestions_pending.md), [`suggestions_reviewed.md`](../../examples/data/suggestions_reviewed.md), and [`suggestions_filtered.md`](../../examples/data/suggestions_filtered.md) | The workflow manages these suggestion queues and archives. Start with the supplied templates. |
+
+## Verify your setup
+
+Run the skill validator from `knowledge-loop`. It should report that all skill files passed.
 
 ```bash
-# 1. Validate all 20 SKILL.md files and cross-platform sub-agent sync
-python3 scripts/validate_skill.py && python3 scripts/sync_subagents.py
-
-# 2. Verify language configuration & self-healing hook against your Data Repo
-python3 scripts/validate_language_config.py
-
-# 3. Verify public repo hygiene (zero PII, zero absolute paths, zero broken links)
-python3 scripts/audit_public_repo.py
-
-# 4. Run full offline test suite
-python3 -m pytest -p no:recording tests/ -v
+python3 scripts/validate_skill.py
 ```
+
+If you're contributing to the project, install the [development dependencies](../../requirements-dev.txt) in a Python virtual environment, then follow the [contributor checks](../../README.md#contributor-checks).

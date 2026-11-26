@@ -31,6 +31,21 @@ def test_audit_detects_synthetic_pii_and_absolute_paths(tmp_path):
     assert "PERSONAL_EMAIL" in joined
 
 
+def test_audit_allows_only_the_exact_public_clone_command_in_the_setup_guide(tmp_path):
+    guide = tmp_path / "docs/guides/setup-guide.md"
+    guide.parent.mkdir(parents=True)
+    clone = "git clone git@github.com:allanbian1017/knowledge-loop.git knowledge-loop"
+    guide.write_text(f"{clone}\n{clone} # personal.name@gmail.com\n", encoding="utf-8")
+    other = tmp_path / "other.md"
+    other.write_text(f"{clone}\n", encoding="utf-8")
+
+    findings = scan_file_contents(tmp_path, [guide, other])
+
+    assert not any(finding.startswith("docs/guides/setup-guide.md:1:") for finding in findings)
+    assert any(finding.startswith("docs/guides/setup-guide.md:2: [PERSONAL_EMAIL]") for finding in findings)
+    assert any(finding.startswith("other.md:1: [PERSONAL_HANDLE]") for finding in findings)
+
+
 def test_all_20_skills_pass_validation():
     skills = sorted((REPO_ROOT / ".agents" / "skills").glob("*/SKILL.md"))
     assert len(skills) == 20, f"Expected 20 approved skills, found {len(skills)}"
