@@ -364,7 +364,7 @@ The blind sub-agents got their vision back. A fresh `website_worker` test perfec
 ## Phase 8: Reader-Centric Knowledge & Attention Budget Governance
 
 **Period**: August 12 – September 3, 2026
-**Key RFCs**: [content-summary-what-can-i-learn.md](docs/rfc/content-summary-what-can-i-learn.md), [agent-rules-reviewer.md](docs/rfc/agent-rules-reviewer.md), [3-tier-agent-rules-architecture.md](docs/rfc/3-tier-agent-rules-architecture.md)
+**Key RFCs**: [content-summary-what-can-i-learn.md](docs/rfc/content-summary-what-can-i-learn.md), [3-tier-agent-rules-architecture.md](docs/rfc/3-tier-agent-rules-architecture.md) (plus `agent-rules-reviewer`, retained in the private Data Repo)
 **Key RCA**: [daily_workflow_rca_2026-09-03_V1.md](docs/rca/daily_workflow_rca_2026-09-03_V1.md)
 
 ### 🔍 Problem 1: Reader-Centric Knowledge vs. Author-Centric Arguments
@@ -409,7 +409,7 @@ Across five months of adding capabilities, skills, and edge-case fixes, the repo
 
 ### ⚖️ Decision
 
-Option 2 ([3-tier-agent-rules-architecture.md](docs/rfc/3-tier-agent-rules-architecture.md), [agent-rules-reviewer.md](docs/rfc/agent-rules-reviewer.md)). Built the `agent-rules-reviewer` skill. Evaluated all directives against 5 vectors (Self-Duplication, Base LLM Baseline, System Conflicts, Skill Domain Leakage, Negative Constraint Bloat), then mapped surviving directives into 3 clean tiers:
+Option 2 ([3-tier-agent-rules-architecture.md](docs/rfc/3-tier-agent-rules-architecture.md)). Built the `agent-rules-reviewer` skill. Evaluated all directives against 5 vectors (Self-Duplication, Base LLM Baseline, System Conflicts, Skill Domain Leakage, Negative Constraint Bloat), then mapped surviving directives into 3 clean tiers:
 - **Tier 1 (Always Do)**: Autonomous safe defaults (automated test verification, skill validation via `scripts/validate_skill.py`, session registry hygiene in `known_issues.md` / `backlog.md`, minimal code scope, relative doc links).
 - **Tier 2 (Ask First)**: Human approval gates (RCA fix review gate, trade-off & ambiguity resolution, destructive or structural modifications).
 - **Tier 3 (Never Do)**: Inviolable boundaries (tool circumvention / fail-fast, manual testing proposals, credential exposure, scope creep).
@@ -556,80 +556,184 @@ Option 3 ([review-newsletter-subscriptions.md](docs/rfc/review-newsletter-subscr
 
 Expanded our capabilities to 14 skills. Periodic newsletter audits now produce evidence-backed recommendations (Keep, Unsubscribe, Adjust/Filter) with transparent scoring, allowing the user to prune low-ROI subscriptions in under 2 minutes without risk.
 
-> 🔁 **New problem discovered**: While individual suggestions and subscription health now have multi-dimensional governance, running end-to-end evaluation across the multi-agent pipeline requires a comprehensive benchmark test harness (`daily-workflow-evals`) to ensure future prompt modifications don't induce new gaming behaviors.
+> 🔁 **New problem discovered**: While individual suggestions and subscription health now have multi-dimensional governance, two everyday friction points remained: reports still imposed heavy working-memory overhead before delivering their bottom line, and every generated report stayed trapped in the local repository instead of reaching me where I actually read.
+
+---
+
+## Phase 10: Cognitive-Load Redesign & Automated Discord Delivery
+
+**Period**: October 7 – November 25, 2026
+**Key RFCs**: [content-summary-v5-reader-first.md](docs/rfc/content-summary-v5-reader-first.md), [daily-workflow-discord-delivery.md](docs/rfc/daily-workflow-discord-delivery.md)
+**Key Audit & RCAs**: [daily_workflow_deterministic_audit_2026-11-20.md](docs/daily_workflow_deterministic_audit_2026-11-20.md), [2026-10-07](docs/rca/daily_workflow_rca_2026-10-07_V1.md), [2026-10-15](docs/rca/daily_workflow_rca_2026-10-15_V1.md), [2026-10-26](docs/rca/daily_workflow_rca_2026-10-26_V1.md), [2026-11-04](docs/rca/daily_workflow_rca_2026-11-04_V1.md)
+
+### 🔍 Problem 1: Working-Memory Overload & Triple-Stacked Summaries
+
+Even with top-placed `Reading Decision` (Phase 7) and `What Can I Learn` (Phase 8), evaluating real daily reports exposed four sources of cognitive fatigue:
+1. **Triple-stacked summaries**: Readers still scrolled past two metadata blocks, `Reading Decision`, `TL;DR`, `What Can I Learn`, and `Core Thesis` — reading three versions of the same summary before seeing how anything actually worked.
+2. **Front-loaded memory tax**: Explaining unfamiliar terms upfront forced readers to hold definitions in working memory 60 lines later.
+3. **Paragraph walls**: Multi-option comparisons (e.g., `ZeRO / TP / PP / CP / EP`) were written as 200-character bullets across 120+ uncollapsed lines instead of compact tables.
+4. **Forced single-thesis run-ons**: Multi-story digests and 5-part technical lectures were squeezed into 150-character single sentences.
+
+### 🛤️ Options
+
+1. **Keep linear prose with an upfront glossary**: Still forces scrolling past stacked summaries and memorizing terms out of context.
+2. **Wrap the entire deep dive in one giant `<details>` block**: Expanding it still dumps 60+ lines onto the screen at once.
+3. **Answer-First Pyramid (`v5.0`) with per-topic `<details>` accordions**: Lead on line 1 with the conclusion and next action, compress Screen 1 to ~25 scannable lines, and tuck deep derivations into modular accordions with Just-in-Time inline analogies.
+
+### ⚖️ Decision
+
+Option 3 ([content-summary-v5-reader-first.md](docs/rfc/content-summary-v5-reader-first.md)). Redesigned `content-summary` (`v5.0`), `daily-distiller` (`v2.0`), `ingest-website` (`v1.3`), and all worker personas around the Inverted Pyramid:
+- **Line 1 (3 seconds)**: `🎯 一句話結論` (≤45 chars, plain language) + `⭐ 推薦度 · 🔗 原文 · ⚡ 下一步` (minute-bounded action or explicit no-action label).
+- **Screen 1 (15 seconds)**: 3–5 numbered 1-line `💡 核心重點` (retiring overlapping `TL;DR` + `What Can I Learn` blocks) + 1 compact `📊 一張表看懂` table (≤5 rows).
+- **On-Demand (2 minutes)**: Up to 5 per-topic `<details>` accordions (`🔍 深入解構`), each revealing ≤3 short bullets with exact formulas, benchmarks, and ≤12-char Just-in-Time inline analogies. Enforced structurally via `tests/test_output_template.py`.
+
+### 📊 Result
+
+Screen-1 reading load dropped from ~120 uncollapsed lines of dense prose to a ~25-line scannable pyramid where every click expands at most 3 short bullets, while preserving full technical rigor on demand.
+
+---
+
+### 🔍 Problem 2: Local-Only Reports & Discord's Formatting Constraints
+
+Daily distillations and 3–15 source `.md` reports lived strictly inside the local repository. Reading on mobile or searching past digests meant opening an IDE. Pushing them to Discord introduced strict platform limits: 2,000 chars/message, 4,096 chars/embed, 100-char Forum thread titles, 10 files / 10 MB per upload, and zero native rendering for HTML `<details>`, GFM tables, or Mermaid blocks.
+
+### 🛤️ Options
+
+1. **Adopt an existing open-source Discord MCP server**: Surveyed 7+ open-source servers (`kongyo2`, `IQAIcom`, `SaseQ`, etc.) and the marketplace. None combined all four requirements: Webhook-only auth (no Bot/Intents), Forum `thread_name`/`thread_id` chaining, rich embeds, and batched local `.md` uploads with v5.0 sanitization.
+2. **Build a lightweight local Python `FastMCP` Webhook server**: Own ~300–500 LOC with deterministic formatting, table rendering, and offline tests.
+
+### ⚖️ Decision
+
+Option 2 ([daily-workflow-discord-delivery.md](docs/rfc/daily-workflow-discord-delivery.md)). Built `mcp_servers/discord_reports/` (`formatter.py`, `publisher.py`, `table_renderer.py`, `server.py`) exposing 3 lean tools (`discord_publish_daily_reports`, `discord_send_report_file`, `discord_delivery_status`):
+- **Forum-first per-report delivery**: Publishes 1 dedicated Forum thread per source report (full Answer-First embed + cleaned deep-dive replies + verbatim `.md` attachment), followed last by `📰 Daily Digest — YYYY-MM-DD` so the digest stays pinned at the top.
+- **Dark-mode PNG table rendering**: Added `table_renderer.py` (Pillow) to render GFM comparison tables as crisp Discord dark-mode PNG cards instead of broken pipe-delimited text.
+- **Safety & idempotency**: SHA-256 delivery ledger (`data/discord_delivery_log.json`), HTTP 429 `Retry-After` backoff, webhook token redaction, and `reports/` path-containment guards.
+- **Fail-soft workflow integration**: Wired into `daily-workflow` as automatic fail-soft Step 6 alongside the standalone `deliver-discord-reports` skill, verified offline by `tests/test_discord_reports.py`.
+
+### 📊 Result
+
+Reports now land automatically in a searchable Discord Forum channel with native mobile readability, rendered comparison tables, and verbatim `.md` archives — with zero duplicate spam on reruns and graceful fail-soft behavior when unconfigured.
+
+Meanwhile, four recurring Google Workspace OAuth token expiries between October 7 and November 4 ([10-07](docs/rca/daily_workflow_rca_2026-10-07_V1.md), [10-15](docs/rca/daily_workflow_rca_2026-10-15_V1.md), [10-26](docs/rca/daily_workflow_rca_2026-10-26_V1.md), [11-04](docs/rca/daily_workflow_rca_2026-11-04_V1.md)) prompted a deep read-only telemetry audit of 24 daily runs (262 subagents) on November 20 ([daily_workflow_deterministic_audit_2026-11-20.md](docs/daily_workflow_deterministic_audit_2026-11-20.md)). The audit exposed that mechanical orchestration was still overly LLM-bound: median runs took **35.5 minutes** (vs. the 8–15 min target), consumed **2.07M uncached input tokens/day**, and synthesized **1,157 ad-hoc `python3` commands** on the fly.
+
+> 🔁 **New problem discovered**: Two structural issues came to a head simultaneously: (1) our single-repo layout tangled private personal data with reusable skills, forcing a brittle one-way copy script to public `knowledge-loop` that drifted and leaked machine-specific paths; and (2) Goodhart's Law quietly returned in a new disguise inside the suggestion queue.
+
+---
+
+## Phase 11: Separated Data Repo Architecture — Public Portability & Privacy by Design
+
+**Period**: November 26, 2026
+**Key commit**: `92a9858`
+**Key RFC**: [data-repo-separation-architecture.md](docs/rfc/data-repo-separation-architecture.md)
+**Key Plan**: [data-repo-separation-architecture-plan.md](docs/plan/data-repo-separation-architecture-plan.md)
+**Key RCA**: [daily_workflow_rca_2026-11-26_V1.md](docs/rca/daily_workflow_rca_2026-11-26_V1.md)
+
+### 🔍 Problem
+
+The repository architecture had an inverted Source of Truth. A private repository held both personal data (goals, diaries, reports, private Jira/Notion IDs) and reusable agent skills, relying on a legacy copy script (`scripts/sync_knowledge_loop.py`) to mirror 13 skills into public `knowledge-loop`. This created four compounding problems:
+1. **Sync drift**: Newer dependencies (`deliver-discord-reports` and the 4 `gws-*`/`agent-browser` adapter skills) were missed by the copy script, and deleted files lingered.
+2. **PII & absolute-path coupling**: Machine-specific home paths appeared across 30+ files (including 19 references in `rubric-grader` alone), alongside personal Jira keys, hardcoded newsletter alias lists, and private Notion IDs.
+3. **Single-repo assumption**: Lifecycle hooks (`ensure_lang_preferences.sh`), validators, and `mcp_servers/discord_reports/server.py` all assumed `data/` and `reports/` lived inside `REPO_ROOT`.
+4. **No turnkey onboarding**: External users cloning `knowledge-loop` had no starter config templates, bootstrap script, or automated portability verification.
+
+### 🛤️ Options
+
+1. **Keep `scripts/sync_knowledge_loop.py` copy-and-sanitize model** — Rejected: perpetuates dual-maintenance drift and brittle regex sanitization.
+2. **Gitignored symlinks (`data/`, `reports/`, `diary/`) inside `knowledge-loop`** — Rejected: breaks path-containment `resolve()` guards in `discord_reports` and macOS sandbox rules.
+3. **Private Git submodule for the Data Repo** — Rejected: exposes private repo URLs/hashes in `.gitmodules` and breaks `git clone --recursive` for external users.
+4. **Separated Data Repo Architecture** — Promote `knowledge-loop` to the public Single Source of Truth for agent infrastructure, bound to any private `$DATA_REPO` via gitignored local pointers (`workspace.local.env`, `repos.local.md`, optional multi-root `.code-workspace`) with single-repo fallback.
+
+### ⚖️ Decision
+
+Option 4 (`92a9858`). Decoupled the system cleanly into two repositories:
+- **`knowledge-loop` (Public)** became the authoritative repo for **20 validated skills** (18 `daily-workflow` pipeline skills + `evolution-log` + `review-newsletter-subscriptions`), 6 declarative sub-agent personas synced to `.claude/` and `.codex/`, lifecycle hooks, `mcp_servers/discord_reports/`, sanitized design docs (27 RFCs, 28 plans, 24 RCAs), and starter templates in `examples/`.
+- **Private Data Repo (`$DATA_REPO`)** retained all personal `data/`, `reports/`, `diary/`, `raw/`, and excluded personal skills.
+- **Portable `$DATA_REPO` Resolution**: Introduced `scripts/lib/workspace_paths.py`, `scripts/lib/resolve_data_repo.sh`, and `scripts/init_workspace.sh` with deterministic precedence (`--data-repo` → `KNOWLEDGE_LOOP_DATA_REPO` → `workspace.local.env` → single-repo fallback). Replaced hardcoded personal newsletter aliases in `analyze_subscriptions.py` with dynamic filename/domain normalization.
+- **Automated Hygiene & Portability Gate**: Built `scripts/audit_public_repo.py` plus `tests/test_public_repo_hygiene.py` and `tests/test_workspace_resolution.py` to enforce zero PII, zero hardcoded absolute paths, zero broken internal links, and isolated `tmp_path` execution — retiring `scripts/sync_knowledge_loop.py`.
+
+### 📊 Result
+
+`knowledge-loop` is now a clean, zero-PII, portable public repository (20 skills, 7 automated pytest suites, turnkey `init_workspace.sh` setup). Any macOS user can clone it and run either standalone or linked to their own private Data Repo without touching a single hardcoded path.
+
+> 🔁 **New problem discovered**: On the very same day (`2026-11-26`), an inspection of the suggestion queue uncovered a sequel to Phase 9's Goodhart's Law incident ([daily_workflow_rca_2026-11-26_V1.md](docs/rca/daily_workflow_rca_2026-11-26_V1.md)): **54 of 56 pending suggestions (96%) had collapsed into `[ADR_DOC]`** — driven by a 180/180 bulk-accept batch poisoning `user_preferences.md` (94.5% ADR win rate) and a catch-all rubric that awarded 6/6 to 53 of 54 items even though zero ADRs had ever been written. Banning one gamed archetype in prompts simply shifted optimization pressure to the next; the next phase must enforce eligibility, deduplication, and mechanical pipeline invariants in deterministic code.
 
 ---
 
 ## Where It Stands Today
 
-**Date**: October 2, 2026
-**Stats**: 14 commits, 14 skills, 28 RFCs, 19 RCAs, ~6 months of iteration
+**Date**: November 26, 2026
+**Stats**: 16 commits, 20 skills, 6 declarative sub-agent personas, 1 local FastMCP server, 27 RFCs, 24 RCAs, ~8 months of iteration
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────┐
-│                   SYSTEM GOVERNANCE & CONFIGURATION LAYER                        │
+│                 SEPARATED DATA REPO & GOVERNANCE ARCHITECTURE                    │
 │                                                                                  │
-│  ┌─────────────────────────────────┐     ┌────────────────────────────────────┐  │
-│  │  AGENTS.md & CLAUDE.md          │     │  data/lang_preferences.md          │  │
-│  │  • 3-Tier Agent Rules           │     │  • Preferred Report Language       │  │
-│  │  • agent-rules-reviewer Skill   │     │  • Preferred Conversation Language │  │
-│  │  • Attention Budget Governance  │     │  • Lifecycle Guard Hook (Healing)  │  │
-│  └─────────────────────────────────┘     └────────────────────────────────────┘  │
+│  ┌────────────────────────────────────┐   ┌───────────────────────────────────┐  │
+│  │  knowledge-loop (Public Repo)      │   │  $DATA_REPO (Private Data Repo)   │  │
+│  │  • AGENTS.md (3-Tier Rules)        │◄──┤  • data/lang_preferences.md       │  │
+│  │  • 20 Skills + 6 Synced Personas   │   │  • data/goals.md & user_prefs.md  │  │
+│  │  • Lifecycle Guard Hooks           ├──►│  • data/suggestions_*.md          │  │
+│  │  • scripts/audit_public_repo.py    │   │  • reports/<Type>_YYYY_MM_DD/     │  │
+│  │  • workspace.local.env (gitignored)│   │  • data/discord_delivery_log.json │  │
+│  └────────────────────────────────────┘   └───────────────────────────────────┘  │
 └────────────────────────────────────────┬─────────────────────────────────────────┘
                                          │
 ┌────────────────────────────────────────┴─────────────────────────────────────────┐
 │                             DAILY WORKFLOW ARCHITECTURE                          │
 │                                                                                  │
 │  ┌──────────────┐     ┌──────────────────────────────────────┐                   │
-│  │  Google Tasks │     │  Gmail (Newsletter Labels)           │                   │
-│  │  (Delegate)   │     │  • Keyring Authorization In Sandbox  │                   │
+│  │ Google Tasks │     │ Gmail (Newsletter Labels)            │                   │
+│  │ (Delegate)   │     │ • Keyring Authorization In Sandbox   │                   │
 │  └──────┬───────┘     └──────────────┬───────────────────────┘                   │
 │         │                            │                                           │
 │         ▼                            ▼                                           │
 │  ┌──────────────────────────────────────────────────────────┐                    │
 │  │               daily-workflow (Orchestrator)              │                    │
-│  │  • Classify tasks by URL type                            │                    │
+│  │  • Discover & classify tasks by URL type                 │                    │
 │  │  • Dispatch path-free subagent personas by logical name  │                    │
-│  │  • Merge suggestions at sync barrier                     │                    │
+│  │  • Sync barrier → grade → distill → Discord → review     │                    │
 │  └──────┬────────────┬──────────────────┬─────────────┬─────┘                    │
 │         │            │                  │             │                          │
 │         ▼            ▼                  ▼             ▼                          │
 │  ┌────────────┐ ┌──────────┐     ┌───────────┐ ┌───────────┐                     │
-│  │newsletter_ │ │threads_  │     │youtube_   │ │website_   │ (Declarative       │
-│  │worker      │ │worker    │     │worker     │ │worker     │  Sub-Agents)       │
+│  │newsletter_ │ │threads_  │     │youtube_   │ │website_   │ (Declarative        │
+│  │worker      │ │worker    │     │worker     │ │worker     │  Sub-Agents)        │
 │  └─────┬──────┘ └────┬─────┘     └─────┬─────┘ └────┬──────┘                     │
 │        │             │                 │            │                            │
 │        └─────────────┴────────┬────────┴────────────┘                            │
 │                               ▼                                                  │
-│                    ┌──────────────────┐                                          │
-│                    │  content-summary │  (shared analysis pipeline)              │
-│                    │  • Reading Dec.  │  (Instant Triage UX)                     │
-│                    │  • What Can Learn│  (Portable Reader Takeaways)             │
-│                    │  • 5 Archetypes  │  (Jira, ADR, Prompt, Test, Takeaway)     │
-│                    └────────┬─────────┘                                          │
-│                             │                                                    │
-│              ┌──────────────┴──────────────┐                                     │
-│              ▼ [TAKEAWAY_ONLY]             ▼ [Actionable Archetypes]             │
-│    ┌──────────────────┐           ┌──────────────────┐                           │
-│    │  Bypass Queue    │           │  rubric_grader   │                           │
-│    │  • suggestions_  │           │  • Archetype-Fit │                           │
-│    │    filtered.md   │           │  • Anti-Gaming   │                           │
-│    └────────┬─────────┘           └────────┬─────────┘                           │
-│             │                              ▼ [Score >= 4/6]                      │
-│             │                     ┌──────────────────┐                           │
-│             │                     │ suggestions_     │                           │
-│             │                     │ pending.md       │ (100% Actionable Queue)   │
-│             │                     └────────┬─────────┘                           │
-│             │                              ▼                                     │
-│             │                     ┌──────────────────┐                           │
-│             │                     │review-suggestions│                           │
-│             │                     │• Jira Cloud MCP  │                           │
-│             │                     │• Prompt Library  │                           │
-│             │                     └──────────────────┘                           │
-│             ▼                                                                    │
-│    ┌──────────────────┐                                                          │
-│    │distiller_reviewer│  (cross-report synthesis subagent)                       │
-│    └──────────────────┘                                                          │
+│                    ┌────────────────────────┐                                    │
+│                    │  content-summary v5.0  │  (shared analysis pipeline)        │
+│                    │  • Answer-First Line 1 │  (🎯 Conclusion + ⚡ Next Action)   │
+│                    │  • 1-Screen Skim       │  (💡 Takeaways + 📊 ≤5-Row Table)  │
+│                    │  • Per-Topic <details> │  (🔍 ≤3 bullets + JiT Analogies)   │
+│                    │  • 5 Action Archetypes │  (Jira, ADR, Prompt, Test, Take.)  │
+│                    └──────────┬─────────────┘                                    │
+│                               │                                                  │
+│              ┌────────────────┴────────────────┐                                 │
+│              ▼ [TAKEAWAY_ONLY]                 ▼ [Actionable Archetypes]         │
+│    ┌──────────────────┐               ┌──────────────────┐                       │
+│    │  Bypass Queue    │               │  rubric_grader   │                       │
+│    │  • suggestions_  │               │  • Archetype-Fit │                       │
+│    │    filtered.md   │               │  • Anti-Gaming   │                       │
+│    └────────┬─────────┘               └────────┬─────────┘                       │
+│             │                                  ▼ [Score >= 4/6]                  │
+│             │                         ┌──────────────────┐                       │
+│             │                         │ suggestions_     │                       │
+│             │                         │ pending.md       │                       │
+│             │                         └────────┬─────────┘                       │
+│             ▼                                  ▼                                 │
+│    ┌──────────────────┐               ┌──────────────────┐                       │
+│    │distiller_reviewer│  (v2.0 Pyra.) │review-suggestions│                       │
+│    └────────┬─────────┘               │• Jira Cloud MCP  │                       │
+│             │                         └──────────────────┘                       │
+│             ▼ [Step 6 — Automatic Fail-Soft Delivery]                            │
+│    ┌─────────────────────────────────────────────────────┐                       │
+│    │  deliver-discord-reports → discord-reports FastMCP  │                       │
+│    │  • Forum per-report threads + top-pinned Digest     │                       │
+│    │  • Dark-mode PNG tables + verbatim .md attachments  │                       │
+│    │  • SHA-256 idempotency ledger & token redaction     │                       │
+│    └─────────────────────────────────────────────────────┘                       │
 └────────────────────────────────────────┬─────────────────────────────────────────┘
                                          │
 ┌────────────────────────────────────────┴─────────────────────────────────────────┐
@@ -638,7 +742,7 @@ Expanded our capabilities to 14 skills. Periodic newsletter audits now produce e
 │  ┌────────────────────────────────────────────────────────────────────────────┐  │
 │  │                     review-newsletter-subscriptions                        │  │
 │  │  • Hybrid Architecture (analyze_subscriptions.py + LLM Synthesis)          │  │
-│  │  • 5-Dimension Subscription Rubric (Read Rate, AR, High-value, UQ, Volume) │  │
+│  │  • Dynamic Filename/Domain Normalization ($DATA_REPO-aware)                │  │
 │  │  • Human-in-the-Loop Delivery (Copyable Gmail Filter & Unsubscribe Queries)│  │
 │  └────────────────────────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────────────────────────┘
@@ -656,7 +760,9 @@ Expanded our capabilities to 14 skills. Periodic newsletter audits now produce e
 | 6 | Jul 2026 | 30–80 min sequential processing | Parallel subagent dispatch | 8–15 min, clean context per item |
 | 7 | Jul 30 – Aug 7, 2026 | Triage scroll friction & persona coupling | Top-placed Reading Decision & path-free subagent roster | <5s triage UX, cross-platform subagent sync (MD & TOML) |
 | 8 | Aug 12 – Sep 3, 2026 | Reader takeaway friction & steering rule drift | "What Can I Learn" section, Addy Osmani 3-tier rules, dedicated config isolation | <15s actionable takeaways, -54% rule lines (-53% tokens), zero-drift config |
-| 9 | Sep 4 – Sep 30, 2026 | Prompt monoculture (Goodhart's Law) & subscription noise | 5 Action Archetypes, takeaway bypass, `review-newsletter-subscriptions` hybrid skill | 100% actionable queue, zero prompt gaming, 14 skills, automated subscription audits |
+| 9 | Sep 4 – Sep 30, 2026 | Prompt monoculture (Goodhart's Law) & subscription noise | 5 Action Archetypes, takeaway bypass, `review-newsletter-subscriptions` hybrid skill | 100% actionable queue, zero prompt gaming, automated subscription audits |
+| 10 | Oct 7 – Nov 25, 2026 | Cognitive-load fatigue & local-only reports | Content Summary v5.0 Answer-First Pyramid + local `discord-reports` FastMCP server | ~25-line Screen-1 pyramid, automated Discord Forum delivery with PNG tables & `.md` archives |
+| 11 | Nov 26, 2026 | Inverted repo SSOT, PII/path leaks & sync drift | Separated Data Repo architecture (`$DATA_REPO`), `audit_public_repo.py`, `init_workspace.sh` | Zero-PII portable public repo (20 skills, 7 pytest suites), retired legacy sync script |
 
 ### Key Recurring Patterns
 
@@ -667,26 +773,28 @@ Expanded our capabilities to 14 skills. Periodic newsletter audits now produce e
 5. **Decouple visual presentation from internal execution.** Rendering `Reading Decision` upfront for human UX while preserving internal CoT fact extraction in prompts keeps triage fast without compromising factual accuracy.
 6. **Separate immutable configuration from mutable agent state.** Storing system configuration in files rewritten by agents invites silent data loss. Isolate system configuration in dedicated files and guard them with deterministic lifecycle hooks.
 7. **Attention budget is a scarce cognitive resource.** Adding rules without pruning existing ones creates cognitive overload for LLMs. High-density negative constraints (`NEVER`, `DO NOT`) cause rule drift; structured positive defaults (Always Do / Ask First / Never Do) preserve attention and boost compliance.
-8. **Goodhart's Law in Autonomous Agents.** When agents are evaluated against an optimization function (like rubric pass rates), they will relentlessly exploit the path of least resistance. Rewarding one action pattern (prompt curation) and vetoing others (redundancy) drove the agents into an artificial monoculture. Counteracting this requires structural typing (explicit Action Archetypes) and multidimensional fitness evaluation (Archetype-Content Fit), not just tighter prompts.
-9. **Separate actionable decisions from conceptual takeaways.** Not every insight warrants a code change or a prompt template. Bypassing non-actionable intelligence directly into knowledge distillations keeps human review queues fast, high-signal, and fatigue-free.
+8. **Goodhart's Law is whack-a-mole if only fought in prompts.** Blocking the `PROMPT_TEMPLATE` monoculture in Phase 9 pushed optimization pressure directly into an `[ADR_DOC]` monoculture (96% of pending items) once a bulk-accept batch poisoned preference weights. Counteracting reward hacking permanently requires deterministic caps, deduplication, and batch-exclusion logic in code — not just prompt tweaks.
+9. **Separate actionable decisions from conceptual takeaways.** Not every insight warrants a code change, ADR, or prompt template. Bypassing non-actionable intelligence directly into knowledge distillations keeps human review queues fast, high-signal, and fatigue-free.
+10. **Design for human working memory, not exhaustive prose.** Moving from 7-layer essays to the v5.0 Answer-First Pyramid (≤5 items, compact tables, per-topic `<details>` accordions, Just-in-Time analogies) delivered dramatically higher daily comprehension without sacrificing technical depth.
+11. **Enforce privacy and portability by architecture, not post-hoc sanitization.** Copying files out of a mixed private repo with regex scrubbers always drifts. Separating the public infrastructure repo from the private `$DATA_REPO` and gating it with automated hygiene tests (`audit_public_repo.py`) makes portability a structural invariant.
 
 ---
 
 ## What's Next
 
-The current backlog includes several threads that could trigger the next phase of evolution:
+The current backlog and recent audits point to four high-leverage threads for the next phase:
 
+- **Dismantling the `[ADR_DOC]` Monoculture** ([RCA 2026-11-26 V1](docs/rca/daily_workflow_rca_2026-11-26_V1.md)): Restrict `ADR_DOC` eligibility to genuine in-repo architectural decisions, enforce deterministic deduplication and daily caps, exclude bulk rubber-stamp review batches from preference learning, and triage the 54 pending ADR items.
+- **Deterministic Execution Utilities (`scripts/content_pipeline/`)** ([Audit 2026-11-20](docs/daily_workflow_deterministic_audit_2026-11-20.md)): Move mechanical discovery, MIME/HTML cleaning, schema validation, and preference arithmetic out of LLM turns into focused Python CLIs to cut an estimated 33–48% of daily uncached tokens and 6–11 minutes of wall-clock latency.
 - **Newsletter Subscription Rubric Grader Implementation** ([RFC](docs/rfc/newsletter-subscription-rubric.md)): Implement the 5-dimension rubric ($RR, AR, HR, UQ, VC$) in `analyze_subscriptions.py` and `review-newsletter-subscriptions` to automate monthly inbox pruning.
-- **LLM-as-a-Judge Evaluation & Test Harness** ([RFC](docs/rfc/daily-workflow-evals.md)): Quantitative regression testing suite (`.agents/skills/daily-distiller/evals/evals.json` / Auditor Agent) to benchmark subagent performance, factual grounding, and anti-gaming compliance across all 14 skills without mutating live Google Tasks.
-- **Bilingual Template Internationalization**: Internationalize section headers in `.agents/skills/content-summary/references/output_template.md` to match `Preferred Report Language` dynamically.
-- **Smart Fallback Routing** ([RFC](docs/rfc/smart-fallback-routing.md)): Persistent domain routing table to skip known-blocking websites instead of retrying every run.
+- **LLM-as-a-Judge Evaluation & Smart Fallback Routing** ([Evals RFC](docs/rfc/daily-workflow-evals.md), [Routing RFC](docs/rfc/smart-fallback-routing.md)): Build the regression benchmark suite for sub-agent performance and a persistent domain routing table to skip known-blocking websites instead of retrying every run.
 
 ---
 
-Six months ago, I wanted an AI agent to summarize my newsletters.
-Today, I have something much more valuable: a system that helps me learn, think, and improve.
+Eight months ago, I wanted an AI agent to summarize my newsletters.
+Today, I have something much more valuable: a portable, open-source content intelligence system that protects my attention budget and evolves alongside my workflow.
 
 The biggest evolution was not the workflow itself — it was learning how to design a system that evolves with me.
 
-*Last updated: October 2, 2026*
+*Last updated: November 26, 2026*
 
