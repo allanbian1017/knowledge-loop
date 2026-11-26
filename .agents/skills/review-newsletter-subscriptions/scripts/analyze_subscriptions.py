@@ -17,7 +17,7 @@ from pathlib import Path
 import re
 import sys
 
-# Allow importing shared workspace_paths from Home Root
+# Allow importing shared workspace_paths from knowledge-loop
 _HOME_ROOT = Path(__file__).resolve().parents[4]
 if str(_HOME_ROOT) not in sys.path:
     sys.path.insert(0, str(_HOME_ROOT))

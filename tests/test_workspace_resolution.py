@@ -1,4 +1,4 @@
-"""Tests for portable Home Root -> Data Repo path resolution, hooks, and init_workspace.sh."""
+"""Tests for portable `knowledge-loop` -> Data Repo path resolution, hooks, and init_workspace.sh."""
 
 import os
 from pathlib import Path
@@ -67,7 +67,7 @@ def test_bash_resolver_and_hook_in_arbitrary_data_repo(tmp_path):
     assert res.returncode == 0, res.stderr
     assert Path(res.stdout.strip()).resolve() == data_repo.resolve()
 
-    # Hook auto-creates data/lang_preferences.md in external Data Repo, never in Home Root
+    # Hook auto-creates data/lang_preferences.md in external Data Repo, never in knowledge-loop
     hook = subprocess.run(
         [str(HOME_ROOT / "scripts/hooks/ensure_lang_preferences.sh")],
         cwd=HOME_ROOT,

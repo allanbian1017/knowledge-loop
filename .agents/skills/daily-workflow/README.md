@@ -139,5 +139,5 @@ data/
 | v3.0.0 | 2026-07-31 | **Declarative Sub-Agent Personas & Cross-Platform Sync (RFC: path-free-subagent-personas-and-sync)**. Establishes 6 path-free sub-agent personas (`.agents/subagents/*.md`) as Single Source of Truth (`newsletter_worker`, `threads_worker`, `website_worker`, `youtube_worker`, `rubric_grader`, `distiller_reviewer`). Implemented `scripts/sync_subagents.py` to sync across Google Antigravity, Claude Code (`.claude/agents/*.md`), and OpenAI Codex (`.codex/agents/*.toml`). Injects dynamic parameters via first user message to maximize system prompt caching. |
 
 ### ADR (Home Repo Pattern Portability)
-- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
 - **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

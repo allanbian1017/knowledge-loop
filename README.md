@@ -1,16 +1,16 @@
-# Knowledge Loop (Home Root)
+# Knowledge Loop
 
-A portable, open-source **Home Root** repository implementing the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern) for an agentic **daily content-intelligence pipeline** (`daily-workflow`).
+A portable, open-source `knowledge-loop` repository implementing the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern) for an agentic **daily content-intelligence pipeline** (`daily-workflow`).
 
 `knowledge-loop` holds all reusable agent skills, cross-platform sub-agent personas, lifecycle hooks, the local `discord-reports` MCP server, architecture RFCs/RCAs, and starter configuration examples — with **zero personal data** and **zero hardcoded absolute paths**. Your personal goals, preferences, reports, and suggestion history live in your own private **Data Repo** (`$DATA_REPO`).
 
 ---
 
-## Architecture: Home Root + Private Data Repo
+## Architecture: knowledge-loop + Private Data Repo
 
 ```mermaid
 graph LR
-    subgraph Home["knowledge-loop (Public Home Root)"]
+    subgraph Home["knowledge-loop (Public Repository)"]
         Skills[".agents/skills/ (20 skills)"]
         Personas[".agents/agents/ + .claude/ + .codex/"]
         Hooks["scripts/hooks/ + .agents/settings.json"]
@@ -42,7 +42,7 @@ Scripts, hooks, and the `discord-reports` MCP server resolve `$DATA_REPO` automa
 
 ## Quickstart (macOS)
 
-See the full walkthrough in [Home Repo Setup Guide](docs/guides/home-repo-setup-guide.md).
+See the full walkthrough in [Setup Guide](docs/guides/setup-guide.md).
 
 ### 1. Clone & Initialize Your Workspace
 ```bash
@@ -100,7 +100,8 @@ python3 -m pytest -p no:recording tests/ -v
 ---
 
 ## Documentation
-- [Home Repo Setup Guide](docs/guides/home-repo-setup-guide.md)
+- [Evolution Log](EvolutionLog.md)
+- [Setup Guide](docs/guides/setup-guide.md)
 - [Discord & MCP Setup Guide](docs/guides/discord-mcp-setup-guide.md)
 - [Home Repo Pattern RFC & ADR](docs/rfc/home-repo-pattern-architecture.md)
 - [Cognitive Bandwidth Protection Guide](docs/cognitive_bandwidth_protection_guide.md)

@@ -2,7 +2,7 @@
 # ==============================================================================
 # Knowledge Loop — Portable macOS Workspace Initializer
 # ==============================================================================
-# Links this Home Root repository to a private Data Repo (or single-repo dir),
+# Links this knowledge-loop repository to a private Data Repo (or single-repo dir),
 # creates gitignored local pointer files (workspace.local.env, repos.local.md),
 # scaffolds missing starter data templates without overwriting existing files,
 # and optionally pre-warms the local discord-reports MCP server.
@@ -25,7 +25,7 @@ usage() {
 Usage: ./scripts/init_workspace.sh [options]
 
 Options:
-  --data-repo PATH       Path to your private Data Repo (relative to Home Root or ~/...)
+  --data-repo PATH       Path to your private Data Repo (relative to knowledge-loop or ~/...)
   --timezone TZ          IANA timezone name (default: detected macOS system timezone or UTC)
   --with-code-workspace  Generate gitignored knowledge-loop.code-workspace multi-root file
   --skip-uv              Skip running `uv sync` for mcp_servers/discord_reports
@@ -181,7 +181,7 @@ cat <<EOF
 
 🎉 Workspace initialized!
 
-  Home Root : ${HOME_ROOT}
+  Knowledge Loop : ${HOME_ROOT}
   Data Repo : ${DATA_REPO_ABS}
   Timezone  : ${TIMEZONE_INPUT}
 

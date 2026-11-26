@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Public Repository Hygiene & Portability Audit for Knowledge Loop.
 
-Verifies that no tracked/non-ignored file in the Home Root contains:
+Verifies that no tracked/non-ignored file in the knowledge-loop contains:
 1. Machine-specific absolute paths (macOS/Linux/Windows home dirs or file:// local paths)
 2. Personal usernames, private repo names, employer names, or personal Jira keys
 3. Private Notion workspace IDs, live Discord webhooks, secret tokens, or personal emails
@@ -202,7 +202,7 @@ def audit(root: Path = HOME_ROOT) -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Audit Knowledge Loop Home Root for PII, absolute paths, and broken links.")
+    parser = argparse.ArgumentParser(description="Audit Knowledge Loop knowledge-loop for PII, absolute paths, and broken links.")
     parser.add_argument("--root", type=Path, default=HOME_ROOT, help="Repository root to audit")
     args = parser.parse_args()
 

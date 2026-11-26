@@ -1,8 +1,8 @@
-# RFC: Adopt Home Repo Pattern (`knowledge-loop` as Home Root, `<data-repo>` as Data Repo)
+# RFC: Adopt Home Repo Pattern (`knowledge-loop` as knowledge-loop, `<data-repo>` as Data Repo)
 
 ## 1. Summary
 
-Adopt the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern) by decoupling agent infrastructure from personal data across two repositories: **`knowledge-loop`** (public **Home Root** owning all agent skills, personas, hooks, MCP servers, scripts, tests, design docs, guidelines, and starter configuration examples) and **`<data-repo>`** (private **Data Repo** owning personal goals, preferences, reports, diaries, private integration mappings, and personal logs). All skills, scripts, hooks, MCP servers, and documentation in `knowledge-loop` will be fully sanitized of PII and hardcoded absolute paths so any user can clone, configure, and run the system on any macOS machine.
+Adopt the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern) by decoupling agent infrastructure from personal data across two repositories: **`knowledge-loop`** (public `knowledge-loop` repository owning all agent skills, personas, hooks, MCP servers, scripts, tests, design docs, guidelines, and starter configuration examples) and **`<data-repo>`** (private **Data Repo** owning personal goals, preferences, reports, diaries, private integration mappings, and personal logs). All skills, scripts, hooks, MCP servers, and documentation in `knowledge-loop` will be fully sanitized of PII and hardcoded absolute paths so any user can clone, configure, and run the system on any macOS machine.
 
 ## 2. Status
 
@@ -21,11 +21,11 @@ Adopt the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern) by d
    - Personal Jira project keys and Epic IDs (`AW`, `PROJ-1`–`PROJ-7`) are embedded in `AGENTS.md` and `scripts/jira_migration/`.
    - Non-`daily-workflow` personal skills (such as `log-task-evidence`, `sync-diary`, `writing-style-technical-english`, `decision-sparring`, etc.) live in the same `.agents/skills/` tree as the core `daily-workflow` pipeline, tangling private Notion IDs and employer writing samples with the reusable content-intelligence pipeline.
    - Personal career logs (`docs/career_mock_interview_log.md`), historical personal backlogs (`docs/archive/backlog_historical.md`), and live-run audits (`docs/daily_workflow_deterministic_audit_2026-11-20.md`) live alongside reusable engineering RFCs.
-3. **Single-Repo Path Assumption**: Hooks (`scripts/hooks/ensure_lang_preferences.sh`), validators (`scripts/validate_language_config.py`), and the local MCP server (`mcp_servers/discord_reports/server.py`) all assume `data/` and `reports/` live under the same repository root (`REPO_ROOT`), preventing clean separation between a public Home Root and a private Data Repo.
+3. **Single-Repo Path Assumption**: Hooks (`scripts/hooks/ensure_lang_preferences.sh`), validators (`scripts/validate_language_config.py`), and the local MCP server (`mcp_servers/discord_reports/server.py`) all assume `data/` and `reports/` live under the same repository root (`REPO_ROOT`), preventing clean separation between a public knowledge-loop and a private Data Repo.
 4. **No Turnkey Onboarding for Public Users**: External users cloning `knowledge-loop` lack configuration templates (`examples/`), a workspace bootstrap script, and automated checks proving the repository is portable on any Mac.
 
 ### Value Delivered
-- **Single Source of Truth**: `knowledge-loop` becomes the authoritative Home Root for all agent capabilities, steering guidelines, and design documentation — eliminating one-way copy scripts and configuration drift.
+- **Single Source of Truth**: `knowledge-loop` becomes the authoritative knowledge-loop for all agent capabilities, steering guidelines, and design documentation — eliminating one-way copy scripts and configuration drift.
 - **Privacy by Architecture**: Private data, personal IDs, and generated reports never enter the public repository; automated CI/local hygiene tests block accidental PII or absolute-path leaks.
 - **Zero-Absolute-Path macOS Portability**: Any user can clone `knowledge-loop`, run a bootstrap script (or copy examples), point it to their own private Data Repo (or run standalone), and use all workflows on any macOS machine.
 
@@ -37,7 +37,7 @@ Adopt the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern) by d
 
 ```mermaid
 graph TD
-    subgraph Public["knowledge-loop (Public Home Root)"]
+    subgraph Public["knowledge-loop (Public Repository)"]
         H_Agents["AGENTS.md / CLAUDE.md / CONTEXT.md"]
         H_Skills[".agents/skills/ (20 skills: 18 daily-workflow + evolution-log + review-newsletter-subscriptions)"]
         H_Personas[".agents/agents/ + .claude/ + .codex/"]
@@ -50,7 +50,7 @@ graph TD
     end
 
     subgraph Private["<data-repo> (Private Data Repo)"]
-        D_Agents["AGENTS.md / CLAUDE.md (reverse pointer to Home Root)"]
+        D_Agents["AGENTS.md / CLAUDE.md (reverse pointer to knowledge-loop)"]
         D_Data["data/ (goals, prefs, blocklist, suggestions, prompts, integrations.md, newsletter_aliases.json)"]
         D_Reports["reports/ (Newsletter, Threads, Website, YouTube, distillations)"]
         D_Other["diary/ + raw/ + .tmp/ + retained non-daily-workflow skills (.agents/skills/)"]
@@ -64,7 +64,7 @@ graph TD
     H_Hooks -->|"resolves DATA_REPO_DIR"| D_Data
     H_MCP -->|"KNOWLEDGE_LOOP_DATA_REPO"| D_Reports
     H_MCP -->|"delivery ledger"| D_Data
-    D_Agents -.->|"points agents back to Home Root"| Public
+    D_Agents -.->|"points agents back to knowledge-loop"| Public
 ```
 
 ### 4.2 Portable Data Repo Resolution Contract (`$DATA_REPO`)
@@ -79,14 +79,14 @@ To eliminate all hardcoded absolute paths while supporting AI agents, shell hook
      USER_TIMEZONE="Asia/Taipei"
      ```
    - `repos.local.md` (copied from `examples/repos.local.md.example`): Home Repo Pattern plain-text pointer map read by `AGENTS.md` so any coding agent (Antigravity, Claude Code, Codex, Cursor) can orient itself across the Data Repo and any additional user repositories.
-   - `knowledge-loop.code-workspace` (optional, gitignored; copied from `examples/knowledge-loop.code-workspace.example`): multi-root workspace descriptor mounting `.` (Home Root) and `../<your-data-repo>` (Data Repo) side by side so macOS workspace sandboxes grant read/write access to both repositories natively without bypassing sandbox rules.
+   - `knowledge-loop.code-workspace` (optional, gitignored; copied from `examples/knowledge-loop.code-workspace.example`): multi-root workspace descriptor mounting `.` (knowledge-loop) and `../<your-data-repo>` (Data Repo) side by side so macOS workspace sandboxes grant read/write access to both repositories natively without bypassing sandbox rules.
 
 2. **Deterministic Resolution Precedence** (implemented in shared `scripts/lib/workspace_paths.py` and `scripts/lib/resolve_data_repo.sh`):
    1. Explicit CLI argument (`--data-repo <path>`) when provided.
    2. Environment variable `KNOWLEDGE_LOOP_DATA_REPO` (supports `~` expansion; relative paths resolve against `HOME_ROOT`).
    3. `DATA_REPO_DIR` from `<HOME_ROOT>/workspace.local.env` (if file exists).
    4. Single-repo fallback: `<HOME_ROOT>` itself if `<HOME_ROOT>/data/` exists (allows external users to try `knowledge-loop` standalone in single-repo mode without creating a second repo first).
-   5. Fail-fast error with setup pointer (`scripts/init_workspace.sh` / `docs/guides/home-repo-setup-guide.md`) if none of the above resolve to an existing directory.
+   5. Fail-fast error with setup pointer (`scripts/init_workspace.sh` / `docs/guides/setup-guide.md`) if none of the above resolve to an existing directory.
 
 3. **Symbolic Path Convention in Skills & Personas**:
    - `AGENTS.md` defines `$DATA_REPO` as the resolved path from `repos.local.md` / `workspace.local.env` (defaulting to `.` in single-repo mode).
@@ -98,14 +98,14 @@ To eliminate all hardcoded absolute paths while supporting AI agents, shell hook
 
 ### 4.3 Asset Ownership Matrix
 
-| Category | `knowledge-loop` (Public Home Root) | `<data-repo>` (Private Data Repo) |
+| Category | `knowledge-loop` (Public knowledge-loop) | `<data-repo>` (Private Data Repo) |
 | :--- | :--- | :--- |
-| **Steering & Context** | `AGENTS.md` (generic, `$DATA_REPO`-aware), `CLAUDE.md`, `CONTEXT.md`, `README.md`, sanitized `known_issues.md` | Slim `AGENTS.md` & `CLAUDE.md` (reverse pointer to Home Root + data hygiene rules), local `known_issues.local.md` (optional) |
-| **Agent Skills** | **20 skills** in `.agents/skills/`: the 18 `daily-workflow` pipeline skills + `evolution-log` + `review-newsletter-subscriptions` (16 custom + 4 external `gws-*`/`agent-browser`) + `skills-lock.json` | 9 excluded skills retained privately in `<data-repo>/.agents/skills/` (the 20 migrated skills removed here so Home Root is SSOT) |
+| **Steering & Context** | `AGENTS.md` (generic, `$DATA_REPO`-aware), `CLAUDE.md`, `CONTEXT.md`, `README.md`, sanitized `known_issues.md` | Slim `AGENTS.md` & `CLAUDE.md` (reverse pointer to knowledge-loop + data hygiene rules), local `known_issues.local.md` (optional) |
+| **Agent Skills** | **20 skills** in `.agents/skills/`: the 18 `daily-workflow` pipeline skills + `evolution-log` + `review-newsletter-subscriptions` (16 custom + 4 external `gws-*`/`agent-browser`) + `skills-lock.json` | 9 excluded skills retained privately in `<data-repo>/.agents/skills/` (the 20 migrated skills removed here so knowledge-loop is SSOT) |
 | **Sub-Agent Personas** | `.agents/agents/*` (all 6 `daily-workflow` workers) + synced `.claude/{agents,subagents}/` + `.codex/{agents,subagents}/` | None |
 | **Hooks & Scripts** | `.agents/settings.json`, `scripts/hooks/*`, `scripts/lib/*`, `scripts/validate_skill.py`, `scripts/validate_language_config.py`, `scripts/sync_subagents.py`, `scripts/init_workspace.sh`, `scripts/audit_public_repo.py` | Retired `scripts/sync_knowledge_loop.py`; `scripts/jira_migration/` archived privately (contains `PROJ-1..PROJ-90` personal migration logic) |
 | **MCP Servers** | `mcp_servers/discord_reports/` (with `KNOWLEDGE_LOOP_DATA_REPO` resolution) | None (runtime ledger stays at `data/discord_delivery_log.json`) |
-| **Design Docs & Guides** | `docs/templates/`, `docs/guides/` (incl. new `home-repo-setup-guide.md`), sanitized `daily-workflow` / `evolution-log` / `review-newsletter-subscriptions` `docs/{rfc,plan,rca}/`, `docs/cognitive_bandwidth_protection_guide.md`, `docs/loop_engineering_coverage_assessment.md` | Excluded-skill & personal RFCs/plans, `docs/career_mock_interview_log.md`, `docs/archive/backlog_historical.md`, `docs/decisions/`, `backlog.md`, `EvolutionLog.md` |
+| **Design Docs & Guides** | `docs/templates/`, `docs/guides/` (incl. new `setup-guide.md`), sanitized `daily-workflow` / `evolution-log` / `review-newsletter-subscriptions` `docs/{rfc,plan,rca}/`, `docs/cognitive_bandwidth_protection_guide.md`, `docs/loop_engineering_coverage_assessment.md` | Excluded-skill & personal RFCs/plans, `docs/career_mock_interview_log.md`, `docs/archive/backlog_historical.md`, `docs/decisions/`, `backlog.md`, `EvolutionLog.md` |
 | **Configuration Examples** | `examples/` (`workspace.local.env.example`, `repos.local.md.example`, `knowledge-loop.code-workspace.example`, `mcp_config.example.json`, `examples/data/*` incl. `newsletter_aliases.example.json`) | N/A |
 | **Personal Data & Outputs** | None (gitignored if single-repo trial mode is used) | `data/*` (incl. `data/integrations.md`, `data/newsletter_aliases.json`), `reports/*`, `diary/*`, `raw/*`, `.tmp/*` |
 | **Tests & CI** | `tests/` (`test_discord_reports.py`, `test_newsletter_subscription_reviewer.py`, `test_output_template.py`, `test_suggestion_archetypes.py`, `test_suggestion_payload_schema.py`, + new `test_public_repo_hygiene.py` & `test_workspace_resolution.py`) + optional `.github/workflows/ci.yml` | Tests for retained private skills (`test_agent_rules_reviewer.py`, `test_sync_diary.py`, `test_jira_*.py`) |
@@ -178,7 +178,7 @@ A dedicated Python verification script (zero external dependencies) and pytest s
 
 - **Option A: Keep `scripts/sync_knowledge_loop.py` Copy Model (Status Quo)**
   - *Description*: Maintain `<data-repo>` as source of truth and copy selected files to `knowledge-loop` with a sanitizer script.
-  - *Rationale for Rejection*: Perpetuates dual-maintenance drift, requires fragile automated text-rewriting regexes for sanitization, and contradicts the Home Repo Pattern where the central repo IS the Home Root.
+  - *Rationale for Rejection*: Perpetuates dual-maintenance drift, requires fragile automated text-rewriting regexes for sanitization, and contradicts the Home Repo Pattern where the central repo IS the knowledge-loop.
 - **Option B: Symlink Data Directories (`data/`, `reports/`, `diary/`) Inside `knowledge-loop`**
   - *Description*: Create gitignored symlinks inside `knowledge-loop` pointing to `../<data-repo>/{data,reports,diary}` so all existing `./data/...` paths keep working unchanged.
   - *Rationale for Rejection*: Multiple existing safety checks (`sync_diary.py`, `discord_reports/server.py` `resolve()`, and sandbox path-confinement rules) explicitly reject or break across symlinks; symlinks also obscure the Home/Data boundary for AI agents and fail on non-POSIX environments. Explicit `DATA_REPO_DIR` / `workspace.local.env` + `repos.local.md` is clearer, safer, and aligned with the Home Repo Pattern.
@@ -201,9 +201,9 @@ This project's `daily-workflow` content-intelligence system spans 18 interdepend
 - **Tool & Sandbox Compatibility**: Must work cleanly across Antigravity, Claude Code, Codex, Bash hooks, Python scripts, and stdio MCP servers without relying on symlinks or sandbox bypasses.
 
 ## Decisions Made
-1. Promote **`knowledge-loop`** to the public **Home Root** owning the **20 approved skills** (18 `daily-workflow` pipeline skills + `evolution-log` + `review-newsletter-subscriptions`), 6 sub-agent personas, hooks, scripts, MCP servers, tests, sanitized design docs, guidelines, and starter configuration examples.
+1. Promote **`knowledge-loop`** to the public `knowledge-loop` repository owning the **20 approved skills** (18 `daily-workflow` pipeline skills + `evolution-log` + `review-newsletter-subscriptions`), 6 sub-agent personas, hooks, scripts, MCP servers, tests, sanitized design docs, guidelines, and starter configuration examples.
 2. Convert **`<data-repo>`** into a pure private **Data Repo** owning `data/` (including `data/integrations.md` and `data/newsletter_aliases.json`), `reports/`, `diary/`, `raw/`, `EvolutionLog.md`, private/excluded docs, and the 9 excluded personal skills retained in `<data-repo>/.agents/skills/`.
-3. Bind Home Root to Data Repo via gitignored local config (`workspace.local.env` + `repos.local.md` + optional multi-root `.code-workspace`), resolved through shared helpers (`workspace_paths.py`, `resolve_data_repo.sh`) with env var `KNOWLEDGE_LOOP_DATA_REPO` override and single-repo fallback.
+3. Bind knowledge-loop to Data Repo via gitignored local config (`workspace.local.env` + `repos.local.md` + optional multi-root `.code-workspace`), resolved through shared helpers (`workspace_paths.py`, `resolve_data_repo.sh`) with env var `KNOWLEDGE_LOOP_DATA_REPO` override and single-repo fallback.
 4. Gate `knowledge-loop` with an automated privacy & portability audit (`scripts/audit_public_repo.py` + pytest suite) and retire `scripts/sync_knowledge_loop.py`.
 
 ## Consequences

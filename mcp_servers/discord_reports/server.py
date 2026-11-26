@@ -73,7 +73,7 @@ DEFAULT_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def resolve_effective_data_root(repo_root: Path | None = None) -> Path:
-    """Resolve Data Repo root: explicit arg -> KNOWLEDGE_LOOP_DATA_REPO -> workspace.local.env -> Home Root."""
+    """Resolve Data Repo root: explicit arg -> KNOWLEDGE_LOOP_DATA_REPO -> workspace.local.env -> knowledge-loop."""
     if repo_root is not None:
         return repo_root.resolve()
     try:

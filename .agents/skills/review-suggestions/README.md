@@ -203,5 +203,5 @@ Remove Defer. Use only Accept and Reject. Suggestions not mentioned in the user'
 | v2.0.0 | 2026-06-11 | Integrated `rubric-grader` skill support. Parsers support dynamic formats (legacy `💎 | ⚡ | 🎯` and new `📊`). Removed Decision Calibration from preference profiling and added `rubric-grader` (maintain mode) invocation. |
 
 ### ADR (Home Repo Pattern Portability)
-- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
 - **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

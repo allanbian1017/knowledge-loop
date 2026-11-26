@@ -1,4 +1,4 @@
-"""Portable Home Root -> Data Repo path resolution.
+"""Portable `knowledge-loop` -> Data Repo path resolution.
 
 Resolution precedence for the Data Repo:
 1. Explicit ``override`` path (e.g., ``--data-repo`` CLI flag)
@@ -21,7 +21,7 @@ LOCAL_ENV_FILENAME = "workspace.local.env"
 
 
 def get_home_root(start: Path | None = None) -> Path:
-    """Return the Knowledge Loop Home Root directory."""
+    """Return the Knowledge Loop knowledge-loop directory."""
     if start is not None:
         return Path(start).expanduser().resolve()
     return Path(__file__).resolve().parents[2]

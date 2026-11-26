@@ -1,1 +1,1 @@
-"""Shared utilities for Knowledge Loop Home Root."""
+"""Shared utilities for Knowledge Loop knowledge-loop."""

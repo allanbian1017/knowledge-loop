@@ -1,16 +1,16 @@
 # AGENTS.md
 
-## Project (Home Root)
-**Knowledge Loop** is a public **Home Root** repository following the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern). It hosts reusable agent skills, sub-agent personas, lifecycle hooks, MCP servers, design guidelines, and verification tooling for the `daily-workflow` content-intelligence loop.
+## Project
+**Knowledge Loop** is a public **Knowledge Loop** repository following the [Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern). It hosts reusable agent skills, sub-agent personas, lifecycle hooks, MCP servers, design guidelines, and verification tooling for the `daily-workflow` content-intelligence loop.
 
 Personal data, generated reports, and private preferences live in a separate **Data Repo** referenced via `$DATA_REPO`.
 
 ### Resolving `$DATA_REPO`
 Before reading or writing `data/` or `reports/`, resolve `$DATA_REPO` in this order:
-1. Read `./repos.local.md` or `./workspace.local.env` (`DATA_REPO_DIR`) in this Home Root.
+1. Read `./repos.local.md` or `./workspace.local.env` (`DATA_REPO_DIR`) in this knowledge-loop.
 2. Check environment variable `KNOWLEDGE_LOOP_DATA_REPO`.
 3. Fallback to `.` (single-repo mode) only if `./data/` exists locally.
-4. If unresolved, stop and direct the user to run `./scripts/init_workspace.sh` or follow [Home Repo Setup Guide](docs/guides/home-repo-setup-guide.md).
+4. If unresolved, stop and direct the user to run `./scripts/init_workspace.sh` or follow [Setup Guide](docs/guides/setup-guide.md).
 
 ---
 

@@ -126,5 +126,5 @@ Invoked automatically at the end of suggestion reviews:
 **Consequences**: Aligns grading with the generator-side priority (content-summary ADR-0012). Borderline ADRs can still pass at 4–5/6, so the generator rule is the primary control.
 
 ### ADR (Home Repo Pattern Portability)
-- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
 - **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

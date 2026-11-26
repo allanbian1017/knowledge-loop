@@ -65,5 +65,5 @@ reports/
 | v1.3.0 | 2026-07-24 | Added optional `SuggestionOutputPath` parameter. When provided by `daily-workflow` parallel dispatch, passes through to `suggestion_log.md` to write to a per-subagent staging file instead of the default location (RFC: parallel-content-processing). |
 
 ### ADR (Home Repo Pattern Portability)
-- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
 - **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

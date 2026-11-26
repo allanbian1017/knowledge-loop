@@ -1,12 +1,12 @@
-# Discord & MCP Setup Guide for `daily-workflow`
+# Discord & MCP Setup Guide for `knowledge-loop`
 
-This guide walks you through setting up Discord (a Forum channel + Webhook) and connecting the local `discord-reports` MCP server so `daily-workflow` and `deliver-discord-reports` can automatically publish your Daily Knowledge Distillation and source `.md` reports to Discord.
+This guide walks you through setting up Discord (a Forum channel + Webhook) and connecting the local `discord-reports` MCP server so `knowledge-loop` (via `deliver-discord-reports`) can automatically publish your Daily Knowledge Distillation and source `.md` reports to Discord.
 
 ---
 
 ## 1. Overview & Architecture
 
-Every time `daily-workflow` finishes distilling today's reports (Step 5), **Step 6 (`deliver-discord-reports`)** calls the local `discord-reports` MCP server to publish a clean, readable digest into Discord:
+Every time `knowledge-loop` finishes distilling today's reports (Step 5), **Step 6 (`deliver-discord-reports`)** calls the local `discord-reports` MCP server to publish a clean, readable digest into Discord:
 
 1. **Opener Forum Post (`📰 Daily Digest — YYYY-MM-DD`)**: Contains the v5.0 Answer-First Distillation Embed (`🎯 今日一句話結論`, `⚡ 本週唯一行動`, `💡 今日核心重點`, `📊 跨來源主題速覽`), a clickable Processed Reports Index, and the attached `Knowledge_Distillation_YYYY_MM_DD.md` file.
 2. **In-Thread Deep Dives**: Cleaned pillar breakdowns (`<details>` tags and GFM tables converted for Discord readability), automatically chunked within Discord's 2,000-character limit.
@@ -14,23 +14,23 @@ Every time `daily-workflow` finishes distilling today's reports (Step 5), **Step
 
 ```mermaid
 sequenceDiagram
-    participant DW as daily-workflow (Step 6)
+    participant KL as knowledge-loop (Step 6)
     participant MCP as discord-reports MCP (stdio)
     participant Ledger as data/discord_delivery_log.json
     participant Discord as Discord Forum Webhook
 
-    DW->>MCP: discord_publish_daily_reports(date, mode="digest", include_source_files=True)
+    KL->>MCP: discord_publish_daily_reports(date, mode="digest", include_source_files=True)
     MCP->>MCP: Parse v5.0 reports, sanitize tables/<details>, chunk & batch .md files
     MCP->>Ledger: Check SHA-256 content hash for date
     alt Already delivered & force=False
         Ledger-->>MCP: Match found
-        MCP-->>DW: { status: "skipped", reason: "already_delivered" }
+        MCP-->>KL: { status: "skipped", reason: "already_delivered" }
     else New or changed content
         MCP->>Discord: POST ?wait=true (thread_name + Opener Embed + Distillation .md)
         Discord-->>MCP: 200 OK (returns channel_id as thread_id)
         MCP->>Discord: POST ?wait=true&thread_id=<id> (Pillar deep dives + .md batches)
         MCP->>Ledger: Save receipt (SHA-256, thread_id, counts)
-        MCP-->>DW: { status: "sent", thread_id, messages_sent, files_attached }
+        MCP-->>KL: { status: "sent", thread_id, messages_sent, files_attached }
     end
 ```
 
@@ -108,7 +108,7 @@ macOS GUI applications often do not inherit `~/.local/bin` in `PATH`. Run:
 ```bash
 which uv
 ```
-Use that exact path (e.g., `/path/to/.local/bin/uv`) as `"command"`, or `"uv"` if it is on your system PATH. Replace `<HOME_REPO_ROOT>` with the path to your `knowledge-loop` clone and `<DATA_REPO_ROOT>` with the path to your private Data Repo.
+Use that exact path (e.g., `/path/to/.local/bin/uv`) as `"command"`, or `"uv"` if it is on your system PATH. Replace `<KNOWLEDGE_LOOP_ROOT>` with the path to your `knowledge-loop` clone and `<DATA_REPO_ROOT>` with the path to your private Data Repo.
 
 ### Step 5.2: Add `discord-reports` to `mcp_config.json`
 
@@ -120,7 +120,7 @@ Use that exact path (e.g., `/path/to/.local/bin/uv`) as `"command"`, or `"uv"` i
       "args": [
         "run",
         "--directory",
-        "<HOME_REPO_ROOT>/mcp_servers/discord_reports",
+        "<KNOWLEDGE_LOOP_ROOT>/mcp_servers/discord_reports",
         "python",
         "server.py"
       ],
@@ -195,8 +195,8 @@ Ask the agent:
 
 This calls `discord_send_report_file(...)` and validates that the path resides strictly inside `reports/`.
 
-### Step 5: Automatic Execution in `daily-workflow`
-When you run `"run my daily workflow"`, **Step 6 (`deliver-discord-reports`)** runs automatically right after `daily-distiller` (Step 5) and before interactive `review-suggestions` (Step 7). It is **fail-soft**: if Discord is unreachable or unconfigured, `daily-workflow` logs the warning in Step 8 Final Summary and continues normally.
+### Step 5: Automatic Execution in `knowledge-loop`
+When you run `"run my daily workflow"`, **Step 6 (`deliver-discord-reports`)** runs automatically right after `daily-distiller` (Step 5) and before interactive `review-suggestions` (Step 7). It is **fail-soft**: if Discord is unreachable or unconfigured, `knowledge-loop` logs the warning in Step 8 Final Summary and continues normally.
 
 ### Delivery Modes Comparison
 

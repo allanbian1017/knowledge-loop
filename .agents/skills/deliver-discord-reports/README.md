@@ -87,5 +87,5 @@ Minimal `~/.gemini/config/mcp_config.json` entry:
 | v1.0.0 | 2026-11-25 | Initial release: `deliver-discord-reports` skill paired with local `discord-reports` Python MCP server (`mcp_servers/discord_reports/`), Forum threading, v5.0 sanitization, `.md` batching, and SHA-256 idempotency ledger. |
 
 ### ADR (Home Repo Pattern Portability)
-- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
 - **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

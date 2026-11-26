@@ -1,6 +1,6 @@
-# Implementation Plan - Adopt Home Repo Pattern (`knowledge-loop` Home Root + `<data-repo>` Data Repo)
+# Implementation Plan - Adopt Home Repo Pattern (`knowledge-loop` knowledge-loop + `<data-repo>` Data Repo)
 
-Transform `knowledge-loop` into a public, portable, zero-PII **Home Root** repository containing the **20 approved agent skills** (18 `daily-workflow` pipeline skills + `evolution-log` + `review-newsletter-subscriptions`), 6 sub-agent personas, hooks, scripts, MCP servers, sanitized design docs/guidelines, and starter configuration examples, while refactoring `<data-repo>` into a clean private **Data Repo**.
+Transform `knowledge-loop` into a public, portable, zero-PII `knowledge-loop` repository containing the **20 approved agent skills** (18 `daily-workflow` pipeline skills + `evolution-log` + `review-newsletter-subscriptions`), 6 sub-agent personas, hooks, scripts, MCP servers, sanitized design docs/guidelines, and starter configuration examples, while refactoring `<data-repo>` into a clean private **Data Repo**.
 
 For the detailed technical architecture, validated dependency closure, design trade-offs, and ADR, please refer to the corresponding RFC: [Adopt Home Repo Pattern](../rfc/home-repo-pattern-architecture.md).
 
@@ -8,7 +8,7 @@ For the detailed technical architecture, validated dependency closure, design tr
 
 1. **Included Skills (20)**: All 18 `daily-workflow` skills + `evolution-log` + `review-newsletter-subscriptions`.
 2. **Excluded Skills (9)**: `agent-rules-reviewer`, `ai-level-check`, `decision-sparring`, `log-task-evidence`, `skill-context-refactor`, `study-github-repo`, `sync-diary`, `tech-deconstructor`, `writing-style-technical-english` — retained privately in `<data-repo>/.agents/skills/`.
-3. **Home Root Checkout Location**: Sibling directory `../knowledge-loop` (linked via gitignored `workspace.local.env` — zero absolute paths committed).
+3. **knowledge-loop Checkout Location**: Sibling directory `../knowledge-loop` (linked via gitignored `workspace.local.env` — zero absolute paths committed).
 4. **`EvolutionLog.md`**: Excluded from `knowledge-loop`; existing personal `EvolutionLog.md` stays in `<data-repo>`.
 5. **Docs Sign-Off**:
    - Exclude `knowledge-loop-core-sync.md` & `knowledge-loop-core-sync-plan.md` (**27 RFCs** + **28 plans** included).
@@ -28,7 +28,7 @@ For the detailed technical architecture, validated dependency closure, design tr
 
 > [!NOTE]
 > **Multi-Root Workspace & MCP Re-Pointing**:
-> After cutover, open the multi-root workspace (`knowledge-loop` + `<data-repo>`) so macOS sandboxed tools can access both repos seamlessly, and update `~/.gemini/config/mcp_config.json` so `discord-reports` runs from `<HOME_REPO_ROOT>/mcp_servers/discord_reports` with `KNOWLEDGE_LOOP_DATA_REPO` pointing to your Data Repo.
+> After cutover, open the multi-root workspace (`knowledge-loop` + `<data-repo>`) so macOS sandboxed tools can access both repos seamlessly, and update `~/.gemini/config/mcp_config.json` so `discord-reports` runs from `<KNOWLEDGE_LOOP_ROOT>/mcp_servers/discord_reports` with `KNOWLEDGE_LOOP_DATA_REPO` pointing to your Data Repo.
 
 ## Open Questions
 
@@ -125,7 +125,7 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
 ### Guides, Templates & Other `docs/` Files
 
 - **Include in `knowledge-loop/docs/`**:
-  - `docs/guides/discord-mcp-setup-guide.md` (+ new `docs/guides/home-repo-setup-guide.md`)
+  - `docs/guides/discord-mcp-setup-guide.md` (+ new `docs/guides/setup-guide.md`)
   - `docs/templates/{plan,prd,rca,rfc}_template.md` (all 4)
   - `docs/cognitive_bandwidth_protection_guide.md`
   - `docs/loop_engineering_coverage_assessment.md` *(sanitized)*
@@ -140,7 +140,7 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
 
 ## Proposed Changes
 
-### Phase 1: Home Root Bootstrap & Portable Path Infrastructure (`knowledge-loop`)
+### Phase 1: knowledge-loop Bootstrap & Portable Path Infrastructure (`knowledge-loop`)
 
 #### [NEW] `knowledge-loop/scripts/lib/workspace_paths.py`
 * Shared zero-dependency Python module resolving `HOME_ROOT` and `DATA_REPO` via deterministic precedence:
@@ -159,7 +159,7 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
   * Copies `examples/repos.local.md.example` → `repos.local.md` (gitignored).
   * Optionally generates `knowledge-loop.code-workspace` (gitignored) from `examples/knowledge-loop.code-workspace.example`.
   * Scaffolds missing starter files from `examples/data/*` into `<DATA_REPO>/data/` **without overwriting** any existing files in the user's Data Repo.
-  * Runs `uv sync --directory mcp_servers/discord_reports` (if `uv` is installed) and prints the exact `which uv` + `<HOME_REPO_ROOT>` / `<DATA_REPO_ROOT>` snippet for `mcp_config.json`.
+  * Runs `uv sync --directory mcp_servers/discord_reports` (if `uv` is installed) and prints the exact `which uv` + `<KNOWLEDGE_LOOP_ROOT>` / `<DATA_REPO_ROOT>` snippet for `mcp_config.json`.
 
 #### [NEW] `knowledge-loop/examples/` (Starter Configuration Package)
 * `examples/workspace.local.env.example` — `DATA_REPO_DIR="../my-knowledge-data"`, `USER_TIMEZONE="UTC"`.
@@ -177,8 +177,8 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
 #### [NEW / MODIFY] `knowledge-loop/{AGENTS.md,CLAUDE.md,CONTEXT.md,README.md,known_issues.md,.gitignore}`
 * `AGENTS.md`: Rewritten for Home Repo Pattern — instructs agents to read `repos.local.md` (or `workspace.local.env`) to resolve `$DATA_REPO`, removes hardcoded Jira project `<PROJECT_KEY>` / `PROJ-1..PROJ-7` (delegating to optional `$DATA_REPO/data/integrations.md`), keeps 3-Tier Rules Architecture, skill validation, ADR, and language rules.
 * `CLAUDE.md`: Pointer to `AGENTS.md` and `repos.local.md`.
-* `CONTEXT.md`: Portable glossary (`Trace`, `Dreamer`, `Memory Injection`, `Home Root`, `Data Repo`).
-* `README.md`: Public-facing architecture overview (Home Root + Data Repo diagram), macOS quickstart (`git clone` → `./scripts/init_workspace.sh` → multi-root workspace / MCP setup), full skill catalog, and verification commands.
+* `CONTEXT.md`: Portable glossary (`Trace`, `Dreamer`, `Memory Injection`, `knowledge-loop`, `Data Repo`).
+* `README.md`: Public-facing architecture overview (knowledge-loop + Data Repo diagram), macOS quickstart (`git clone` → `./scripts/init_workspace.sh` → multi-root workspace / MCP setup), full skill catalog, and verification commands.
 * `known_issues.md`: Sanitized generic macOS/sandbox/CLI troubleshooting entries (replacing `~/.gitconfig` → `~/.gitconfig`, `<project-key>` → `<project-key>`, removing private session anecdotes).
 * `.gitignore`: Ignores `workspace.local.env`, `repos.local.md`, `*.code-workspace`, `.tmp/`, `mcp_servers/discord_reports/.venv/`, `__pycache__/`, `.DS_Store`, `node_modules/`, and optional local `data/` / `reports/` / `diary/` (for single-repo trial users).
 
@@ -227,8 +227,8 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
 * Migrate and sanitize `docs/rfc/*`, `docs/plan/*`, `docs/rca/*` (excluding personal-only docs per Open Question #3):
   * Replace all `<DATA_REPO>/...` and `file://<HOME_DIR>` paths with relative workspace links or `<REPO_ROOT>` / `<DATA_REPO>` placeholders.
   * Redact personal usernames, private Notion IDs, personal Jira keys (`AW-*`), and real email/report filenames where needed.
-  * Update `docs/guides/discord-mcp-setup-guide.md` to reference `<HOME_REPO_ROOT>`, `<DATA_REPO_ROOT>`, and `KNOWLEDGE_LOOP_DATA_REPO`.
-* **[NEW]** `knowledge-loop/docs/guides/home-repo-setup-guide.md`: Step-by-step macOS onboarding guide covering cloning `knowledge-loop`, creating/linking a private Data Repo, running `scripts/init_workspace.sh`, setting up multi-root workspace / `--add-dir`, configuring `gws` / `yt2doc` / Discord MCP / Notion MCP, and running verification checks.
+  * Update `docs/guides/discord-mcp-setup-guide.md` to reference `<KNOWLEDGE_LOOP_ROOT>`, `<DATA_REPO_ROOT>`, and `KNOWLEDGE_LOOP_DATA_REPO`.
+* **[NEW]** `knowledge-loop/docs/guides/setup-guide.md`: Step-by-step macOS onboarding guide covering cloning `knowledge-loop`, creating/linking a private Data Repo, running `scripts/init_workspace.sh`, setting up multi-root workspace / `--add-dir`, configuring `gws` / `yt2doc` / Discord MCP / Notion MCP, and running verification checks.
 
 ---
 
@@ -262,7 +262,7 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
 * `data/newsletter_aliases.json` — Moved personal newsletter alias normalization map from `analyze_subscriptions.py`.
 
 #### [MODIFY] `<data-repo>/{AGENTS.md,CLAUDE.md,README.md,.gitignore}`
-* `AGENTS.md` / `CLAUDE.md`: Slim Data Repo instructions pointing agents to `knowledge-loop` as the Home Root for the 20 core skills, hooks, scripts, and engineering rules, plus Data Repo hygiene rules (no credentials, data/report layout).
+* `AGENTS.md` / `CLAUDE.md`: Slim Data Repo instructions pointing agents to `knowledge-loop` as the knowledge-loop for the 20 core skills, hooks, scripts, and engineering rules, plus Data Repo hygiene rules (no credentials, data/report layout).
 * `README.md`: Updated to describe `<data-repo>` as the private Data Repo paired with `knowledge-loop`.
 
 #### [DELETE] Retired Duplicated Infrastructure from `<data-repo>`
@@ -296,6 +296,6 @@ All 24 `daily-workflow`, `ingest-*`, `gws_shared`, `newsletter_summary`, and `yt
 ### Manual Verification (Shadow Cutover & End-to-End Check)
 
 1. Point `knowledge-loop/workspace.local.env` (gitignored) to `DATA_REPO_DIR="../<data-repo>"` and run `python3 scripts/validate_language_config.py` from `knowledge-loop` → verify it reads `<data-repo>/data/lang_preferences.md`.
-2. Update `~/.gemini/config/mcp_config.json` to run `discord-reports` from `<HOME_REPO_ROOT>/mcp_servers/discord_reports` with `KNOWLEDGE_LOOP_DATA_REPO="<DATA_REPO_ROOT>"`, restart/refresh MCP, and run `discord_publish_daily_reports(dry_run=True)` → verify it discovers reports in `<data-repo>/reports/` without error.
+2. Update `~/.gemini/config/mcp_config.json` to run `discord-reports` from `<KNOWLEDGE_LOOP_ROOT>/mcp_servers/discord_reports` with `KNOWLEDGE_LOOP_DATA_REPO="<DATA_REPO_ROOT>"`, restart/refresh MCP, and run `discord_publish_daily_reports(dry_run=True)` → verify it discovers reports in `<data-repo>/reports/` without error.
 3. Open the multi-root workspace (`knowledge-loop` + `<data-repo>`) in Antigravity, verify all 20 core skills are discovered from `knowledge-loop` (and retained private skills from `<data-repo>`), and run a read-only check confirming `$DATA_REPO/data/` resolves cleanly.
 4. Run `git status` and `git diff` in `knowledge-loop` to confirm `workspace.local.env`, `repos.local.md`, and `*.code-workspace` are ignored and never staged.

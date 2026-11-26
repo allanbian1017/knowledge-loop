@@ -209,5 +209,5 @@ This skill has no trigger phrases. It has no executable procedure. If you find y
 **Consequences**: ADRs appear only when no concrete artifact fits. Enforcement is prompt-level; the rubric caps Preference Alignment for violating `ADR_DOC` items. No per-run deduplication or caps yet (open RCA items).
 
 ### ADR (Home Repo Pattern Portability)
-- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` Home Root against any user's private Data Repo on macOS.
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
 - **Changelog (2026-11-26)**: Adopted Home Repo `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

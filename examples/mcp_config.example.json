@@ -5,7 +5,7 @@
       "args": [
         "run",
         "--directory",
-        "<HOME_REPO_ROOT>/mcp_servers/discord_reports",
+        "<KNOWLEDGE_LOOP_ROOT>/mcp_servers/discord_reports",
         "python",
         "server.py"
       ],
