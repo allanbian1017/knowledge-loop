@@ -1,0 +1,30 @@
+name: Knowledge Loop CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Audit public repository hygiene (PII, absolute paths, broken links)
+        run: python3 scripts/audit_public_repo.py
+
+      - name: Validate all SKILL.md manifests
+        run: python3 scripts/validate_skill.py
+
+      - name: Run full offline pytest suite
+        run: python3 -m pytest -p no:recording tests/ -v

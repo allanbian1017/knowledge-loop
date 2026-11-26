@@ -14,13 +14,13 @@ The `review-suggestions` skill introduces a human-in-the-loop feedback cycle tha
 
 ### Key Features
 
-1. **Centralized Review:** Aggregates all pending suggestions from `data/suggestions_pending.md` into a single numbered artifact, with links to original source articles and full reports.
+1. **Centralized Review:** Aggregates all pending suggestions from `$DATA_REPO/data/suggestions_pending.md` into a single numbered artifact, with links to original source articles and full reports.
 2. **Today / Backlog Split:** Separates today's suggestions from older unreviewed items, prioritizing fresh content while keeping the backlog accessible.
 3. **Binary Feedback:** Accept or Reject — no ambiguous middle ground. Skipped suggestions remain pending. Free-text comments and global preference statements are also captured.
 4. **Two-File State Management:**
-   - `data/suggestions_pending.md` — shrinks as suggestions are reviewed (items removed).
-   - `data/suggestions_reviewed.md` — grows as reviewed items are appended with feedback metadata.
-5. **Preference Profile Generation:** After each review session, the skill analyzes all historical feedback and regenerates `data/user_preferences.md` — a Markdown file containing topic affinities, action type preferences, decision calibration ratios, shifting interest flags, and explicit user statements.
+   - `$DATA_REPO/data/suggestions_pending.md` — shrinks as suggestions are reviewed (items removed).
+   - `$DATA_REPO/data/suggestions_reviewed.md` — grows as reviewed items are appended with feedback metadata.
+5. **Preference Profile Generation:** After each review session, the skill analyzes all historical feedback and regenerates `$DATA_REPO/data/user_preferences.md` — a Markdown file containing topic affinities, action type preferences, decision calibration ratios, shifting interest flags, and explicit user statements.
 6. **Recency-Weighted Conflict Resolution:** Recent feedback (14-day window at 2× weight) overrides older patterns. Explicit user statements always override statistical inference. Conflicts are transparently flagged rather than silently resolved.
 7. **Calibration Loop:** Downstream skills (`newsletter-summary`, `process-delegate-tasks`) read the preference profile before generating `AI 分析`, enabling progressively better-calibrated suggestions.
 
@@ -91,7 +91,7 @@ After review, the entry gains feedback metadata in `suggestions_reviewed.md`:
 
 ## Preference Profile Structure
 
-The generated `data/user_preferences.md` contains:
+The generated `$DATA_REPO/data/user_preferences.md` contains:
 
 | Section | Purpose |
 |---|---|
@@ -111,8 +111,8 @@ The generated `data/user_preferences.md` contains:
 
 ## Dependencies
 
-- `newsletter-summary` skill — appends suggestions to `data/suggestions_pending.md` (Step 2-4b)
-- `process-delegate-tasks` skill — appends suggestions to `data/suggestions_pending.md` (Steps 6Tb, 6Yb)
+- `newsletter-summary` skill — appends suggestions to `$DATA_REPO/data/suggestions_pending.md` (Step 2-4b)
+- `process-delegate-tasks` skill — appends suggestions to `$DATA_REPO/data/suggestions_pending.md` (Steps 6Tb, 6Yb)
 - `rubric-grader` skill — scores, filters, and routes suggestions to pending/filtered; run maintain mode to perform blocklist verification and calibration.
 
 No external tools or CLI dependencies. The skill operates entirely on local Markdown files and the Antigravity artifact UI.
@@ -201,3 +201,7 @@ Remove Defer. Use only Accept and Reject. Suggestions not mentioned in the user'
 |---|---|---|
 | v1.0.0 | 2026-05-07 | Initial skill: 7-step review workflow with artifact presentation, Accept/Reject feedback collection, two-file state management, and recency-weighted preference profile generation. Integrates with `newsletter-summary` (Step 2-4b) and `process-delegate-tasks` (Steps 6Tb, 6Yb) for suggestion ingestion. See ADR-0001, ADR-0002, ADR-0003. |
 | v2.0.0 | 2026-06-11 | Integrated `rubric-grader` skill support. Parsers support dynamic formats (legacy `💎 | ⚡ | 🎯` and new `📊`). Removed Decision Calibration from preference profiling and added `rubric-grader` (maintain mode) invocation. |
+
+### ADR (Portable Data Repo Separation)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

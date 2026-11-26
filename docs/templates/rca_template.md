@@ -70,7 +70,7 @@ Track the status of all relevant tasks.
 - [ ] Wrote/executed automated tests to verify the fix (Note: manual verification is prohibited by project rules)
 - [ ] Modified the affected skill code / configuration files
 - [ ] Updated `backlog.md` (if long-term defensive mechanism is needed)
-- [ ] Updated session decision log and `learnings/lessons.md` (if new gotchas were introduced)
+- [ ] Updated `known_issues.md` and `learnings/lessons.md` (if new gotchas were introduced)
 
 ---
 

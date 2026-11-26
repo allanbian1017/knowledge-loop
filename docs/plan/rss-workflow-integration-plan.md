@@ -35,7 +35,7 @@ Integrate RSS feed monitoring into the daily content intelligence pipeline. Intr
 - Insert **Step 2R — Process RSS feeds** between Step 2 and Step 3:
   - Parse `data/feeds.yaml` to retrieve subscribed feeds.
   - Load seen URLs from `data/rss/seen/<feed_slug>.txt`.
-  - Invoke `node /Users/allanbian/my-ai-workflow/.agents/skills/rss-reader/scripts/fetch-rss.mjs <url> --limit <limit> --skip <seen_urls>`.
+  - Invoke `node <DATA_REPO>/.agents/skills/rss-reader/scripts/fetch-rss.mjs <url> --limit <limit> --skip <seen_urls>`.
   - For full-content articles: Summarize directly and write to `reports/RSS_YYYY_MM_DD/[feed_slug]_[article_slug].md`.
   - For snippet-only articles: Fetch via Jina Reader (`r.jina.ai`), falling back to snippet text if Jina/cleaner fails. Write to `reports/RSS_YYYY_MM_DD/[feed_slug]_[article_slug].md`.
   - Log suggestions to the pending backlog using `{SourceType}` = `RSS` (automatically delegating to `rubric-grader`).
@@ -56,7 +56,7 @@ Integrate RSS feed monitoring into the daily content intelligence pipeline. Intr
   - Verify that `data/feeds.yaml` is present and valid YAML.
   - Verify that `daily-workflow/SKILL.md` documents Step 2R.
   - Verify that `rss-reader/SKILL.md` documents `data/rss/seen/` usage.
-  - Confirm the existence of `/Users/allanbian/my-ai-workflow/.agents/skills/rss-reader/scripts/fetch-rss.mjs`.
+  - Confirm the existence of `<DATA_REPO>/.agents/skills/rss-reader/scripts/fetch-rss.mjs`.
 
 ---
 

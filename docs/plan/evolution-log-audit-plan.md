@@ -13,9 +13,9 @@ Add an automated audit function to the `/evolution-log` skill, enabling it to de
 
 ## Proposed Changes
 
-### `evolution-log` Skill Core (`/Users/allanbian/.gemini/config/skills/evolution-log/`)
+### `evolution-log` Skill Core (`~/.gemini/config/skills/evolution-log/`)
 
-#### [MODIFY] [SKILL.md](file:///Users/allanbian/.gemini/config/skills/evolution-log/SKILL.md)
+#### [MODIFY] [SKILL.md](~/.gemini/config/skills/evolution-log/SKILL.md)
 - **Frontmatter Description**: Add audit trigger phrases (`"audit my evolution log"`, `"verify evolution log"`, `"check evolution log for missing files or commits"`, `"clean up evolution log"`, `"audit evolution log"`).
 - **Mode Detection**: Add **Audit Mode** alongside Generate Mode and Update Mode.
 - **Audit Workflow Section**: Add step-by-step instructions for performing the audit:
@@ -26,16 +26,16 @@ Add an automated audit function to the `/evolution-log` skill, enabling it to de
 - **Propose-then-Confirm Remediation**: Instructions to present findings and proposed diffs in an Artifact and wait for user confirmation before applying in-place modifications.
 - **Step 7 (Save, Audit and Verify)**: Upgrade the verification step to run the audit checks as an automated quality gate ensuring zero phantom commits and zero broken links.
 
-#### [MODIFY] [references/output_template.md](file:///Users/allanbian/.gemini/config/skills/evolution-log/references/output_template.md)
+#### [MODIFY] [references/output_template.md](~/.gemini/config/skills/evolution-log/references/output_template.md)
 - Add strict rules regarding commit hashes: only real, verified git commit hashes from `git log` may be included. If no specific commits exist for a phase, omit the `**Key commits**:` line or use descriptive milestones.
 - Add strict rules against referencing nonexistent test files, uncreated templates, or phantom backlog anchors.
 
-#### [MODIFY] [README.md](file:///Users/allanbian/.gemini/config/skills/evolution-log/README.md)
+#### [MODIFY] [README.md](~/.gemini/config/skills/evolution-log/README.md)
 - Document the new **Audit Mode** and its agent-pure workflow.
 - Add **ADR-001**: Architecture Decision Record documenting the problem of LLM hallucination in historical chronicles, options considered (prompt-only rules vs. helper script vs. agent-pure shell inspection), and decision rationale adhering to the Zero-Script preference.
 - Add an updated **Changelog**.
 
-#### [MODIFY] [evals/evals.json](file:///Users/allanbian/.gemini/config/skills/evolution-log/evals/evals.json)
+#### [MODIFY] [evals/evals.json](~/.gemini/config/skills/evolution-log/evals/evals.json)
 - Add a 4th evaluation case for auditing an `EvolutionLog.md` that contains missing files or nonexistent commit hashes.
 
 ---
@@ -44,12 +44,12 @@ Add an automated audit function to the `/evolution-log` skill, enabling it to de
 
 ### Automated Tests
 1. **Skill Frontmatter & Syntax Validation**:
-   - **How to test**: `python3 scripts/validate_skill.py /Users/allanbian/.gemini/config/skills/evolution-log/SKILL.md`
+   - **How to test**: `python3 scripts/validate_skill.py ~/.gemini/config/skills/evolution-log/SKILL.md`
    - **Expected behavior**: Returns exit code 0 (`✅ [OK]`).
 
 ### Manual & Behavioral Verification
 1. **Live Repository Audit**:
-   - Run the audit steps defined in `SKILL.md` on `/Users/allanbian/knowledge-loop/EvolutionLog.md`.
+   - Run the audit steps defined in `SKILL.md` on `<REPO_ROOT>/EvolutionLog.md`.
    - Verify that 0 phantom commits and 0 missing links are found on the cleaned file.
 2. **Documentation & ADR Review**:
    - Verify that `README.md` contains a complete ADR-001 and an updated Changelog.

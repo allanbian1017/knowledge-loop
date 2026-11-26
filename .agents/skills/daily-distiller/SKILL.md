@@ -1,46 +1,44 @@
 ---
 name: daily-distiller
-description: Reviews today's reports in ./reports/ and generates a synthesized Knowledge Distillation document in reports/distillations/. Use this skill whenever the user asks to "summarize today's reports", "distill today's knowledge", "run daily distillation", or "update the knowledge distillation document". It ensures technical insights about AI Agents and Context Engineering are preserved and systematized.
+description: Reviews today's reports in $DATA_REPO/reports/ and generates a synthesized Knowledge Distillation document in $DATA_REPO/reports/distillations/. Use this skill whenever the user asks to "summarize today's reports", "distill today's knowledge", "run daily distillation", or "update the knowledge distillation document". It ensures technical insights about AI Agents and Context Engineering are preserved and systematized.
 ---
 
 # Daily Distiller
 
-This skill automates reviewing today's intelligence reports and synthesizing them into a high-quality Knowledge Distillation document — capturing what's technically significant, how concepts connect, and what actions follow.
+Synthesizes today's intelligence reports into a low-cognitive-load **Answer-First Pyramid** Knowledge Distillation document — leading with a 1-sentence conclusion and 1 concrete action, followed by 3–5 numbered takeaways, a 1-glance cross-source table, and modular per-pillar `<details>` accordions.
 
 ## Workflow
 
 ### Step 1: Discover Today's Reports
-Find all `.md` files created today in the `./reports/` directory, **excluding** `reports/distillations/`. Use today's local date.
+Find all `.md` files created today in the `$DATA_REPO/reports/` directory, **excluding** `$DATA_REPO/reports/distillations/`. Use today's local date.
 
 ```bash
-find reports -not -path "reports/distillations/*" -type f -name "*.md" -newermt "YYYY-MM-DD" ! -newermt "YYYY-MM-DD+1"
+find reports -not -path "$DATA_REPO/reports/distillations/*" -type f -name "*.md" -newermt "YYYY-MM-DD" ! -newermt "YYYY-MM-DD+1"
 ```
 
 If no reports are found, notify the user and stop.
 
 ### Step 2: Read All Reports
-Read every report file in full. Note:
-- **Source / Author**: newsletter name, Threads handle, etc.
-- **Key technical insights**: Especially those about AI Agents, Context Engineering, Workflow Optimization, and System Architecture.
-- **Cross-cutting themes**: Patterns that appear across multiple sources deserve to become a Pillar.
+Read every report file in full (including inside `<details>` blocks). Note:
+- **Source / Author**: newsletter name, Threads handle, website domain, etc.
+- **Core engineering problems & insights**: Especially AI Agents, Context Engineering, Workflow Optimization, and System Architecture.
+- **Cross-cutting themes**: Patterns appearing across multiple sources become Pillars (2–4 max; never 1:1 per report).
 
 ### Step 3: Load the Output Template
-Read `assets/output_template.md` — it contains the file output rules (path, filename format), document structure guide, and the full markdown template to follow.
+Read `assets/output_template.md` — it defines the file path, Answer-First Pyramid layout, and low-cognitive-load formatting rules.
 
-### Step 4: Synthesize
-Check `data/lang_preferences.md` for the `Preferred Report Language` configuration, and produce the distillation document in that language (defaulting to **English** if not configured). Follow the template structure:
+### Step 4: Synthesize (Answer First, Explain Later)
+Check `$DATA_REPO/data/lang_preferences.md` for the `Preferred Report Language` configuration, and produce the distillation document in that language (defaulting to **English** if not configured):
 
-1. **Executive Summary** — Overarching narrative. What is the "big picture theme" of today?
-2. **Major Pillars (2–4 sections)** — Group insights into coherent technical themes (not one per source). Name each section for the concept, not the source.
-3. **The Synthesis** — Explain how the pillars relate to each other as a system, not just a list.
-4. **Strategic Takeaway** — One actionable, philosophical call-to-action grounded in the day's data.
-
-**Quality bar**: Avoid one-to-one report-to-section mapping. The goal is to *reframe* raw inputs into a unified technical narrative. The most valuable distillations surface **connections** that weren't obvious in the individual reports.
+1. **Top Callout (`🎯 今日一句話結論` + `⚡ 本週唯一行動`)** — State the single overarching answer in plain everyday words (≤45 chars) on line 1, plus one concrete action with explicit minutes.
+2. **`## 💡 今日核心重點` (Numbered 1–4, 1 short sentence each)** — Cross-source takeaways in plain language with zero paragraph walls or undefined buzzwords.
+3. **`## 📊 跨來源主題速覽` (Compact Table, 2–4 rows)** — Map each Pillar to `卡在哪裡（痛點） | 怎麼解決（白話直覺） | 系統連結與來源` (`≤18 chars/cell`).
+4. **`## 🔍 主題深入解構（點擊展開細節）`** — 2–4 individual `<details>` accordions (one per Pillar, plus 1 final synthesis accordion if needed), each opening **only 3 short bullets** (`痛點與脈絡 / 關鍵機制與證據 / 如何串聯進系統`), with just-in-time inline analogies and blank lines after `</summary>` and before `</details>`.
 
 ### Step 5: Save Output
-Follow the file output rules in `assets/output_template.md`:
+Save to:
 ```
-reports/distillations/Knowledge_Distillation_YYYY_MM_DD.md
+$DATA_REPO/reports/distillations/Knowledge_Distillation_YYYY_MM_DD.md
 ```
 Use today's local date in the filename.
 

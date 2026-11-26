@@ -47,19 +47,19 @@ In accordance with the Fail-Fast rule (Tier 3: Tool Circumvention) in `AGENTS.md
 ```json
 {
   "auth_method": "oauth2",
-  "client_config": "/Users/allanbian/.config/gws/client_secret.json",
+  "client_config": "~/.config/gws/client_secret.json",
   "client_config_exists": true,
   "client_id": "49987952....com",
   "config_client_id": "49987952....com",
   "credential_source": "client_secret.json",
-  "encrypted_credentials": "/Users/allanbian/.config/gws/credentials.enc",
+  "encrypted_credentials": "~/.config/gws/credentials.enc",
   "encrypted_credentials_exists": true,
   "encryption_valid": true,
   "has_refresh_token": true,
   "keyring_backend": "keyring",
-  "plain_credentials": "/Users/allanbian/.config/gws/credentials.json",
+  "plain_credentials": "~/.config/gws/credentials.json",
   "plain_credentials_exists": true,
-  "project_id": "allanbian-ai-workflow",
+  "project_id": "<user>-ai-workflow",
   "storage": "encrypted",
   "token_cache_exists": true,
   "token_error": "Token has been expired or revoked.",
@@ -92,7 +92,7 @@ Because `gws auth login` requires interactive browser-based OAuth consent that c
 ## 5. Remediation & Verification Results
 
 - [x] User re-authenticated via `gws auth login`.
-- [x] Verified `gws auth status`: `token_valid: true`, 7 scopes authorized (`email`, `profile`, `gmail.modify`, `tasks`, etc.), user `tselunbien@gmail.com`.
+- [x] Verified `gws auth status`: `token_valid: true`, 7 scopes authorized (`email`, `profile`, `gmail.modify`, `tasks`, etc.), user `<user-email@example.com>`.
 - [x] Verified `gws tasks tasklists list`: exit 0, retrieved tasklists including `Delegate` (`QnNIeVNoUmxOalM1bTNsRg`).
 - [x] Verified `gws gmail users messages list`: exit 0, retrieved unread newsletter list (`resultSizeEstimate: 201`).
 - [x] Pipeline unblocked; resumed daily workflow.

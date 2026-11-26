@@ -75,3 +75,7 @@ reports/
 | Version | Date | Change Summary |
 |---|---|---|
 | v1.0.0 | 2026-05-13 | Initial skill: Jina Reader API, `read_url_content`-only implementation. |
+
+### ADR (Portable Data Repo Separation)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

@@ -13,7 +13,7 @@ When scraping or copying content from the web, the raw text is often polluted wi
 - **Ad Blocking:** Removes advertisement placeholders (e.g., "廣告-請繼續往下閱讀"), sponsored content blocks, and social media sharing buttons.
 - **Metadata Sanitization:** Cleans up hidden JSON-LD (Schema.org) blocks, raw HTML tags, and unnecessary script code.
 - **Structured Output:** Generates a standardized Markdown file including Title, Author, Date, and the clean article body.
-- **Auto-Archiving:** Automatically saves the cleaned output into an organized directory structure (e.g., `./reports/Articles_YYYY_MM_DD/`).
+- **Auto-Archiving:** Automatically saves the cleaned output into an organized directory structure (e.g., `$DATA_REPO/reports/Articles_YYYY_MM_DD/`).
 
 ## Usage
 
@@ -38,3 +38,7 @@ You can trigger this skill naturally during your conversation by asking Antigrav
 ## Customization
 
 If you notice specific types of noise or advertisements consistently slipping through, you can easily improve this skill by editing the `Cleaning Guidelines` section in `SKILL.md` to include those specific patterns.
+
+### ADR (Portable Data Repo Separation)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

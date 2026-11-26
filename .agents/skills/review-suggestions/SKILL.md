@@ -11,7 +11,7 @@ Review pending AI suggestions, collect feedback, and update the user preference 
 
 ## Step 1 — Load pending suggestions
 
-Read `data/suggestions_pending.md`.
+Read `$DATA_REPO/data/suggestions_pending.md`.
 
 If the file doesn't exist or contains no suggestion entries (only the heading), tell the user:
 
@@ -91,7 +91,7 @@ Suggestions **not mentioned** in the user's response remain in `suggestions_pend
 
 For each suggestion the user provided feedback on:
 
-1. **Append** to `data/suggestions_reviewed.md` — the original suggestion entry plus feedback:
+1. **Append** to `$DATA_REPO/data/suggestions_reviewed.md` — the original suggestion entry plus feedback:
 
 ```markdown
 ---
@@ -107,15 +107,15 @@ For each suggestion the user provided feedback on:
 
 *(Note: Legacy entries are appended keeping their original `💎 | ⚡ | 🎯` fields.)*
 
-2. **Rewrite** `data/suggestions_pending.md` — keep only the entries the user did NOT provide feedback on. Preserve the `# 📋 Pending Suggestions` heading.
+2. **Rewrite** `$DATA_REPO/data/suggestions_pending.md` — keep only the entries the user did NOT provide feedback on. Preserve the `# 📋 Pending Suggestions` heading.
 
 ---
 
 ## Step 6 — Regenerate preference profile
 
-Read the full `data/suggestions_reviewed.md` and existing `data/user_preferences.md` (if any).
+Read the full `$DATA_REPO/data/suggestions_reviewed.md` and existing `$DATA_REPO/data/user_preferences.md` (if any).
 
-Analyze **all** reviewed entries to produce the updated preference profile. Write to `data/user_preferences.md` with the following structure:
+Analyze **all** reviewed entries to produce the updated preference profile. Write to `$DATA_REPO/data/user_preferences.md` with the following structure:
 
 ### 6-1. Summary Statistics
 
@@ -187,7 +187,7 @@ Count total reviewed, accept count/rate, reject count/rate.
 
 ### 6-6. Auto-Maintenance & Calibration
 
-After writing `data/user_preferences.md`, invoke the `rubric-grader` skill in **Maintain mode** to perform blocklist verification and threshold score calibration.
+After writing `$DATA_REPO/data/user_preferences.md`, invoke the `rubric-grader` skill in **Maintain mode** to perform blocklist verification and threshold score calibration.
 
 ---
 
@@ -203,7 +203,7 @@ Report the results:
 
 | Step | Action | File(s) Affected |
 |---|---|---|
-| 1 | Load pending | `data/suggestions_pending.md` (read) |
+| 1 | Load pending | `$DATA_REPO/data/suggestions_pending.md` (read) |
 | 2 | Split today vs. backlog | — |
 | 3 | Present artifact | Antigravity artifact |
 | 4 | Parse feedback | — |

@@ -32,10 +32,10 @@ python3 .agents/skills/review-newsletter-subscriptions/scripts/analyze_subscript
 *(Note: If the user specified a custom window like 60 days or explicit dates, pass `--days N` or `--start-date YYYY-MM-DD --end-date YYYY-MM-DD`.)*
 
 The script outputs structured JSON containing:
-- `reports_count`: Total reports received per source in `reports/Newsletter_*`
-- `reviewed_count`: Suggestions reviewed by user in `data/suggestions_reviewed.md`
+- `reports_count`: Total reports received per source in `$DATA_REPO/reports/Newsletter_*`
+- `reviewed_count`: Suggestions reviewed by user in `$DATA_REPO/data/suggestions_reviewed.md`
 - `accepted_count` / `rejected_count`: Feedback breakdown
-- `filtered_count`: Suggestions blocked in `data/suggestions_filtered.md` with veto categories
+- `filtered_count`: Suggestions blocked in `$DATA_REPO/data/suggestions_filtered.md` with veto categories
 - `acceptance_rate` ($A / R$) and `yield_rate` ($A / N$)
 - Initial `triage` tag (`Keep`, `Unsubscribe`, `Adjust`, `Watch`)
 
@@ -57,7 +57,7 @@ Consult `references/triage_criteria.md` to evaluate each newsletter source again
    - High volume ($N \ge 15$), positive core value ($A \ge 2$), but contains separable noise (e.g. weekend specials, robotics).
    - Formulate targeted Gmail filter query (e.g. `from:sender "Sunday Special"`).
 4. **⚪ Watch (持續觀察)**:
-   - Low volume ($N < 5$, $R < 2$) without strong negative signals, or suggestions currently in `data/suggestions_pending.md`.
+   - Low volume ($N < 5$, $R < 2$) without strong negative signals, or suggestions currently in `$DATA_REPO/data/suggestions_pending.md`.
 
 ---
 

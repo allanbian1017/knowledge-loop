@@ -498,7 +498,7 @@ The result during human review was cognitive exhaustion and a **50% rejection sp
 Option 3 ([daily_workflow_rca_2026-09-29_V2.md](docs/rca/daily_workflow_rca_2026-09-29_V2.md)). In an interactive design interview (`/grill-me`), we resolved each decision branch and established:
 
 1. **5 Explicit Action Archetypes** in `.agents/skills/content-summary/references/ai_analysis.md`:
-   - `JIRA_BACKLOG`: System design patterns, distributed architectures, and model routing, structured as proposals linked to Domain Epics (`AW-1` to `AW-7`).
+   - `JIRA_BACKLOG`: System design patterns, distributed architectures, and model routing, structured as proposals linked to Domain Epics (`PROJ-1` to `PROJ-7`).
    - `ADR_DOC`: Architectural trade-offs and engineering lessons documented in `docs/adr/`.
    - `PROMPT_TEMPLATE`: Strictly restricted to interactive prompt tools (mock interview kits, negotiation coaches, evaluation judges); **banned for news, politics, and abstract architecture**.
    - `TEST_FIXTURE`: Concrete edge-case test fixtures and assertion scenarios added to automated test suites.

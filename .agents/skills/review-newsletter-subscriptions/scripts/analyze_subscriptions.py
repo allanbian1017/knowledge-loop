@@ -2,7 +2,7 @@
 """
 Newsletter Subscription Telemetry Analyzer
 
-Aggregates statistics from reports/Newsletter_YYYY_MM_DD/ and suggestion files
+Aggregates statistics from $DATA_REPO/reports/Newsletter_YYYY_MM_DD/ and suggestion files
 (suggestions_reviewed.md, suggestions_filtered.md, suggestions_pending.md) over
 a specified time window (default: 30 days) to evaluate newsletter ROI and triage.
 """
@@ -13,60 +13,40 @@ from datetime import datetime, timedelta
 import glob
 import json
 import os
+from pathlib import Path
 import re
 import sys
+from urllib.parse import urlparse
+
+# Allow importing shared workspace_paths from knowledge-loop
+_REPO_ROOT = Path(__file__).resolve().parents[4]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+try:
+    from scripts.lib.workspace_paths import resolve_data_repo
+except ImportError:
+    resolve_data_repo = None  # type: ignore[assignment]
 
 def normalize_source(filename: str = "", title_url: str = "") -> str:
-    """Normalize various filename, subject, and URL patterns to canonical newsletter names."""
-    combined = f"{filename} {title_url}".lower()
-    
-    if "rundown" in combined:
-        return "The Rundown AI"
-    if "the_code" in combined or "the code" in combined or "codenewsletter.ai" in combined:
-        return "The Code"
-    if "superhuman" in combined:
-        return "Superhuman"
-    if "bytebytego" in combined or "alex_xu" in combined:
-        return "ByteByteGo (Alex Xu)"
-    if "neo_kim" in combined or "system_design_one" in combined or "systemdesign" in combined:
-        return "System Design One (Neo Kim)"
-    if "gary" in combined or "garychen" in combined:
-        return "Gary Chen (創作者的秘密)"
-    if "waki" in combined or "readingoutpost" in combined or "瓦基" in combined:
-        return "閱讀前哨站 (瓦基)"
-    if "ally" in combined or "ally_hsieh" in combined:
-        return "Ally Hsieh"
-    if "hugging" in combined or "huggingface" in combined:
-        return "Hugging Face Daily Papers"
-    if "zhu" in combined or "henrychu" in combined or "朱騏" in combined:
-        return "朱騏 (Henry Chu)"
-    if "matt" in combined or "pocock" in combined:
-        return "Matt Pocock"
-    if "tech_scoop" in combined or "techscoop" in combined:
-        return "Tech Scoop"
-    if "ai_hero" in combined or "aihero" in combined:
-        return "AI Hero"
-    if "jeff_su" in combined or "jeff su" in combined:
-        return "Jeff Su"
-    if "pragmatic" in combined or "gergely" in combined:
-        return "The Pragmatic Engineer (Gergely Orosz)"
-    if "inner_circle" in combined:
-        return "AI Inner Circle"
-    if "今天學到了什麼" in combined or "今日學到了什麼" in combined:
-        return "今天學到了什麼"
-    if "readtodie" in combined:
-        return "ReadToDie"
-    if "chris_richardson" in combined or "microservices_io" in combined:
-        return "Microservices.IO (Chris Richardson)"
-    if "backend_weekly" in combined:
-        return "Backend Weekly"
-    
-    # Fallback to prefix
+    """Derive a clean canonical newsletter name dynamically from filename or URL (no static map required)."""
     if filename:
-        clean_fn = os.path.splitext(filename)[0]
-        parts = clean_fn.split('_')
-        return " ".join(parts[:2])
+        stem = os.path.splitext(os.path.basename(filename))[0]
+        # Strip trailing date patterns like _2026_09_01 or -2026-09-01
+        stem = re.sub(r"[_-]\d{4}[_-]\d{2}[_-]\d{2}.*$", "", stem)
+        tokens = [t for t in re.split(r"[_\-]+", stem) if t]
+        if tokens:
+            return " ".join(tokens[:2])
+
+    url_match = re.search(r"https?://[^\s\)]+", title_url or "")
+    if url_match:
+        host = urlparse(url_match.group(0)).netloc.lower()
+        host = re.sub(r"^www\.", "", host)
+        if host:
+            return host
+
     return "Other / Unknown"
+
 
 def parse_suggestion_file(filepath: str):
     """Parse suggestion entries from a markdown file."""
@@ -74,7 +54,7 @@ def parse_suggestion_file(filepath: str):
         return []
     with open(filepath, "r", encoding="utf-8") as f:
         text = f.read()
-        
+
     chunks = text.split("\n---\n")
     entries = []
     for chunk in chunks:
@@ -82,20 +62,21 @@ def parse_suggestion_file(filepath: str):
         if not lines or not lines[0].startswith("### "):
             continue
         header = lines[0]
-        # Format: ### YYYY-MM-DD | Type | [Title](url)
         parts = header[4:].split(" | ")
         date_str = parts[0].strip() if len(parts) > 0 else ""
         entry_type = parts[1].strip() if len(parts) > 1 else ""
         title_url = parts[2].strip() if len(parts) > 2 else ""
-        
+
         report_path, feedback, comment, category, score_status, suggestion_text = "", "", "", "", "", ""
-        for l in lines[1:]:
-            l_strip = l.strip()
+        for line in lines[1:]:
+            l_strip = line.strip()
             if "🏷️" in l_strip:
                 cat_m = re.search(r"🏷️\s*([^\|]+)", l_strip)
-                if cat_m: category = cat_m.group(1).strip()
+                if cat_m:
+                    category = cat_m.group(1).strip()
                 sc_m = re.search(r"📊\s*(.+)", l_strip)
-                if sc_m: score_status = sc_m.group(1).strip()
+                if sc_m:
+                    score_status = sc_m.group(1).strip()
             elif "**Feedback**:" in l_strip or "- Feedback:" in l_strip:
                 feedback = l_strip
             elif "**Comment**:" in l_strip or "- Comment:" in l_strip:
@@ -104,7 +85,7 @@ def parse_suggestion_file(filepath: str):
                 report_path = l_strip
             elif "建議" in l_strip:
                 suggestion_text = l_strip
-                
+
         entries.append({
             "date": date_str,
             "type": entry_type,
@@ -115,217 +96,231 @@ def parse_suggestion_file(filepath: str):
             "comment": comment,
             "report_path": report_path,
             "suggestion": suggestion_text,
-            "raw": chunk
+            "raw": chunk,
         })
     return entries
 
+
 def extract_veto_category(score_status: str) -> str:
-    """Extract human-readable veto or filter reason."""
-    if "Hard-veto:" in score_status:
-        m = re.search(r"Hard-veto:\s*([^)]+)", score_status)
-        if m:
-            return m.group(1).strip()
-        return "Hard-veto"
+    """Extract the specific veto or low-score reason from score_status."""
+    m = re.search(r"Hard-veto:\s*([^\)]+)", score_status)
+    if m:
+        return m.group(1).strip()
+    m2 = re.search(r"Ambiguity blocklist:\s*([^\)]+)", score_status)
+    if m2:
+        return f"Ambiguity: {m2.group(1).strip()}"
     if "Below threshold" in score_status:
         return "Below threshold"
-    return "Filtered"
+    if "VETO" in score_status:
+        return "Hard Veto (Other)"
+    return "Other Filtered"
 
-def analyze_subscriptions(workspace_dir: str = ".", days: int = 30, start_date: str = None, end_date: str = None):
-    """Compute newsletter statistics and triage recommendations."""
-    if not end_date:
-        end_date = datetime.now().strftime("%Y-%m-%d")
-    if not start_date:
-        start_dt = datetime.strptime(end_date, "%Y-%m-%d") - timedelta(days=days)
-        start_date = start_dt.strftime("%Y-%m-%d")
 
-    reports_dir = os.path.join(workspace_dir, "reports")
-    data_dir = os.path.join(workspace_dir, "data")
+def analyze_subscriptions(workspace_dir: str, days: int = 30, start_date: str = None, end_date: str = None):
+    if end_date:
+        end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+    else:
+        end_dt = datetime.now()
 
-    # 1. Gather all newsletter report files within date range
-    reports_by_source = defaultdict(list)
-    newsletter_dirs = glob.glob(os.path.join(reports_dir, "Newsletter_*"))
-    
-    for d in newsletter_dirs:
-        dir_name = os.path.basename(d)
-        m = re.search(r"Newsletter_(\d{4}_\d{2}_\d{2})", dir_name)
-        if not m:
-            continue
-        ds = m.group(1).replace("_", "-")
-        if start_date <= ds <= end_date:
-            for f in glob.glob(os.path.join(d, "*.md")):
-                bn = os.path.basename(f)
-                src = normalize_source(filename=bn)
-                reports_by_source[src].append({
-                    "date": ds,
-                    "filepath": f,
-                    "filename": bn
-                })
+    if start_date:
+        start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+    else:
+        start_dt = end_dt - timedelta(days=days)
 
-    # 2. Parse suggestions files
-    reviewed_entries = parse_suggestion_file(os.path.join(data_dir, "suggestions_reviewed.md"))
-    filtered_entries = parse_suggestion_file(os.path.join(data_dir, "suggestions_filtered.md"))
-    pending_entries = parse_suggestion_file(os.path.join(data_dir, "suggestions_pending.md"))
+    start_str = start_dt.strftime("%Y-%m-%d")
+    end_str = end_dt.strftime("%Y-%m-%d")
 
-    # 3. Aggregate stats by source
     stats = defaultdict(lambda: {
         "reports_count": 0,
+        "report_dates": set(),
         "reviewed_count": 0,
         "accepted_count": 0,
         "rejected_count": 0,
         "filtered_count": 0,
         "pending_count": 0,
-        "acceptance_rate": 0.0,
-        "yield_rate": 0.0,
         "veto_reasons": defaultdict(int),
-        "rejection_comments": [],
         "accepted_examples": [],
-        "triage": "Watch"
+        "rejected_examples": [],
+        "filtered_examples": [],
     })
 
-    # Populate report counts
-    for src, rep_list in reports_by_source.items():
-        stats[src]["reports_count"] = len(rep_list)
+    reports_glob = os.path.join(workspace_dir, "reports", "Newsletter_*")
+    for folder in glob.glob(reports_glob):
+        if not os.path.isdir(folder):
+            continue
+        folder_name = os.path.basename(folder)
+        m = re.match(r"Newsletter_(\d{4})_(\d{2})_(\d{2})", folder_name)
+        if not m:
+            continue
+        d_str = f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+        if not (start_str <= d_str <= end_str):
+            continue
 
-    # Helper to resolve source name from an entry
-    def resolve_source(entry):
-        rp = entry["report_path"]
-        m = re.search(r"reports/Newsletter_[^/]+/([^/]+)\.md", rp)
-        fn = m.group(1) if m else ""
-        return normalize_source(filename=fn, title_url=entry["title_url"])
+        for md_file in glob.glob(os.path.join(folder, "*.md")):
+            fn = os.path.basename(md_file)
+            src = normalize_source(filename=fn)
+            stats[src]["reports_count"] += 1
+            stats[src]["report_dates"].add(d_str)
 
-    # Process reviewed
-    for e in reviewed_entries:
-        if e["type"] == "Newsletter" and start_date <= e["date"] <= end_date:
-            src = resolve_source(e)
-            stats[src]["reviewed_count"] += 1
-            fb = e["feedback"].lower()
-            if "accept" in fb:
-                stats[src]["accepted_count"] += 1
-                stats[src]["accepted_examples"].append({
-                    "date": e["date"],
-                    "title": e["title_url"],
-                    "suggestion": e["suggestion"]
-                })
-            elif "reject" in fb:
-                stats[src]["rejected_count"] += 1
-                if e["comment"]:
-                    stats[src]["rejection_comments"].append(e["comment"])
+    reviewed_path = os.path.join(workspace_dir, "data", "suggestions_reviewed.md")
+    for entry in parse_suggestion_file(reviewed_path):
+        if "Newsletter" not in entry["type"] and "Newsletter_" not in entry["report_path"]:
+            continue
+        d_str = entry["date"]
+        if not (start_str <= d_str <= end_str):
+            continue
+        rp_fn = os.path.basename(entry["report_path"].split("(")[-1].rstrip(")")) if "(" in entry["report_path"] else ""
+        src = normalize_source(filename=rp_fn, title_url=entry["title_url"])
+        stats[src]["reviewed_count"] += 1
+        if "✅" in entry["feedback"] or "Accept" in entry["feedback"]:
+            stats[src]["accepted_count"] += 1
+            stats[src]["accepted_examples"].append(f"[{d_str}] {entry['title_url']} — {entry['comment']}")
+        elif "❌" in entry["feedback"] or "Reject" in entry["feedback"]:
+            stats[src]["rejected_count"] += 1
+            stats[src]["rejected_examples"].append(f"[{d_str}] {entry['title_url']} — {entry['comment']}")
 
-    # Process filtered
-    for e in filtered_entries:
-        if e["type"] == "Newsletter" and start_date <= e["date"] <= end_date:
-            src = resolve_source(e)
-            stats[src]["filtered_count"] += 1
-            veto = extract_veto_category(e["score_status"])
-            stats[src]["veto_reasons"][veto] += 1
+    filtered_path = os.path.join(workspace_dir, "data", "suggestions_filtered.md")
+    for entry in parse_suggestion_file(filtered_path):
+        if "Newsletter" not in entry["type"] and "Newsletter_" not in entry["report_path"]:
+            continue
+        d_str = entry["date"]
+        if not (start_str <= d_str <= end_str):
+            continue
+        rp_fn = os.path.basename(entry["report_path"].split("(")[-1].rstrip(")")) if "(" in entry["report_path"] else ""
+        src = normalize_source(filename=rp_fn, title_url=entry["title_url"])
+        stats[src]["filtered_count"] += 1
+        reason = extract_veto_category(entry["score_status"])
+        stats[src]["veto_reasons"][reason] += 1
+        stats[src]["filtered_examples"].append(f"[{d_str}] {entry['title_url']} ({reason})")
 
-    # Process pending
-    for e in pending_entries:
-        if e["type"] == "Newsletter" and start_date <= e["date"] <= end_date:
-            src = resolve_source(e)
-            stats[src]["pending_count"] += 1
+    pending_path = os.path.join(workspace_dir, "data", "suggestions_pending.md")
+    for entry in parse_suggestion_file(pending_path):
+        if "Newsletter" not in entry["type"] and "Newsletter_" not in entry["report_path"]:
+            continue
+        d_str = entry["date"]
+        if not (start_str <= d_str <= end_str):
+            continue
+        rp_fn = os.path.basename(entry["report_path"].split("(")[-1].rstrip(")")) if "(" in entry["report_path"] else ""
+        src = normalize_source(filename=rp_fn, title_url=entry["title_url"])
+        stats[src]["pending_count"] += 1
 
-    # Calculate rates and triage
     results = []
-    for src, d in stats.items():
-        rcvd = d["reports_count"]
-        rev = d["reviewed_count"]
-        acc = d["accepted_count"]
-        rej = d["rejected_count"]
-        filt = d["filtered_count"]
-        
-        acc_rate = (acc / rev) if rev > 0 else 0.0
-        yield_rate = (acc / rcvd) if rcvd > 0 else 0.0
-        
-        d["acceptance_rate"] = round(acc_rate, 3)
-        d["yield_rate"] = round(yield_rate, 3)
+    for src, s in stats.items():
+        total_sugg = s["reviewed_count"] + s["filtered_count"] + s["pending_count"]
+        acc_rate = (s["accepted_count"] / s["reviewed_count"] * 100) if s["reviewed_count"] > 0 else 0.0
+        yield_rate = (s["accepted_count"] / total_sugg * 100) if total_sugg > 0 else 0.0
+        veto_rate = (s["filtered_count"] / total_sugg * 100) if total_sugg > 0 else 0.0
 
-        # Triage logic
-        # 1. Unsubscribe: strong negative signals (poor acceptance, high veto ratio with low acceptance, or zero acceptances)
-        if (rev >= 3 and acc_rate < 0.40) or \
-           (rev >= 2 and acc == 0) or \
-           (filt >= 4 and yield_rate < 0.08) or \
-           (rcvd >= 10 and yield_rate < 0.08 and acc_rate < 0.60) or \
-           (filt >= 3 and filt / max(1, (rev + filt)) >= 0.50 and acc_rate < 0.50):
-            d["triage"] = "Unsubscribe"
-        # 2. Adjust / Filter: high volume, solid acceptance, but notable separable noise (filt >= 3 or rcvd >= 15 with mixed results)
-        elif rcvd >= 15 and acc >= 2 and (filt >= 3 or (0.40 <= acc_rate < 0.60)):
-            d["triage"] = "Adjust"
-        # 3. Strong Keep: high acceptance or high yield with multiple reviews
-        elif (rev >= 2 and acc_rate >= 0.60) or yield_rate >= 0.20:
-            d["triage"] = "Keep"
-        else:
-            d["triage"] = "Watch"
+        triage = "Watch"
+        triage_reason = "Insufficient volume (< 3 reports) or no completed reviews."
 
-        # Convert veto_reasons dict for JSON serialization
-        d["veto_reasons"] = dict(d["veto_reasons"])
-        
-        entry_data = {"source": src, **d}
-        results.append(entry_data)
+        if s["reports_count"] >= 3 or total_sugg >= 3:
+            if s["accepted_count"] >= 1 and (acc_rate >= 40.0 or yield_rate >= 25.0):
+                triage = "Keep"
+                triage_reason = f"Strong signal: {s['accepted_count']} accepted ({acc_rate:.0f}% acceptance, {yield_rate:.0f}% yield)."
+            elif s["accepted_count"] >= 1 and (acc_rate < 40.0 or veto_rate >= 50.0):
+                triage = "Adjust"
+                triage_reason = f"Mixed signal: {s['accepted_count']} accepted but {s['rejected_count']} rejected & {s['filtered_count']} filtered."
+            elif s["accepted_count"] == 0 and (s["rejected_count"] + s["filtered_count"] >= 3 or s["reports_count"] >= 4):
+                triage = "Unsubscribe"
+                triage_reason = f"Zero yield across {s['reports_count']} reports ({s['rejected_count']} rejected, {s['filtered_count']} filtered)."
+            else:
+                triage = "Watch"
+                triage_reason = f"Evaluating: {s['reports_count']} reports, {s['pending_count']} pending."
 
-    # Sort results: Keep first, then Adjust, then Unsubscribe, then Watch; secondary sort by reports_count desc
-    triage_order = {"Keep": 0, "Adjust": 1, "Unsubscribe": 2, "Watch": 3}
-    results.sort(key=lambda x: (triage_order.get(x["triage"], 4), -x["accepted_count"], -x["reports_count"]))
+        results.append({
+            "source": src,
+            "triage": triage,
+            "triage_reason": triage_reason,
+            "reports_count": s["reports_count"],
+            "active_days": len(s["report_dates"]),
+            "total_suggestions": total_sugg,
+            "reviewed_count": s["reviewed_count"],
+            "accepted_count": s["accepted_count"],
+            "rejected_count": s["rejected_count"],
+            "filtered_count": s["filtered_count"],
+            "pending_count": s["pending_count"],
+            "acceptance_rate": round(acc_rate, 1),
+            "yield_rate": round(yield_rate, 1),
+            "veto_rate": round(veto_rate, 1),
+            "veto_reasons": dict(s["veto_reasons"]),
+            "accepted_examples": s["accepted_examples"][:3],
+            "rejected_examples": s["rejected_examples"][:3],
+            "filtered_examples": s["filtered_examples"][:3],
+        })
+
+    triage_order = {"Unsubscribe": 0, "Adjust": 1, "Keep": 2, "Watch": 3}
+    results.sort(key=lambda x: (triage_order.get(x["triage"], 9), -x["reports_count"], -x["total_suggestions"]))
 
     return {
-        "time_window": {
-            "start_date": start_date,
-            "end_date": end_date,
-            "days": days
-        },
+        "window": {"start": start_str, "end": end_str, "days": (end_dt - start_dt).days},
         "total_newsletters_evaluated": len(results),
         "total_reports": sum(r["reports_count"] for r in results),
         "total_accepted": sum(r["accepted_count"] for r in results),
-        "subscriptions": results
+        "total_rejected": sum(r["rejected_count"] for r in results),
+        "total_filtered": sum(r["filtered_count"] for r in results),
+        "subscriptions": results,
     }
+
 
 def format_markdown_table(data: dict) -> str:
-    """Format the evaluation telemetry as a markdown table."""
-    lines = [
-        f"# 📬 Newsletter Subscription Audit ({data['time_window']['start_date']} ~ {data['time_window']['end_date']})",
-        f"> Evaluated {data['total_newsletters_evaluated']} sources across {data['total_reports']} reports. Accepted suggestions: {data['total_accepted']}.\n",
-        "| Source | Triage | Reports | Reviewed | Accept | Reject | Filtered | Pend | Accept Rate | Yield Rate |",
-        "|---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|"
-    ]
-    
-    icon_map = {
-        "Keep": "🟢 Keep",
-        "Unsubscribe": "🔴 Unsubscribe",
-        "Adjust": "🟡 Adjust",
-        "Watch": "⚪ Watch"
-    }
+    lines = []
+    w = data["window"]
+    lines.append(f"### Telemetry Window: {w['start']} to {w['end']} ({w['days']} days)")
+    lines.append(
+        f"**Total Newsletters**: {data['total_newsletters_evaluated']} | "
+        f"**Total Reports**: {data['total_reports']} | "
+        f"**Accepted**: {data['total_accepted']} | "
+        f"**Rejected**: {data['total_rejected']} | "
+        f"**Filtered/Vetoed**: {data['total_filtered']}\n"
+    )
+    lines.append("| Source | Triage | Reports | Accepted | Rejected | Filtered | Pending | Acc. Rate | Yield | Top Veto Reason |")
+    lines.append("| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |")
 
-    for s in data["subscriptions"]:
-        triage_str = icon_map.get(s["triage"], s["triage"])
-        acc_pct = f"{s['acceptance_rate']*100:.1f}%" if s["reviewed_count"] > 0 else "-"
-        yield_pct = f"{s['yield_rate']*100:.1f}%" if s["reports_count"] > 0 else "-"
+    for r in data["subscriptions"]:
+        top_veto = "-"
+        if r["veto_reasons"]:
+            top_v = sorted(r["veto_reasons"].items(), key=lambda x: -x[1])[0]
+            top_veto = f"{top_v[0]} ({top_v[1]})"
         lines.append(
-            f"| {s['source']} | {triage_str} | {s['reports_count']} | {s['reviewed_count']} | {s['accepted_count']} | {s['rejected_count']} | {s['filtered_count']} | {s['pending_count']} | {acc_pct} | {yield_pct} |"
+            f"| **{r['source']}** | `{r['triage']}` | {r['reports_count']} | {r['accepted_count']} | "
+            f"{r['rejected_count']} | {r['filtered_count']} | {r['pending_count']} | "
+            f"{r['acceptance_rate']}% | {r['yield_rate']}% | {top_veto} |"
         )
-        
     return "\n".join(lines)
 
+
+def _default_data_repo() -> str:
+    if resolve_data_repo is not None:
+        try:
+            return str(resolve_data_repo(require_exists=False))
+        except FileNotFoundError:
+            pass
+    return os.getcwd()
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Audit and analyze newsletter subscriptions based on reports and suggestions.")
-    parser.add_argument("--days", type=int, default=30, help="Number of past days to analyze (default: 30)")
-    parser.add_argument("--start-date", type=str, help="Start date (YYYY-MM-DD)")
-    parser.add_argument("--end-date", type=str, help="End date (YYYY-MM-DD)")
-    parser.add_argument("--workspace", type=str, default=".", help="Workspace root directory")
-    parser.add_argument("--json", action="store_true", help="Output raw JSON instead of markdown table")
-    
+    parser = argparse.ArgumentParser(description="Analyze newsletter subscription ROI over a time window.")
+    parser.add_argument("--data-repo", "--workspace", dest="workspace", default=None, help="Data Repo root directory")
+    parser.add_argument("--days", type=int, default=30, help="Lookback window in days (default: 30)")
+    parser.add_argument("--start-date", type=str, default=None, help="Explicit start date YYYY-MM-DD")
+    parser.add_argument("--end-date", type=str, default=None, help="Explicit end date YYYY-MM-DD")
+    parser.add_argument("--format", choices=["json", "markdown"], default="json", help="Output format")
     args = parser.parse_args()
-    
+
+    workspace = args.workspace or _default_data_repo()
     data = analyze_subscriptions(
-        workspace_dir=args.workspace,
+        workspace_dir=workspace,
         days=args.days,
         start_date=args.start_date,
-        end_date=args.end_date
+        end_date=args.end_date,
     )
-    
-    if args.json:
-        print(json.dumps(data, ensure_ascii=False, indent=2))
-    else:
+
+    if args.format == "markdown":
         print(format_markdown_table(data))
+    else:
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+
 
 if __name__ == "__main__":
     main()

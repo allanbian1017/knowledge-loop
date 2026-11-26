@@ -19,7 +19,7 @@ Extracted the Threads processing path into its own focused skill. Uses `fetch-th
 1. **Anti-Truncation Standard:** Mandatory scroll-before-extract, `get text body` as primary method, and a verbatim raw content section that must never be summarised.
 2. **Shared Summarisation Rules:** Reads `content-summary/references/summarise.md` — Zero Hallucination, Comprehensiveness, Objectivity.
 3. **Structured Output:** Markdown report with source metadata, executive summary, key highlights, action items, disclaimers, and verbatim raw content (see `../content-summary/references/output_template.md`).
-4. **Separate AI Analysis Backlog:** AI analysis is appended to `data/suggestions_pending.md`, not written to the report.
+4. **Separate AI Analysis Backlog:** AI analysis is appended to `$DATA_REPO/data/suggestions_pending.md`, not written to the report.
 5. **Full Lifecycle:** Marks the Google Task as completed after confirming the report and suggestion are written.
 
 ## File Structure
@@ -63,3 +63,7 @@ reports/
 | v1.1.0 | 2026-05-14 | Unified output template moved to `content-summary/references/output_template.md`. |
 | v1.2.0 | 2026-06-16 | Made output language globally configurable, defaulting to English and preferring Traditional Chinese. |
 | v1.3.0 | 2026-07-24 | Added optional `SuggestionOutputPath` parameter. When provided by `daily-workflow` parallel dispatch, passes through to `suggestion_log.md` to write to a per-subagent staging file instead of the default location (RFC: parallel-content-processing). |
+
+### ADR (Portable Data Repo Separation)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

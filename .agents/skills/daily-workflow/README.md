@@ -37,13 +37,16 @@ daily-workflow/
 The main agent **never sees article content**. Its context contains only: task list metadata, message IDs, subagent IDs, and completion status.
 
 ```
+```
 Step 1 → Discover + classify (email IDs, task URLs)
-Step 2 → Pre-create report directories + data/suggestions_pending/
+Step 2 → Pre-create report directories + $DATA_REPO/data/suggestions_pending/
 Step 3 → Dispatch all subagents in parallel (fire-and-forget using dispatch_spec.md)
 Step 4 → Sync barrier (30-min global timeout) & merge suggestion files → main log
 Step 5 → daily-distiller
-Step 6 → review-suggestions
-Step 7 → Final summary output
+Step 6 → deliver-discord-reports (fail-soft Discord Forum digest + .md attachments)
+Step 7 → review-suggestions
+Step 8 → Final summary output
+```
 ```
 
 ### Subagents (Declarative Path-Free Personas)
@@ -65,10 +68,10 @@ Each subagent independently: fetches → summarises → writes report → writes
 
 Each subagent writes to a unique staging file:
 ```
-data/suggestions_pending/suggestion_<type>_<item_id>.json
+$DATA_REPO/data/suggestions_pending/suggestion_<type>_<item_id>.json
 ```
 
-After the sync barrier (Step 4), the orchestrator merges all pending files into `data/suggestions_pending.md` in a single-threaded pass, eliminating concurrent write contention.
+After the sync barrier (Step 4), the orchestrator merges all pending files into `$DATA_REPO/data/suggestions_pending.md` in a single-threaded pass, eliminating concurrent write contention.
 
 ### Crash Safety
 
@@ -86,6 +89,7 @@ A 30-minute global timeout is set after all subagents are dispatched. If reached
 - `ingest-youtube` — YouTube transcription + post-processing (focused parallel subagent).
 - `content-summary` — shared summarisation, AI analysis, suggestion log, filename rules.
 - `daily-distiller` — synthesis of today's reports.
+- `deliver-discord-reports` — fail-soft delivery of daily distillation and `.md` reports via the `discord-reports` MCP server (see [Discord & MCP Setup Guide](../../../docs/guides/discord-mcp-setup-guide.md)).
 - `review-suggestions` — review of pending AI suggestions.
 - `gws-tasks` — Delegate list discovery.
 - `gws-gmail` — unread newsletter discovery.
@@ -113,13 +117,27 @@ data/
 └── suggestions_pending.md      # Merged suggestion log
 ```
 
+## Architecture Decision Records (ADRs)
+
+### ADR-0001: Fail-Soft Post-Distillation Discord Delivery Before Suggestion Review
+- **Context**: `daily-workflow` generates local Markdown reports (`$DATA_REPO/reports/distillations/` + `$DATA_REPO/reports/<Type>_YYYY_MM_DD/`). Step 7 (`review-suggestions`) is interactive and waits for user input.
+- **Decision**: Place `deliver-discord-reports` as automatic Step 6 immediately after `daily-distiller` (Step 5) and before interactive `review-suggestions` (Step 7), configured as strictly fail-soft so Discord outages or unconfigured webhooks never block suggestion review or lose local reports.
+- **Consequences**: Reports appear in Discord as soon as distillation completes without waiting for interactive review, while the pipeline remains resilient when run offline or without Discord configured.
+
 ## Changelog
 
 | Version | Date | Change Summary |
 |---|---|---|
+| v3.3.0 | 2026-11-25 | Switched Step 6 `per_report` delivery to Option C (pure native Discord Markdown with zero `.md` attachments by default, converted Mermaid flows, and 2-line subtext table cards). |
+| v3.2.0 | 2026-11-25 | Switched Step 6 default Discord delivery mode from `digest` to `per_report` so each individual report gets its own rendered Forum post (+ `.md` attachment) beneath the top Daily Knowledge Distillation post. |
+| v3.1.0 | 2026-11-25 | Added automatic fail-soft **Step 6 — Deliver to Discord** (`deliver-discord-reports` / `discord-reports` MCP) after `daily-distiller`, shifted `review-suggestions` to Step 7 and `Final Summary` to Step 8, and added `Discord delivery:` status line to `dispatch_spec.md`. |
 | v1.0.0 | 2026-05-13 | Initial skill: absorbs router logic from `process-delegate-tasks`. Chains fire-YouTube → ingest-newsletter → ingest-threads → poll-YouTube → daily-distiller → review-suggestions. YouTube post-processing done directly by orchestrator using `content-summary` references. |
 | v1.1.0 | 2026-05-18 | Replaced Docker dependencies with local `yt2doc` CLI usage for YouTube transcription jobs. |
 | v1.2.0 | 2026-05-25 | Added `website_queue` routing and Step 4W: delegates generic URL tasks to `ingest-website` synchronously after Threads processing. Skips tasks with no URL (previously "no supported URL"). |
 | v2.0.0 | 2026-07-24 | **Parallel dispatch rewrite (RFC: parallel-content-processing)**. Main agent rewritten as pure metadata dispatcher. Steps 2–5 replaced with: pre-create directories (Step 2), fire-and-forget parallel subagent dispatch for all content types (Step 3a–3d), 30-minute global timeout barrier (Step 4), and suggestion merge (Step 4M). Each content item now gets a focused full-lifecycle subagent scoped to only its relevant skill. Wall-clock time reduced from ~30–80 min sequential to ~8–15 min (slowest item). |
 | v2.1.0 | 2026-07-29 | **Context Engineering Refactor (`skill-context-refactor`)**. Restructured `SKILL.md` into a 100-line Lean Spine (55.5% line reduction). Extracted prompt parameter templates, classification rules, and summary schemas into `references/dispatch_spec.md`. Removed obsolete step markers and unhobbled restrictive directives. |
 | v3.0.0 | 2026-07-31 | **Declarative Sub-Agent Personas & Cross-Platform Sync (RFC: path-free-subagent-personas-and-sync)**. Establishes 6 path-free sub-agent personas (`.agents/subagents/*.md`) as Single Source of Truth (`newsletter_worker`, `threads_worker`, `website_worker`, `youtube_worker`, `rubric_grader`, `distiller_reviewer`). Implemented `scripts/sync_subagents.py` to sync across Google Antigravity, Claude Code (`.claude/agents/*.md`), and OpenAI Codex (`.codex/agents/*.toml`). Injects dynamic parameters via first user message to maximize system prompt caching. |
+
+### ADR (Portable Data Repo Separation)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

@@ -1,6 +1,6 @@
 ---
 name: daily-workflow
-description: "Chains the full content intelligence pipeline in optimal order: discover Delegate tasks, dispatch all content items as parallel full-lifecycle subagents, collect results, merge suggestions, run daily distillation, review suggestions. Use when the user says 'run my daily workflow', 'run daily', 'start my daily routine', or any request to run all content processing tasks in sequence."
+description: "Chains the full content intelligence pipeline in optimal order: discover Delegate tasks, dispatch all content items as parallel full-lifecycle subagents, collect results, merge suggestions, run daily distillation, deliver reports to Discord (fail-soft), review suggestions. Use when the user says 'run my daily workflow', 'run daily', 'start my daily routine', or any request to run all content processing tasks in sequence."
 allowed-tools: Bash(gws:*, yt2doc, agent-browser:*)
 ---
 
@@ -18,7 +18,7 @@ Orchestrates the full content intelligence pipeline by discovering pending items
 ```
 [1. Discover & Classify] ──> [2. Pre-create Directories] ──> [3. Parallel Dispatch]
                                                                      │
-[6. Review Suggestions] <── [5. Distill Knowledge] <── [4. Collect & Merge]
+[8. Final Summary] <── [7. Review Suggestions] <── [6. Deliver to Discord] <── [5. Distill Knowledge] <── [4. Collect & Merge]
 ```
 
 ---
@@ -49,8 +49,8 @@ Orchestrates the full content intelligence pipeline by discovering pending items
 
 Create date-stamped output directories for non-empty queues and the suggestion staging area:
 ```bash
-mkdir -p data/suggestions_pending
-# Pre-create reports/<Type>_YYYY_MM_DD/ for active queues only (Newsletter, Threads, Website, YouTube)
+mkdir -p $DATA_REPO/data/suggestions_pending
+# Pre-create $DATA_REPO/reports/<Type>_YYYY_MM_DD/ for active queues only (Newsletter, Threads, Website, YouTube)
 ```
 
 ---
@@ -74,25 +74,33 @@ Refer to [dispatch_spec.md](references/dispatch_spec.md) for prompt parameter te
 
 
 2. **Grade & Merge Suggestions**:
-   Run subagent `rubric_grader` to score each file matching `data/suggestions_pending/suggestion_*.json`:
-   - Approved suggestions score $\ge 4/6$ and append to `data/suggestions_pending.md`.
-   - Vetoed or low-scoring suggestions append to `data/suggestions_filtered.md`.
+   Run subagent `rubric_grader` to score each file matching `$DATA_REPO/data/suggestions_pending/suggestion_*.json`:
+   - Approved suggestions score $\ge 4/6$ and append to `$DATA_REPO/data/suggestions_pending.md`.
+   - Vetoed or low-scoring suggestions append to `$DATA_REPO/data/suggestions_filtered.md`.
    - Remove processed pending JSON files.
 
 ---
 
 ### Step 5 — Distill Knowledge
 
-Invoke subagent `distiller_reviewer` (or follow `../daily-distiller/SKILL.md`) to synthesize today's reports into `reports/distillations/`.
+Invoke subagent `distiller_reviewer` (or follow `../daily-distiller/SKILL.md`) to synthesize today's reports into `$DATA_REPO/reports/distillations/`.
 
 ---
 
-### Step 6 — Review Suggestions
+### Step 6 — Deliver to Discord (Fail-Soft)
+
+Follow `../deliver-discord-reports/SKILL.md` and call `discord_publish_daily_reports` (`date=<TODAY>`, `mode="per_report"`, `include_source_files=False`) via the `discord-reports` MCP server.
+
+- **Fail-Soft Guarantee**: If the `discord-reports` MCP server is unavailable/unconfigured or returns `status: "error"`, record the reason for Step 8 Final Summary and continue directly to Step 7 (`Review Suggestions`) without failing the workflow.
+
+---
+
+### Step 7 — Review Suggestions
 
 Invoke subagent `distiller_reviewer` (or follow `../review-suggestions/SKILL.md`) to conduct interactive suggestion review and calibrate user preferences.
 
 ---
 
-### Step 7 — Final Summary
+### Step 8 — Final Summary
 
 Print final summary adhering to the output format in [dispatch_spec.md](references/dispatch_spec.md).

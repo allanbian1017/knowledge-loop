@@ -48,15 +48,14 @@ If both fail, log the error and skip — do NOT mark the task as completed:
 
 > 📄 Read `../content-summary/references/filename_rules.md`
 
-Directory: `reports/Website_YYYY_MM_DD/`  
+Directory: `$DATA_REPO/reports/Website_YYYY_MM_DD/`  
 Filename: `[domain]_[slugified_title].md` (hostname without `www.`, then slugified page title)
 
 > 📄 Read `../content-summary/references/output_template.md`
 
-**Website-specific fields** under `## 🔖 來源 Metadata`:
-- **Domain/Host**: the hostname of the URL (e.g. `martinfowler.com`)
-- **原文連結**: the full original URL
-- **抓取日期**: today's date (YYYY-MM-DD)
+**Website-specific metadata**:
+- Include `Domain: <hostname>` (e.g. `martinfowler.com`) and optional original publish date (`發布日期: YYYY-MM-DD`) in the `來源紀錄` line inside the `🧭 對我的意義與來源資訊` `<details>` block of `output_template.md`.
+- Do NOT add top-of-file metadata boilerplate above the `🎯 一句話結論` callout.
 
 **Omit `## 📄 原始內容`** entirely — do not include the raw Jina Markdown in the report.
 
@@ -80,7 +79,7 @@ gws tasks tasks patch \
   --json '{"status": "completed"}'
 ```
 
-Log: `"✅ Task '<title>' marked as completed. Report saved to reports/Website_YYYY_MM_DD/<filename>.md"`
+Log: `"✅ Task '<title>' marked as completed. Report saved to $DATA_REPO/reports/Website_YYYY_MM_DD/<filename>.md"`
 
 ---
 

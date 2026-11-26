@@ -19,7 +19,7 @@ The skill follows a **Hybrid Architecture** combining deterministic Python telem
 ```mermaid
 graph TD
     Trigger["User Request / Scheduled Audit"] --> Script["Deterministic Analyzer Script<br/>(scripts/analyze_subscriptions.py)"]
-    Script --> Parse["Cross-reference reports/Newsletter_* &<br/>data/suggestions_*.md"]
+    Script --> Parse["Cross-reference $DATA_REPO/reports/Newsletter_* &<br/>$DATA_REPO/data/suggestions_*.md"]
     Parse --> Metrics["Compute Volume, Reviewed, Accepted,<br/>Rejected, Filtered, Yield Rate"]
     Metrics --> Triage["Apply Multi-Dimensional Criteria<br/>(references/triage_criteria.md)"]
     Triage --> Artifact["Render Audit Artifact<br/>(newsletter_subscription_audit_YYYY-MM-DD.md)"]
@@ -157,3 +157,7 @@ review-newsletter-subscriptions/
 | Version | Date | Changes |
 |---|---|---|
 | **v1.0.0** | 2026-09-08 | Initial release of `review-newsletter-subscriptions` skill with Hybrid Architecture, 4-dimensional triage heuristics, Human-in-the-Loop execution boundary, and ADRs 0001–0004. |
+
+### ADR (Portable Data Repo Separation)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

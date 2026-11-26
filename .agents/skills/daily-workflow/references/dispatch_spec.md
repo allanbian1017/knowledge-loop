@@ -44,8 +44,8 @@ required: ["subagent", "item_id", "suggestion_output_path", "report_directory"]
 #### Newsletter (`newsletter_worker`)
 ```
 MESSAGE_ID: <MESSAGE_ID>
-SuggestionOutputPath: data/suggestions_pending/suggestion_newsletter_<MESSAGE_ID>.json
-Report directory: reports/Newsletter_YYYY_MM_DD/
+SuggestionOutputPath: $DATA_REPO/data/suggestions_pending/suggestion_newsletter_<MESSAGE_ID>.json
+Report directory: $DATA_REPO/reports/Newsletter_YYYY_MM_DD/
 
 Skip Step 1 (batch discovery) — process only this single email.
 Pass SuggestionOutputPath through to suggestion_log.md.
@@ -56,8 +56,8 @@ Pass SuggestionOutputPath through to suggestion_log.md.
 THREADS_URL: <URL>
 TASK_ID: <TASK_ID>
 DELEGATE_LIST_ID: <DELEGATE_LIST_ID>
-SuggestionOutputPath: data/suggestions_pending/suggestion_threads_<TASK_ID>.json
-Report directory: reports/Threads_YYYY_MM_DD/
+SuggestionOutputPath: $DATA_REPO/data/suggestions_pending/suggestion_threads_<TASK_ID>.json
+Report directory: $DATA_REPO/reports/Threads_YYYY_MM_DD/
 
 Pass SuggestionOutputPath through to suggestion_log.md.
 ```
@@ -67,8 +67,8 @@ Pass SuggestionOutputPath through to suggestion_log.md.
 WEBSITE_URL: <URL>
 TASK_ID: <TASK_ID>
 DELEGATE_LIST_ID: <DELEGATE_LIST_ID>
-SuggestionOutputPath: data/suggestions_pending/suggestion_website_<TASK_ID>.json
-Report directory: reports/Website_YYYY_MM_DD/
+SuggestionOutputPath: $DATA_REPO/data/suggestions_pending/suggestion_website_<TASK_ID>.json
+Report directory: $DATA_REPO/reports/Website_YYYY_MM_DD/
 
 Pass SuggestionOutputPath through to suggestion_log.md.
 ```
@@ -78,8 +78,8 @@ Pass SuggestionOutputPath through to suggestion_log.md.
 YOUTUBE_URL: <URL>
 TASK_ID: <TASK_ID>
 DELEGATE_LIST_ID: <DELEGATE_LIST_ID>
-SuggestionOutputPath: data/suggestions_pending/suggestion_youtube_<TASK_ID>.json
-Report directory: reports/YouTube_YYYY_MM_DD/
+SuggestionOutputPath: $DATA_REPO/data/suggestions_pending/suggestion_youtube_<TASK_ID>.json
+Report directory: $DATA_REPO/reports/YouTube_YYYY_MM_DD/
 
 Pass SuggestionOutputPath through to suggestion_log.md.
 ```
@@ -94,17 +94,19 @@ Upon completion of all steps, format the final execution summary as follows:
 Dispatched N items total (N newsletter(s), T Threads, W website(s), Y YouTube).
 Completed: <success_count> | Failed: <failed_count> | Timed out: <timeout_count>
 
-Newsletter(s): reports/Newsletter_YYYY_MM_DD/
+Newsletter(s): $DATA_REPO/reports/Newsletter_YYYY_MM_DD/
 Threads:
-  ✅ @handle — topic → reports/Threads_YYYY_MM_DD/filename.md
+  ✅ @handle — topic → $DATA_REPO/reports/Threads_YYYY_MM_DD/filename.md
   ⚠️ @handle — FAILED (reason)
 Website(s):
-  ✅ example.com — Article Title → reports/Website_YYYY_MM_DD/filename.md
+  ✅ example.com — Article Title → $DATA_REPO/reports/Website_YYYY_MM_DD/filename.md
   ⚠️ another.com — FAILED (reason)
 YouTube:
-  ✅ Video Title → reports/YouTube_YYYY_MM_DD/filename.md
+  ✅ Video Title → $DATA_REPO/reports/YouTube_YYYY_MM_DD/filename.md
   ⚠️ Another Video — FAILED (reason)
 Skipped Z task(s) (no URL found).
-Suggestions merged: <count> pending → data/suggestions_pending.md
-Distillation complete. Suggestions reviewed.
+Suggestions merged: <count> pending → $DATA_REPO/data/suggestions_pending.md
+Distillation complete.
+Discord delivery: ✅ Sent (<mode>, thread <thread_id>, <N> files) | ⏭️ Skipped (already sent) | ⚠️ FAILED (<reason>)
+Suggestions reviewed.
 ```

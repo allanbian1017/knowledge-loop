@@ -1,77 +1,71 @@
-# Daily Distiller — Output Template
+# Daily Distiller — Output Template (Answer-First Pyramid)
 
-This file defines the output path, filename convention, and the full document structure for the Knowledge Distillation report.
+Defines the output path, filename convention, and Answer-First Pyramid structure for Knowledge Distillation reports.
 
 ---
 
 ## File Output Rules
 
-- **Directory**: `reports/distillations/`
+- **Directory**: `$DATA_REPO/reports/distillations/`
 - **Filename format**: `Knowledge_Distillation_YYYY_MM_DD.md` (use today's local date)
-- Re-running on the same day overwrites the existing file (treated as an updated version)
+- Re-running on the same day overwrites the existing file
 
 ---
 
-## Document Structure
+## Cognitive-Load & Quality Rules
 
-The document contains four fixed sections in this order:
-
-| Section | Purpose |
-|---|---|
-| **Executive Summary** | The overarching narrative of the day — answer "What is the big picture theme?" |
-| **Major Pillars (2–4)** | Group insights into coherent technical themes across sources. Name each section after the *concept*, not the source. |
-| **The Synthesis** | Explain how the pillars relate to each other as a *system*, not just a list. |
-| **Strategic Takeaway** | One actionable, philosophically grounded call-to-action derived from the day's data. |
-
-### Quality Standards
-
-- **Avoid** one-to-one report-to-pillar mapping — the goal is to *reframe* raw inputs into a unified narrative
-- The most valuable distillations surface **connections** that weren't obvious across individual reports
+- **Answer First (3-Second Top Block)**: Line 1 after `# Title` MUST be a standalone `> **🎯 今日一句話結論**` quote in plain everyday language (≤45 chars), followed immediately by a `- **⚡ 本週唯一行動**：` bullet with explicit minutes.
+- **1-Screen Skim (~20–25 Lines Above `<details>`)**: Keep `💡 今日核心重點` to 3–4 numbered 1-line bullets and `📊 跨來源主題速覽` to a 2–4 row table (`≤18 chars/cell`). Zero prose walls!
+- **Per-Pillar Accordions (`<details>`)**: Group insights across multiple sources (never 1:1 per report). Put each Pillar in its own `<details>` block (`2–4 max`), containing **at most 3 short bullets** with just-in-time inline analogies and blank lines after `</summary>` and before `</details>`.
 
 ---
 
 ## Markdown Template
 
-Use this exact structure when writing the output file:
-
 ```markdown
-# Knowledge Distillation: [Topic/Title] (YYYY-MM-DD)
+# Knowledge Distillation: [直白具體的主題標題] (YYYY-MM-DD)
 
-## 📝 Executive Summary
-[High-level summary of the day's core insights. Focus on the "So What?" and the overarching theme.]
+> **🎯 今日一句話結論**：[≤45 字白話點破今日跨來源最核心的工程結論，零術語堆疊]
 
----
+- **⚡ 本週唯一行動**：[1 個具體可動手的行動 + 明確分鐘數]
 
-## 🏗️ 1. [First Major Pillar]
-[Detailed breakdown of the first key concept.]
+## 💡 今日核心重點
+1. **[重點 1]**：[≤45 字白話因果短句]
+2. **[重點 2]**：[≤45 字白話因果短句]
+3. **[重點 3]**：[≤45 字白話因果短句]
 
-### [Sub-point / Component]
-*   **[Key Term]**: [Explanation].
-*   **[Key Term]**: [Explanation].
-
----
-
-## 🧩 2. [Second Major Pillar]
-[Detailed breakdown of the second key concept.]
-
-### [Sub-point / Component]
-*   **[Key Term]**: [Explanation].
-*   **[Key Term]**: [Explanation].
+## 📊 跨來源主題速覽
+| 主題支柱 | 卡在哪裡（白話痛點） | 核心解法直覺 | 對應來源 |
+|---|---|---|---|
+| **1. [支柱名稱]** | [≤18 字] | [≤18 字] | [簡短來源名] |
+| **2. [支柱名稱]** | [≤18 字] | [≤18 字] | [簡短來源名] |
 
 ---
 
-## 🔗 3. The Synthesis: [How Concepts Interconnect]
-[Explain the symbiotic relationship or broader system implications of the pillars above.]
+## 🔍 主題深入解構（點擊展開細節）
 
-1.  **[Synthesis Point 1]**: [Detail].
-2.  **[Synthesis Point 2]**: [Detail].
-3.  **[Synthesis Point 3]**: [Detail].
+<details>
+<summary><b>1. [支柱 1 白話名稱]</b> — [≤25 字一句話結論]</summary>
 
----
+- **痛點與脈絡**：[1 句白話說明真實痛點；專業詞彙當場括號補 ≤10 字類比]
+- **關鍵機制與數據**：[1–2 句短句整合跨報告證據]
+- **系統怎麼串聯**：[1 句說明此支柱如何與其他支柱協作]
 
-## 🚀 Strategic Takeaway
-[Final "Call to Action" or core philosophy to adopt moving forward.]
+</details>
 
----
-*Synthesized from: [List of Sources / Reports]*
+<details>
+<summary><b>2. [支柱 2 白話名稱]</b> — [≤25 字一句話結論]</summary>
+
+- **痛點與脈絡**：[1 句白話說明真實痛點]
+- **關鍵機制與數據**：[1–2 句短句整合跨報告證據]
+- **系統怎麼串聯**：[1 句說明此支柱如何與其他支柱協作]
+
+</details>
+
+<details>
+<summary>📚 <b>今日合成來源清單</b>（Sources）</summary>
+
+- [Report Filename 1](../<SourceType>_YYYY_MM_DD/<filename>.md)
+
+</details>
 ```

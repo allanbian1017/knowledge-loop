@@ -21,17 +21,17 @@ Where `{SourceType}` is one of: `Newsletter`, `Threads`, `YouTube`, `Website`.
 ### `SuggestionOutputPath` (optional)
 
 When a `SuggestionOutputPath` is provided by the caller:
-- Write the suggestion JSON to that path instead of the default `data/suggestions_pending.md`.
-- Use the format: `data/suggestions_pending/suggestion_<type>_<item_id>.json`
+- Write the suggestion JSON to that path instead of the default `$DATA_REPO/data/suggestions_pending.md`.
+- Use the format: `$DATA_REPO/data/suggestions_pending/suggestion_<type>_<item_id>.json`
 - This enables parallel subagents to write without file contention.
 
 When omitted:
-- Use the default location (`data/suggestions_pending.md`) — behavior is unchanged.
+- Use the default location (`$DATA_REPO/data/suggestions_pending.md`) — behavior is unchanged.
 
 ## Rules
 
 - This format is written by the `rubric-grader` skill (Grade mode).
-- If `data/suggestions_pending.md` does not exist, it is created with the heading:
+- If `$DATA_REPO/data/suggestions_pending.md` does not exist, it is created with the heading:
   ```
   # 📋 Pending Suggestions
   ```

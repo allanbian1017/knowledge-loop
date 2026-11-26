@@ -21,7 +21,7 @@ Extracted the YouTube processing path into its own focused skill with a clear Vi
 3. **Error Handling:** Exit code 137 (OOM) produces a clear remediation message. Non-zero exits surface the last 20 lines of stderr. Neither marks the task as done.
 4. **Shared Summarisation Rules:** Reads `content-summary/references/summarise.md` — Zero Hallucination, Comprehensiveness, Objectivity.
 5. **Structured Output:** Markdown report with source metadata, executive summary, key highlights, and full verbatim transcript (see `../content-summary/references/output_template.md`).
-6. **Separate AI Analysis Backlog:** AI analysis is appended to `data/suggestions_pending.md`, not written to the report.
+6. **Separate AI Analysis Backlog:** AI analysis is appended to `$DATA_REPO/data/suggestions_pending.md`, not written to the report.
 7. **Full Lifecycle:** Marks the Google Task as completed and removes the intermediate raw transcription file after confirming the report is written.
 
 ## File Structure
@@ -74,3 +74,7 @@ reports/
 | v1.1.0 | 2026-05-14 | Unified output template moved to `content-summary/references/output_template.md`. |
 | v1.2.0 | 2026-06-16 | Made output language globally configurable, defaulting to English and preferring Traditional Chinese. |
 | v1.3.0 | 2026-07-24 | Skill now runs as a full-lifecycle parallel subagent when dispatched by `daily-workflow` (owns transcription → poll → summarise → suggest → mark-done). Added optional `SuggestionOutputPath` parameter passed through to `suggestion_log.md` for per-subagent file isolation (RFC: parallel-content-processing). |
+
+### ADR (Portable Data Repo Separation)
+- **Decision**: Parameterized data/report paths to `$DATA_REPO/...` and removed all machine-specific absolute paths so this skill runs cleanly from the public `knowledge-loop` knowledge-loop against any user's private Data Repo on macOS.
+- **Changelog (2026-11-26)**: Adopted portable `$DATA_REPO` path convention and verified zero-PII / zero-absolute-path portability.

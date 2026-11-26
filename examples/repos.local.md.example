@@ -1,0 +1,19 @@
+# Local Repositories Map (Data Repo Pointer)
+
+> Copy to `./repos.local.md` (gitignored) or run `./scripts/init_workspace.sh`.
+> Agents read this file via `AGENTS.md` to resolve `$DATA_REPO` and any additional repositories.
+
+## Primary Data Repo (`$DATA_REPO`)
+
+- **Path**: `<DATA_REPO_PATH>`
+- **Purpose**: Private personal goals, preferences, suggestion queues, generated reports, and delivery logs.
+- **Key directories**:
+  - `$DATA_REPO/data/` — `lang_preferences.md`, `goals.md`, `user_preferences.md`, `rubric_blocklist.md`, `suggestions_*.md`, `integrations.md`
+  - `$DATA_REPO/reports/` — `Newsletter_YYYY_MM_DD/`, `Threads_YYYY_MM_DD/`, `Website_YYYY_MM_DD/`, `YouTube_YYYY_MM_DD/`, `distillations/`
+
+## Additional Repositories (Optional)
+
+<!-- Add pointers to other local repos you want agents to coordinate across:
+- **Backend API**: `../backend-api` — Core application services
+- **Frontend Web**: `../frontend-web` — Web client
+-->

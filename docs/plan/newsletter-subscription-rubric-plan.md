@@ -19,19 +19,19 @@ For the detailed technical architecture, design trade-offs, and decisions, pleas
 
 ### Component: `.agents/skills/review-newsletter-subscriptions`
 
-#### [MODIFY] [analyze_subscriptions.py](file:///Users/allanbian/my-ai-workflow/.agents/skills/review-newsletter-subscriptions/scripts/analyze_subscriptions.py)
+#### [MODIFY] [analyze_subscriptions.py](.agents/skills/review-newsletter-subscriptions/scripts/analyze_subscriptions.py)
 * Read each report file during discovery to parse `## ⭐ Reading Decision` star ratings (`推薦指數: [★☆]+`) and compute Read Rate ($RR$).
 * Multi-source trace for High-value count ($H$): parse user comments in `data/suggestions_reviewed.md` (`add to backlog`, `prompts.md`, `知識庫`), references in `backlog.md`, and citations in `reports/distillations/` to compute High-value Rate ($HR$).
 * Compute Volume Cost ($VC$) based on monthly report count ($N$).
 * Output individual dimension telemetry ($RR, AR, HR, VC$) in structured JSON and markdown table.
 
-#### [MODIFY] [triage_criteria.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/review-newsletter-subscriptions/references/triage_criteria.md)
+#### [MODIFY] [triage_criteria.md](.agents/skills/review-newsletter-subscriptions/references/triage_criteria.md)
 * Document the 5 rubric dimensions, scoring formulas, point anchors, LLM-as-a-Judge Uniqueness instructions, and triage mapping.
 
-#### [MODIFY] [review_template.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/review-newsletter-subscriptions/references/review_template.md)
+#### [MODIFY] [review_template.md](.agents/skills/review-newsletter-subscriptions/references/review_template.md)
 * Update markdown audit template to include the 5-dimension rubric columns and composite score.
 
-#### [MODIFY] [SKILL.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/review-newsletter-subscriptions/SKILL.md) & [README.md](file:///Users/allanbian/my-ai-workflow/.agents/skills/review-newsletter-subscriptions/README.md)
+#### [MODIFY] [SKILL.md](.agents/skills/review-newsletter-subscriptions/SKILL.md) & [README.md](.agents/skills/review-newsletter-subscriptions/README.md)
 * Update skill documentation to reflect the 5-dimension rubric workflow.
 * Add ADR-0005 documenting the 5-Dimension Subscription Rubric design rationale and update Changelog.
 
@@ -39,7 +39,7 @@ For the detailed technical architecture, design trade-offs, and decisions, pleas
 
 ### Component: Automated Verification
 
-#### [MODIFY] [test_newsletter_subscription_reviewer.py](file:///Users/allanbian/my-ai-workflow/tests/test_newsletter_subscription_reviewer.py)
+#### [MODIFY] [test_newsletter_subscription_reviewer.py](tests/test_newsletter_subscription_reviewer.py)
 * Add unit test for Reading Decision star rating extraction regex.
 * Add unit test for High-value action comment and citation detection.
 * Add unit test for Volume Cost and telemetry calculation.
