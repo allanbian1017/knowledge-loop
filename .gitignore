@@ -4,12 +4,12 @@ repos.local.md
 *.code-workspace
 
 # Optional single-repo local data/outputs (use a separate private Data Repo in production)
-data/
-data/discord_delivery_log.json
-reports/
-diary/
-raw/
-tasks/*
+/data/
+/data/discord_delivery_log.json
+/reports/
+/diary/
+/raw/
+/tasks/*
 
 # Dependencies & runtime caches
 node_modules/
